@@ -79,12 +79,27 @@ impl Consume for TokenHandler {
  */
 impl NextToken for TokenHandler {
     fn nextToken(&mut self, type: TokenType) {
+        let current_col = self.partial_token_start + self.partial_token.len();
         self.tokens.push(Token{
             type: type.
             value: self.partial_token,
             line: self.line,
             start_col: self.partial_token_start,
-            end_col: self.partial_token_start + self.partial_token.len(); 
+            end_col: current_col,
         });
+
+        self.partial_token = "";
+        self.partial_token_start = current_col;
+    }
+}
+
+
+/**
+ * Gets the next char of input and a lookahead.
+ */
+impl NextChar for TokenHandler {
+    fn nextChar(& self) -> (char, char) {
+        let chs = self.input.chars();
+        (chs.next(), chs.next())
     }
 }

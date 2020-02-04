@@ -1,8 +1,7 @@
-use std::env;
 use std::fs;
 
+
 fn main() {
-    // --snip--
     let filename = "example-code/hello_world.rbg";
     println!("In file {}", filename);
 
