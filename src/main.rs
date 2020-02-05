@@ -12,7 +12,7 @@ fn main() {
 
     println!("With text:\n{}", contents);
 
-    let tokens: Vec<Token> = lexer::generateTokens(contents);
+    let tokens: Vec<Token> = lexer::tokenize(contents);
 
-    println!("Tokens:\n{:?}", tokens);
+    println!("Tokens:\n{:#?}", tokens);
 }

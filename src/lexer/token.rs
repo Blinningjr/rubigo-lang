@@ -15,23 +15,24 @@ pub struct Token {
  * All the different token types.
  */
 #[derive(Debug, Clone)]
-enum TokenType {
+pub enum TokenType {
     Fn,
     While,
     If,
     Else,
     Let,
+    
     Ident,
     Type,
     Boolean,
     Number,
-    Text,
+
+    String,
 
     BodyStart,
     BodyEnd,
     ParenthesisStart,
     ParenthesisEnd,
-    LineEnd,
 }
 
 
@@ -57,8 +58,8 @@ impl TokenHandler {
             input: input,
             tokens: Vec::new(),
             partial_token: "".to_string(),
-            line: 0,
-            partial_token_start: 0,
+            line: 1,
+            partial_token_start: 1,
         }
     }
 }
@@ -81,7 +82,7 @@ impl TokenHandler {
  * Creates a token from the partial token.
  */
 impl TokenHandler {
-    pub fn NextToken(&mut self, token_type: TokenType) {
+    pub fn next_token(&mut self, token_type: TokenType) {
         let current_col = self.partial_token_start + self.partial_token.chars().count();
         self.tokens.push(Token{
             token_type: token_type,
@@ -101,7 +102,7 @@ impl TokenHandler {
  * Gets the next char of input and a lookahead.
  */
 impl TokenHandler {
-    pub fn nextChar(& self) -> (Option<char>, Option<char>) {
+    pub fn next_char(& self) -> (Option<char>, Option<char>) {
         let mut chs = self.input.chars();
         (chs.next(), chs.next())
     }
@@ -113,5 +114,41 @@ impl TokenHandler {
 impl TokenHandler {
     pub fn get_tokens(& self) -> Vec<Token> {
         self.tokens.clone()
+    }
+}
+
+
+/**
+ * Returns true if there are more chars in input.
+ */
+impl TokenHandler {
+    pub fn hungry(& self) -> bool {
+        self.input.chars().count() != 0
+    }
+}
+
+
+/**
+ * Discards the current char..
+ */
+impl TokenHandler {
+    pub fn discard(&mut self) {
+        let mut chs = self.input.chars();
+        self.partial_token_start += 1;
+
+        match chs.next() {
+            Some(ch) => {
+                match ch {
+                    '\n' => {
+                        self.line += 1;
+                        self.partial_token_start = 1;
+                    },
+                    _ => (),
+                };
+            },
+            None => (),
+        };
+        
+        self.input = chs.collect::<String>();
     }
 }
