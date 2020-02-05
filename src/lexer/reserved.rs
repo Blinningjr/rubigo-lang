@@ -37,7 +37,7 @@ pub fn check_reserved_idents(ident: &str) -> TokenType {
  */
 pub fn check_symbols(token_handler: &mut TokenHandler, ch: char, look_a_head: char) -> bool {
     let mut result: bool = true;
-    let mut input = String::from("");
+    let mut input: String = String::from("");
     input.push(ch);
     input.push(look_a_head);
 

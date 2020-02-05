@@ -12,6 +12,16 @@ pub struct Token {
 
 
 /**
+ * Returns the type of the token. 
+ */
+impl Token {
+    pub fn get_type(&self) -> TokenType {
+        return self.token_type;
+    }
+}
+
+
+/**
  * All the different token types.
  */
 #[derive(Debug, Clone)]

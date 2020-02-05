@@ -1,7 +1,10 @@
-use std::fs;
-
 mod lexer;
+mod parser;
+
+
+use std::fs;
 use crate::lexer::Token;
+
 
 fn main() {
     let filename = "example-code/hello_world.rbg";
@@ -9,10 +12,10 @@ fn main() {
 
     let contents = fs::read_to_string(filename)
         .expect("Something went wrong reading the file");
-
     println!("With text:\n{}", contents);
 
-    let tokens: Vec<Token> = lexer::tokenize(contents);
-
+    let mut tokens: Vec<Token> = lexer::tokenize(contents);
     println!("Tokens:\n{:#?}", tokens);
+
+    parser::parse_tokens(&mut tokens);
 }
