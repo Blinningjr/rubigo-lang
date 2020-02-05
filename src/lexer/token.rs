@@ -22,10 +22,14 @@ pub enum TokenType {
     Else,
     Let,
     
+    Mut,
+    Borrow,
+    
     Ident,
     Type,
     Boolean,
     Number,
+    Op,
 
     String,
 
@@ -33,6 +37,10 @@ pub enum TokenType {
     BodyEnd,
     ParenthesisStart,
     ParenthesisEnd,
+
+    TypeDec,
+
+    FnType,
 }
 
 
@@ -71,7 +79,7 @@ impl TokenHandler {
  */
 impl TokenHandler {
     pub fn consume(&mut self) {
-        let mut chs = self.input.chars();
+        let mut chs: std::str::Chars<'_> = self.input.chars();
         self.partial_token.push(chs.next().unwrap());
         self.input = chs.collect::<String>();
     }
@@ -83,7 +91,7 @@ impl TokenHandler {
  */
 impl TokenHandler {
     pub fn next_token(&mut self, token_type: TokenType) {
-        let current_col = self.partial_token_start + self.partial_token.chars().count();
+        let current_col: usize = self.partial_token_start + self.partial_token.chars().count();
         self.tokens.push(Token{
             token_type: token_type,
             value: self.partial_token.clone(),
@@ -103,7 +111,7 @@ impl TokenHandler {
  */
 impl TokenHandler {
     pub fn next_char(& self) -> (Option<char>, Option<char>) {
-        let mut chs = self.input.chars();
+        let mut chs: std::str::Chars<'_> = self.input.chars();
         (chs.next(), chs.next())
     }
 }
@@ -129,11 +137,11 @@ impl TokenHandler {
 
 
 /**
- * Discards the current char..
+ * Discards the current char.
  */
 impl TokenHandler {
     pub fn discard(&mut self) {
-        let mut chs = self.input.chars();
+        let mut chs: std::str::Chars<'_> = self.input.chars();
         self.partial_token_start += 1;
 
         match chs.next() {
@@ -150,5 +158,15 @@ impl TokenHandler {
         };
         
         self.input = chs.collect::<String>();
+    }
+}
+
+
+/**
+ * Returns the current tokens value.
+ */
+impl TokenHandler {
+    pub fn get_token_value(& self) -> &str {
+        &self.partial_token
     }
 }

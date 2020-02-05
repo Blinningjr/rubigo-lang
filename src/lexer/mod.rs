@@ -1,4 +1,5 @@
 pub mod token;
+pub mod reserved;
 
 pub use crate::lexer::token::{
     Token,
@@ -6,6 +7,11 @@ pub use crate::lexer::token::{
     TokenHandler,
 };
 
+use crate::lexer::reserved::{
+    check_reserved_idents,
+    check_symbols,
+    check_symbol,
+};
 
 /**
  * Generates vector of tokens from a String.
@@ -23,7 +29,7 @@ pub fn tokenize(input: String) -> Vec<Token> {
 /**
  * Starts a finite state machine for consuming and classifying a token.
  */
-fn fsm_start(token_handler: &mut TokenHandler, ch: char, _look_a_head: Option<char>) {
+fn fsm_start(token_handler: &mut TokenHandler, ch: char, look_a_head: Option<char>) {
     if ch.is_alphabetic() {
         token_handler.consume();
         // Make it call reserved FSM:s.
@@ -32,36 +38,20 @@ fn fsm_start(token_handler: &mut TokenHandler, ch: char, _look_a_head: Option<ch
         token_handler.consume();
         fsm_number(token_handler);
     } else {
-        // Fiz so theses are not hard coded.
-        match ch {
-            '"' => {
-                token_handler.consume();
-                token_handler.next_token(TokenType::String);
-            },
-            '_' => {
-                token_handler.consume();
-                fsm_ident(token_handler);
-            },
-            ' ' => token_handler.discard(),
-            '\n' => token_handler.discard(),
-            '{' => {
-                token_handler.consume();
-                token_handler.next_token(TokenType::BodyStart);
-            },
-            '}' => {
-                token_handler.consume();
-                token_handler.next_token(TokenType::BodyEnd);
-            },
-            '(' => {
-                token_handler.consume();
-                token_handler.next_token(TokenType::ParenthesisStart);
-            },
-            ')' => {
-                token_handler.consume();
-                token_handler.next_token(TokenType::ParenthesisEnd);
-            },
-            _ => panic!("{:?} Not implemented (fsm_start)", ch),
+        let mut is_tokenized = false;
+        
+        match look_a_head {
+            Some(look_a_head) => is_tokenized = check_symbols(token_handler, ch, look_a_head),
+            None => is_tokenized = false,
         };
+        
+        if !is_tokenized {
+            check_symbol(token_handler, ch);
+        }
+
+        if !is_tokenized {
+            token_handler.discard();
+        }
     }
 }
 
@@ -69,7 +59,7 @@ fn fsm_start(token_handler: &mut TokenHandler, ch: char, _look_a_head: Option<ch
 /**
  * FSM for converting string to Token of type ident.
  */
-fn fsm_ident(token_handler: &mut TokenHandler) {
+pub fn fsm_ident(token_handler: &mut TokenHandler) {
     if token_handler.hungry() {
         let (ch, _look_a_head) = token_handler.next_char();
         // TODO: Fix so '_' is not hard coded.
@@ -77,11 +67,17 @@ fn fsm_ident(token_handler: &mut TokenHandler) {
             token_handler.consume();
             fsm_ident(token_handler);
         } else {
-            token_handler.next_token(TokenType::Ident);
+            fsm_ident_end(token_handler);
         }
     } else {
-        token_handler.next_token(TokenType::Ident);
+        fsm_ident_end(token_handler);
     } 
+}
+
+fn fsm_ident_end(token_handler: &mut TokenHandler) {
+    let token_value: &str = token_handler.get_token_value();
+    let token_type: TokenType = check_reserved_idents(token_value);
+    token_handler.next_token(token_type);
 }
 
 
