@@ -1,9 +1,11 @@
+#![allow(dead_code)]
+
 pub mod expressions;
 
 
-use crate::lexer::token::{
+use super::lexer::token::{
     Token,
-    TokenType,
+    // TokenType,
 };
 
 
@@ -34,9 +36,9 @@ fn check_token(tokens: &mut Vec<Token>) {
 /**
  * Parses a function token and all its related tokens. 
  */
-fn parse_fn(tokens: &mut Vec<Token>) {
-
-}
+// fn parse_fn(tokens: &mut Vec<Token>) {
+    
+// }
 
 
 /**

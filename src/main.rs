@@ -1,9 +1,9 @@
-mod lexer;
+pub mod lexer;
 mod parser;
 
 
 use std::fs;
-use crate::lexer::Token;
+use lexer::Token;
 
 
 fn main() {

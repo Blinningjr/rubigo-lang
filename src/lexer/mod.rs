@@ -2,13 +2,13 @@ pub mod token;
 pub mod reserved;
 
 
-pub use crate::lexer::token::{
+pub use token::{
     Token,
     TokenType,
     TokenHandler,
 };
 
-use crate::lexer::reserved::{
+use reserved::{
     check_reserved_idents,
     check_symbols,
     check_symbol,

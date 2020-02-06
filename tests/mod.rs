@@ -1,3 +1,1 @@
-pub use extern::crate::lexer;
-
-// mod testLexer;
+mod test_lexer;
