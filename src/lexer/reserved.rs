@@ -15,6 +15,7 @@ pub fn check_reserved_idents(ident: &str) -> TokenType {
         "if" => TokenType::If,
         "else" => TokenType::Else,
         "let" => TokenType::Let,
+        "return" => TokenType::Return,
 
         "mut" => TokenType::Mut,
 

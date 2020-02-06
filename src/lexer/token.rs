@@ -47,6 +47,7 @@ pub enum TokenType {
     If,
     Else,
     Let,
+    Return,
     
     Mut,
     Borrow,
@@ -141,6 +142,7 @@ impl TokenHandler {
         (chs.next(), chs.next())
     }
 }
+
 
 /**
  * Gets all tokens.

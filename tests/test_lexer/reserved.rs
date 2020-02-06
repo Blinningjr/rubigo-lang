@@ -231,3 +231,22 @@ fn test_tokenize_string() {
         )
     );
 }
+
+
+/**
+ * Test tokenizing key identifier return.
+ */
+#[test]
+fn test_tokenize_return() {
+    let test1_input: String = "return".to_string();
+    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    assert_eq!(test1_tokens[0], 
+        Token::new(
+            TokenType::Return,  // token_type
+            test1_input,        // value
+            1,                  // line
+            1,                  // start_col
+            7,                  // end_col
+        )
+    );
+}
