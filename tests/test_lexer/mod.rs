@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 #[path = "../../src/lexer/mod.rs"]
 pub mod lexer;
 
