@@ -49,6 +49,8 @@ pub enum TokenType {
     Let,
     Return,
     
+    EndExpression,
+
     Mut,
     Borrow,
     

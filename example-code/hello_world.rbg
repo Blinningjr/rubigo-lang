@@ -1,8 +1,1 @@
-fn foo(test: i32) -> f32 {
-    let under_ten: bool = true;
-    let mut num: i32 = 0; 
-    while (under_ten) {
-        num += 1;
-        under_ten = num < 10; 
-    }
-}
+letmutx:i32 = 10;

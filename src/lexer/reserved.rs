@@ -72,6 +72,7 @@ pub fn check_symbol(token_handler: &mut TokenHandler, ch: char) -> bool {
         ' ' => token_handler.discard(),
         '\n' => token_handler.discard(),
 
+        ';' => tokenize_simple_symbol(token_handler, TokenType::EndExpression),
         ':' => tokenize_simple_symbol(token_handler, TokenType::TypeDec),
         '"' => tokenize_simple_symbol(token_handler, TokenType::String),
         '{' => tokenize_simple_symbol(token_handler, TokenType::BodyStart),

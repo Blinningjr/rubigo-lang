@@ -1,7 +1,18 @@
 #![allow(dead_code)]
 
+pub mod types;
 pub mod expressions;
+pub mod operations;
+pub mod ast;
 
+pub use types::{
+    Type,
+    Literal,
+};
+
+pub use expressions::{
+    Expression,
+};
 
 use super::lexer::token::{
     Token,

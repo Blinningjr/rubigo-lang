@@ -329,3 +329,22 @@ fn test_tokenize_greater_then() {
         )
     );
 }
+
+
+/**
+ * Test tokenizing key symbol ';'.
+ */
+#[test]
+fn test_tokenize_end_expression() {
+    let test1_input: String = ';'.to_string();
+    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    assert_eq!(test1_tokens[0], 
+        Token::new(
+            TokenType::EndExpression,   // token_type
+            test1_input,                // value
+            1,                          // line
+            1,                          // start_col
+            2,                          // end_col
+        )
+    );
+}
