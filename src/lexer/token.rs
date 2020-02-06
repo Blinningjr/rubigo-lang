@@ -1,7 +1,7 @@
 /**
  * Lexer Token.
  */
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Token {
     token_type: TokenType,
     value: String,
@@ -15,8 +15,24 @@ pub struct Token {
  * Returns the type of the token. 
  */
 impl Token {
+    pub fn new(token_type: TokenType, value: String, line: usize, start_col: usize, end_col: usize) -> Token {
+        Token{
+            token_type: token_type,
+            value: value,
+            line: line,
+            start_col: start_col,
+            end_col: end_col,
+        }
+    }
+}
+
+
+/**
+ * Returns the type of the token. 
+ */
+impl Token {
     pub fn get_type(&self) -> TokenType {
-        return self.token_type;
+        return self.token_type.clone();
     }
 }
 
@@ -24,7 +40,7 @@ impl Token {
 /**
  * All the different token types.
  */
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenType {
     Fn,
     While,
@@ -102,13 +118,13 @@ impl TokenHandler {
 impl TokenHandler {
     pub fn next_token(&mut self, token_type: TokenType) {
         let current_col: usize = self.partial_token_start + self.partial_token.chars().count();
-        self.tokens.push(Token{
-            token_type: token_type,
-            value: self.partial_token.clone(),
-            line: self.line,
-            start_col: self.partial_token_start,
-            end_col: current_col,
-        });
+        self.tokens.push(Token::new(
+            token_type, 
+            self.partial_token.clone(), 
+            self.line, 
+            self.partial_token_start, 
+            current_col)
+        );
 
         self.partial_token = "".to_string();
         self.partial_token_start = current_col;

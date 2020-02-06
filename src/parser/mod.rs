@@ -23,7 +23,7 @@ pub fn parse_tokens(tokens: &mut Vec<Token>) {
  */
 fn check_token(tokens: &mut Vec<Token>) {
     let token: Token = tokens[0].clone();
-    match token.token_type {
+    match token.get_type() {
         // TokenType::Fn => parse_fn(tokens),
         // TokenType::Number => ,
         _ => panic!("Syntax Error: Expected token ..."),
