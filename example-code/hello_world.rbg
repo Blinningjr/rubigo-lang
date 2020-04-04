@@ -1,1 +1,10 @@
-letmutx:i32 = 10;
+fn foo(bar: i32) -> bool {
+    while true {
+        let a: f32 = 10.2 + 21;
+        if bar == 21 {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

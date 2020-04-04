@@ -1,12 +1,11 @@
+pub mod token_type;
 pub mod token;
+pub mod token_handler;
 pub mod reserved;
 
-
-pub use token::{
-    Token,
-    TokenType,
-    TokenHandler,
-};
+pub use token_type::TokenType;
+pub use token::Token;
+pub use token_handler::TokenHandler;
 
 use reserved::{
     check_reserved_idents,
@@ -18,20 +17,20 @@ use reserved::{
 /**
  * Generates vector of tokens from a String.
  */
-pub fn tokenize(input: String) -> Vec<Token> {
-    let mut token_handler: TokenHandler = TokenHandler::new(input); 
-    while token_handler.hungry() {
-        let (ch, look_a_head): (Option<char>, Option<char>) = token_handler.next_char();
-        fsm_start(&mut token_handler, ch.unwrap(), look_a_head);
-    }
-    return  token_handler.get_tokens();
-}
+//pub fn tokenize(input: String) -> Vec<Token> {
+//    let mut token_handler: TokenHandler = TokenHandler::new(input); 
+//    while token_handler.hungry() {
+//        let (ch, look_a_head): (Option<char>, Option<char>) = token_handler.next_char();
+//        fsm_start(&mut token_handler, ch.unwrap(), look_a_head);
+//    }
+//    return  token_handler.get_tokens();
+//}
 
 
 /**
  * Starts a finite state machine for consuming and classifying a token.
  */
-fn fsm_start(token_handler: &mut TokenHandler, ch: char, look_a_head: Option<char>) {
+pub fn fsm_start(token_handler: &mut TokenHandler, ch: char, look_a_head: Option<char>) {
     if ch.is_alphabetic() {
         token_handler.consume();
         // Make it call reserved FSM:s.
@@ -121,3 +120,4 @@ fn fsm_number(token_handler: &mut TokenHandler) {
         token_handler.next_token(TokenType::Number);
     }
 }
+

@@ -5,6 +5,10 @@ pub mod expressions;
 pub mod operations;
 pub mod ast;
 
+// pub use super::error_handler::{
+//     Error,
+// };
+
 pub use types::{
     Type,
     Literal,

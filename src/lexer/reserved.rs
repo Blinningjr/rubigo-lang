@@ -69,8 +69,8 @@ pub fn check_symbols(token_handler: &mut TokenHandler, ch: char, look_a_head: ch
 pub fn check_symbol(token_handler: &mut TokenHandler, ch: char) -> bool {
     let mut result: bool = true;
     match ch {
-        ' ' => token_handler.discard(),
-        '\n' => token_handler.discard(),
+        ' ' => tokenize_simple_symbol(token_handler, TokenType::Space),
+        '\n' => tokenize_simple_symbol(token_handler, TokenType::NewLine),
 
         ';' => tokenize_simple_symbol(token_handler, TokenType::EndExpression),
         ':' => tokenize_simple_symbol(token_handler, TokenType::TypeDec),

@@ -1,34 +1,48 @@
-use std::Display;
+// /**
+//  * Defines the traits all errors must have.
+//  */
+// pub trait Error {
+//     fn to_string(&self);
+// }
 
 
-/**
- * Keeps track of all errors.
- */
-pub struct ErrorHandler<T: Display> {
-    errors: Vec<T>
-}
+// /**
+//  * Keeps track of all errors.
+//  */
+// pub struct ErrorHandler<T: Error> {
+//     errors: Vec<T>
+// }
 
 
-impl ErrorHandler {
-    pub fn new() -> ErrorHandler {
-        return ErrorHandler {
-            errors: Vec::new(),
-        };
-    }
-}
+// /**
+//  * Creates a new error handler.
+//  */
+// impl<T: Error> ErrorHandler<T> {
+//     pub fn new() -> ErrorHandler<T> {
+//         return ErrorHandler::<T> {
+//             errors: Vec::new(),
+//         };
+//     }
+// }
 
 
-impl ErrorHandler {
-    pub fn append<T: Display>(&mut self, error: T>) {
-        self.errors.append(error);
-    }
-}
+// // /**
+// //  * Appends a error to the errors vector.
+// //  */
+// // impl<T: Error + Clone> ErrorHandler<T> {
+// //     pub fn append(&mut self, error: T) {
+// //         self.errors.append(error);
+// //     }
+// // }
 
 
-impl ErrorHandler {
-    pub fn print_errors<T: Display>(&self) {
-        for error in self.errors {
-            print!("{}", error.to_string());
-        }
-    }
-}
+// /**
+//  * Prints all errors stored in error handler.
+//  */
+// impl<T: Error> ErrorHandler<T> {
+//     pub fn print_errors(&self) {
+//         for error in self.errors {
+//             print!("{:#?}", error.to_string());
+//         }
+//     }
+// }

@@ -14,7 +14,7 @@ pub enum Expression {
     Let(Box<Let>),
     Return(Return),
     FunctionCall(Box<FunctionCall>),
-    Operation(),
+    Math(),
 }
 
 
@@ -79,6 +79,18 @@ pub struct FunctionCall {
  * Defines parameter in Rubigo.
  */
 pub struct Parameter {
+    ident: String,
+    r#type: Type,
+    line: usize,
+    start_col: usize,
+    end_col: usize,
+}
+
+
+/**
+ * Defines parameter in Rubigo.
+ */
+pub struct Math {
     ident: String,
     r#type: Type,
 }
