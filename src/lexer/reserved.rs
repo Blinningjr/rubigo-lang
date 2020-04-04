@@ -1,12 +1,9 @@
-use super::{
-    TokenType,
-    TokenHandler,
-    fsm_ident,
-};
+use super::TokenType;
 
 
 /**
  * Checks if ident equals to one of the reserved ident:s.
+ * Returns a reserved token type or the ident token type.
  */
 pub fn check_reserved_idents(ident: &str) -> TokenType {
     match ident {
@@ -33,88 +30,64 @@ pub fn check_reserved_idents(ident: &str) -> TokenType {
 
 
 /**
- * Checks symbols and preforms the related operation.
- * Returns true if operations is implemented for the symbol.
+ * Checks if input is two reserved symboles.
+ * Returns token type or error.
  */
-pub fn check_symbols(token_handler: &mut TokenHandler, ch: char, look_a_head: char) -> bool {
-    let mut result: bool = true;
+pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static str> {
     let mut input: String = String::from("");
     input.push(ch);
     input.push(look_a_head);
 
-    match &input[..] {
-        "->" => tokenize_symbols(token_handler, TokenType::FnType),
-        "()" => tokenize_symbols(token_handler, TokenType::Type),
+    return match &input[..] {
+        "->" => Ok(TokenType::FnType),
+        "()" => Ok(TokenType::Type),
 
-        "!=" => tokenize_symbols(token_handler, TokenType::Op),
-        "==" => tokenize_symbols(token_handler, TokenType::Op),
-        "+=" => tokenize_symbols(token_handler, TokenType::Op),
-        "-=" => tokenize_symbols(token_handler, TokenType::Op),
-        ">=" => tokenize_symbols(token_handler, TokenType::Op),
-        "<=" => tokenize_symbols(token_handler, TokenType::Op),
+        "!=" => Ok(TokenType::Op),
+        "==" => Ok(TokenType::Op),
+        "+=" => Ok(TokenType::Op),
+        "-=" => Ok(TokenType::Op),
+        ">=" => Ok(TokenType::Op),
+        "<=" => Ok(TokenType::Op),
 
-        "&&" => tokenize_symbols(token_handler, TokenType::Op),
-        "||" => tokenize_symbols(token_handler, TokenType::Op),
+        "&&" => Ok(TokenType::Op),
+        "||" => Ok(TokenType::Op),
 
-        _ => result = false,
+        _ => Err("Symbols are not reserved"),
     };
-    return result;
 }
 
 
 /**
- * Checks symbol and preforms the related operation.
- * Returns true if operations is implemented for the symbol.
+ * Cheacks if symbole is reserved.
+ * Returns token type or error.
  */
-pub fn check_symbol(token_handler: &mut TokenHandler, ch: char) -> bool {
-    let mut result: bool = true;
-    match ch {
-        ' ' => tokenize_simple_symbol(token_handler, TokenType::Space),
-        '\n' => tokenize_simple_symbol(token_handler, TokenType::NewLine),
+    pub fn check_symbol(ch: char) -> bool {
+        return match ch {
+            ' ' => Ok(TokenType::Space),
+            '\n' => Ok(TokenType::NewLine),
 
-        ';' => tokenize_simple_symbol(token_handler, TokenType::EndExpression),
-        ':' => tokenize_simple_symbol(token_handler, TokenType::TypeDec),
-        '"' => tokenize_simple_symbol(token_handler, TokenType::String),
-        '{' => tokenize_simple_symbol(token_handler, TokenType::BodyStart),
-        '}' => tokenize_simple_symbol(token_handler, TokenType::BodyEnd),
-        '(' => tokenize_simple_symbol(token_handler, TokenType::ParenthesisStart),
-        ')' => tokenize_simple_symbol(token_handler, TokenType::ParenthesisEnd),
+            ';' => Ok(TokenType::EndExpression),
+            ':' => Ok(TokenType::TypeDec),
+            '"' => Ok(TokenType::String),
+            '{' => Ok(TokenType::BodyStart),
+            '}' => Ok(TokenType::BodyEnd),
+            '(' => Ok(TokenType::ParenthesisStart),
+            ')' => Ok(TokenType::ParenthesisEnd),
 
-        '&' => tokenize_simple_symbol(token_handler, TokenType::Borrow),
+            '&' => Ok(TokenType::Borrow),
 
-        '=' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '!' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '+' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '-' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '/' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '*' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '%' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '<' => tokenize_simple_symbol(token_handler, TokenType::Op),
-        '>' => tokenize_simple_symbol(token_handler, TokenType::Op),
+            '=' => Ok(TokenType::Op),
+            '!' => Ok(TokenType::Op),
+            '+' => Ok(TokenType::Op),
+            '-' => Ok(TokenType::Op),
+            '/' => Ok(TokenType::Op),
+            '*' => Ok(TokenType::Op),
+            '%' => Ok(TokenType::Op),
+        '<' => Ok(TokenType::Op),
+        '>' => Ok(TokenType::Op),
         
-        '_' => {
-            token_handler.consume();
-            fsm_ident(token_handler);
-        },
-        _ => result = false,
+        _ => Err("Symbol is not reserved"),
     };
     return result;
 }
 
-
-/**
- * Consumes one char and makes a token of token type token_type.
- */
-fn tokenize_simple_symbol(token_handler: &mut TokenHandler, token_type: TokenType) {
-    token_handler.consume();
-    token_handler.next_token(token_type);
-}
-
-
-/**
- * Consumes two chars and makes a token of token type token_type.
- */
-fn tokenize_symbols(token_handler: &mut TokenHandler, token_type: TokenType) {
-    token_handler.consume();
-    tokenize_simple_symbol(token_handler, token_type);
-}

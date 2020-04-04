@@ -1,4 +1,4 @@
 | Date		| Start | End	|  Task							|
 |---------------|:-----:|:-----:|----------------------------------------------:|
-| 2020-04-04	| 19:12 | 	| Converting the lexer to online.		|
+| 2020-04-04	| 19:12 | 22:06	| Converting the lexer to online.		|
 
