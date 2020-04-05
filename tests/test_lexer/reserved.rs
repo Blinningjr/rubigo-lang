@@ -1,7 +1,8 @@
+use super::tokenize_string;
+
 use super::lexer::{
     Token, 
     TokenType,
-    tokenize,
 };
 
 
@@ -11,7 +12,7 @@ use super::lexer::{
 #[test]
 fn test_tokenize_fn() {
     let test1_input: String = "fn".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Fn,      // token_type
@@ -30,7 +31,7 @@ fn test_tokenize_fn() {
 #[test]
 fn test_tokenize_while() {
     let test1_input: String = "while".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::While,   // token_type
@@ -49,7 +50,7 @@ fn test_tokenize_while() {
 #[test]
 fn test_tokenize_if() {
     let test1_input: String = "if".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::If,      // token_type
@@ -68,7 +69,7 @@ fn test_tokenize_if() {
 #[test]
 fn test_tokenize_else() {
     let test1_input: String = "else".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Else,    // token_type
@@ -87,7 +88,7 @@ fn test_tokenize_else() {
 #[test]
 fn test_tokenize_let() {
     let test1_input: String = "let".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Let,     // token_type
@@ -106,7 +107,7 @@ fn test_tokenize_let() {
 #[test]
 fn test_tokenize_mut() {
     let test1_input: String = "mut".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Mut,     // token_type
@@ -125,7 +126,7 @@ fn test_tokenize_mut() {
 #[test]
 fn test_tokenize_false() {
     let test1_input: String = "false".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Boolean, // token_type
@@ -144,7 +145,7 @@ fn test_tokenize_false() {
 #[test]
 fn test_tokenize_true() {
     let test1_input: String = "true".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Boolean, // token_type
@@ -163,7 +164,7 @@ fn test_tokenize_true() {
 #[test]
 fn test_tokenize_bool() {
     let test1_input: String = "bool".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Type,    // token_type
@@ -182,7 +183,7 @@ fn test_tokenize_bool() {
 #[test]
 fn test_tokenize_i32() {
     let test1_input: String = "i32".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Type,    // token_type
@@ -201,7 +202,7 @@ fn test_tokenize_i32() {
 #[test]
 fn test_tokenize_f32() {
     let test1_input: String = "f32".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Type,    // token_type
@@ -220,7 +221,7 @@ fn test_tokenize_f32() {
 #[test]
 fn test_tokenize_string() {
     let test1_input: String = "String".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Type,    // token_type
@@ -239,7 +240,7 @@ fn test_tokenize_string() {
 #[test]
 fn test_tokenize_return() {
     let test1_input: String = "return".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Return,  // token_type
@@ -250,3 +251,4 @@ fn test_tokenize_return() {
         )
     );
 }
+

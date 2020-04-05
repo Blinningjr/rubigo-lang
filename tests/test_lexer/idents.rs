@@ -1,7 +1,9 @@
+use super::tokenize_string;
+
 use super::lexer::{
     Token, 
     TokenType,
-    tokenize,
+    TokenHandler,
 };
 
 
@@ -11,7 +13,7 @@ use super::lexer::{
 #[test]
 fn test_tokenize_alphabetic_ident() {
     let test1_input: String = "foo".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Ident,   // token_type
@@ -30,7 +32,7 @@ fn test_tokenize_alphabetic_ident() {
 #[test]
 fn test_tokenize_alphanumeric_ident() {
     let test1_input: String = "foo1231".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Ident,   // token_type
@@ -49,7 +51,7 @@ fn test_tokenize_alphanumeric_ident() {
 #[test]
 fn test_tokenize_underscore_ident() {
     let test1_input: String = "foo_bar".to_string();
-    let test1_tokens: Vec<Token> = tokenize(test1_input.clone());
+    let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
             TokenType::Ident,   // token_type
@@ -60,3 +62,4 @@ fn test_tokenize_underscore_ident() {
         )
     );
 }
+

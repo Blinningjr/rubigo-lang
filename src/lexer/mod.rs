@@ -1,11 +1,9 @@
 pub mod token_type;
 pub mod token;
-//pub mod token_handler;
 pub mod reserved;
 
 pub use token_type::TokenType;
 pub use token::Token;
-//pub use token_handler::TokenHandler;
 
 use reserved::{
     check_reserved_idents,
