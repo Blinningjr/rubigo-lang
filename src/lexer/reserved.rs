@@ -61,7 +61,7 @@ pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static 
  * Cheacks if symbole is reserved.
  * Returns token type or error.
  */
-    pub fn check_symbol(ch: char) -> bool {
+    pub fn check_symbol(ch: char) -> Result<TokenType, &'static str> {
         return match ch {
             ' ' => Ok(TokenType::Space),
             '\n' => Ok(TokenType::NewLine),
@@ -88,6 +88,5 @@ pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static 
         
         _ => Err("Symbol is not reserved"),
     };
-    return result;
 }
 

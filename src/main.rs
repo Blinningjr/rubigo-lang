@@ -6,7 +6,6 @@ use std::fs;
 use lexer::{
     Token,
     TokenHandler,
-    fsm_start,
 };
 
 
@@ -18,15 +17,18 @@ fn main() {
         .expect("Something went wrong reading the file");
     println!("With text:\n{}", contents);
 
-//    let mut tokens: Vec<Token> = lexer::tokenize(contents);
+    let mut tokens: Vec<Token> = Vec::new();
 //    println!("Tokens:\n{:#?}", tokens);
 
     let mut token_handler: TokenHandler = TokenHandler::new(contents); 
-    while token_handler.hungry() {
-        let (ch, look_a_head): (Option<char>, Option<char>) = token_handler.next_char();
-        fsm_start(&mut token_handler, ch.unwrap(), look_a_head);
+    let mut hungry: bool = true;
+    while hungry {
+        match token_handler.next_token() {
+            Ok(token) => tokens.push(token),
+            Err(_err) => hungry = false,
+        };
     }
-    println!("Tokens:\n{:#?}", token_handler.get_tokens());
+    println!("Tokens:\n{:#?}", tokens);
 
 //    parser::parse_tokens(&mut tokens);
 }

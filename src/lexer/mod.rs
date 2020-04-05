@@ -1,6 +1,6 @@
 pub mod token_type;
 pub mod token;
-pub mod token_handler;
+//pub mod token_handler;
 pub mod reserved;
 
 pub use token_type::TokenType;
@@ -45,18 +45,12 @@ impl TokenHandler {
     /**
      * Creates the next token of the input.
      */
-    pub fn next_token(&mut self, token_type: TokenType) -> Token {
-        let current_col: usize = self.partial_token_start + self.partial_token.chars().count();
-        self.tokens.push(Token::new(
-            token_type, 
-            self.partial_token.clone(), 
-            self.line, 
-            self.partial_token_start, 
-            current_col)
-        );
-
-        self.partial_token = "".to_string();
-        self.partial_token_start = current_col;
+    pub fn next_token(&mut self) -> Result<Token, &'static str> {
+        if self.hungry() {
+            return Ok(self.fsm_start());
+        } else {
+            return Err("Out of string to tokenize");
+        }
     }
 
 
@@ -87,7 +81,7 @@ impl TokenHandler {
         let token: Token = Token::new(
             token_type, 
             self.partial_token.clone(), 
-            self.line, 
+            self.current_line, 
             self.partial_token_start, 
             current_col);
 
@@ -104,7 +98,7 @@ impl TokenHandler {
     fn fsm_start(&mut self) -> Token {
         let mut chs: std::str::Chars<'_> = self.input.chars();
         let ch: char = chs.next().unwrap();
-        if ch.is_alphabetic() {
+        if ch.is_alphabetic() || ch == '_' {
             self.consume();
             // Make it call reserved FSM:s.
             return self.fsm_ident();
@@ -112,11 +106,34 @@ impl TokenHandler {
             self.consume();
             return self.fsm_number();
         } else {
-            let look_a_head: char = chs.next();
-            // call ident if '_'
-            match look_a_head {
-                Some(look_a_head) => return check_symbols(self, ch, look_a_head),
-                None => return check_symbol(self, ch),
+            match chs.next() {
+                Some(look_a_head) => {
+                    match check_symbols(ch, look_a_head) {
+                        Ok(token_type) => {
+                            self.consume();
+                            self.consume();
+                            return self.tokenize(token_type);
+                        },
+                        Err(_err) => {
+                            match check_symbol(ch) {
+                                Ok(token_type) => {
+                                    self.consume();
+                                    return self.tokenize(token_type);
+                                },
+                                Err(err) => panic!("Lexer err: {}", err),
+                            };
+                        },
+                    };
+                },
+                None => {
+                    match check_symbol(ch) {
+                        Ok(token_type) => {
+                            self.consume();
+                            return self.tokenize(token_type);
+                        },
+                        Err(err) => panic!("Lexer err: {}", err),
+                    };
+                }
             };
         }
     }
@@ -126,11 +143,11 @@ impl TokenHandler {
      * FSM for converting string to Token of type ident.
      */
     fn fsm_ident(&mut self) -> Token {
-        if token_handler.hungry() {
+        if self.hungry() {
             let mut chs: std::str::Chars<'_> = self.input.chars();
             let ch: char = chs.next().unwrap();
             if ch.is_alphanumeric() || ch == '_' {
-                token_handler.consume();
+                self.consume();
                 return self.fsm_ident();
             } else {
                 return self.fsm_ident_end();
@@ -159,8 +176,8 @@ impl TokenHandler {
             let ch: char = chs.next().unwrap();
 
             if ch.is_numeric() {
-                token_handler.consume();
-                self.fsm_number();
+                self.consume();
+                return self.fsm_number();
             } else {
                 match ch {
                     '.' => {
