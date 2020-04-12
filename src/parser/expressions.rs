@@ -15,6 +15,15 @@ pub enum Expression {
     Return(Return),
     FunctionCall(Box<FunctionCall>),
     Math(),
+    Body(Box<Body>)
+}
+
+
+/**
+ * Defines Body in Rubigo.
+ */
+pub struct Body {
+    Body: Vec<Expression>,
 }
 
 
@@ -25,16 +34,14 @@ pub struct Function {
     ident: String,
     parameters: Vec<Parameter>,
     return_type: Type,
-    body: Vec<Expression>,
+    body: Body,
 }
 
 
-/**
- * Defines while in Rubigo.
- */
+/** Defines while in Rubigo.  */
 pub struct While {
     condition: Expression,
-    body: Vec<Expression>,
+    body: Body,
 }
 
 
@@ -43,8 +50,8 @@ pub struct While {
  */
 pub struct If {
     condition: Expression,
-    if_body: Vec<Expression>,
-    else_body: Option<Vec<Expression>>,
+    if_body: Body,
+    else_body: Body,
 }
 
 
@@ -62,7 +69,8 @@ pub struct Let {
  * Defines return in Rubigo.
  */
 pub struct Return {
-    
+   r#type: Type,
+   valuse: Expression,
 }
 
 

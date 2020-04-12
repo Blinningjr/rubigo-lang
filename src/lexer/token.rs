@@ -6,11 +6,10 @@ use super::TokenType;
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Token {
-    token_type: TokenType,
-    value: String,
-    line: usize,
-    start_col: usize,
-    end_col: usize,
+    token_type: TokenType,      // The type of token.
+    value: String,              // The raw value of the token.
+    line: usize,                // The line the token appears
+    offset: usize,              // The number of chars before the token on that lien.
 }
 
 
@@ -21,13 +20,12 @@ impl Token {
     /**
      * Returns the type of the token. 
      */
-    pub fn new(token_type: TokenType, value: String, line: usize, start_col: usize, end_col: usize) -> Token {
+    pub fn new(token_type: TokenType, value: String, line: usize, offset: usize) -> Token {
         Token{
             token_type: token_type,
             value: value,
             line: line,
-            start_col: start_col,
-            end_col: end_col,
+            offset: offset,
         }
     }
 

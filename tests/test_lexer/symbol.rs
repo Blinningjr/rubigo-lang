@@ -18,8 +18,7 @@ fn test_tokenize_blank_space() {
             TokenType::Space,   // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -37,8 +36,7 @@ fn test_tokenize_new_line() {
             TokenType::NewLine, // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -56,8 +54,7 @@ fn test_tokenize_type_dec() {
             TokenType::TypeDec, // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -75,8 +72,7 @@ fn test_tokenize_string() {
             TokenType::String,  // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -94,8 +90,7 @@ fn test_tokenize_body_start() {
             TokenType::BodyStart,   // token_type
             test1_input,            // value
             1,                      // line
-            1,                      // start_col
-            2,                      // end_col
+            1,                      // offset
         )
     );
 }
@@ -113,8 +108,7 @@ fn test_tokenize_body_end() {
             TokenType::BodyEnd, // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -132,8 +126,7 @@ fn test_tokenize_parenthesis_start() {
             TokenType::ParenthesisStart,    // token_type
             test1_input,                    // value
             1,                              // line
-            1,                              // start_col
-            2,                              // end_col
+            1,                              // offset
         )
     );
 }
@@ -151,8 +144,7 @@ fn test_tokenize_parenthesis_end() {
             TokenType::ParenthesisEnd,  // token_type
             test1_input,                // value
             1,                          // line
-            1,                          // start_col
-            2,                          // end_col
+            1,                          // offset
         )
     );
 }
@@ -170,8 +162,7 @@ fn test_tokenize_borrow() {
             TokenType::Borrow,  // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -189,8 +180,7 @@ fn test_tokenize_equals() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -208,8 +198,7 @@ fn test_tokenize_not() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -227,8 +216,7 @@ fn test_tokenize_plus() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -246,8 +234,7 @@ fn test_tokenize_minus() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -265,8 +252,7 @@ fn test_tokenize_divide() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -284,8 +270,7 @@ fn test_tokenize_multiply() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -303,8 +288,7 @@ fn test_tokenize_modulus() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -322,8 +306,7 @@ fn test_tokenize_less_then() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -341,8 +324,7 @@ fn test_tokenize_greater_then() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -360,8 +342,7 @@ fn test_tokenize_end_expression() {
             TokenType::EndExpression,   // token_type
             test1_input,                // value
             1,                          // line
-            1,                          // start_col
-            2,                          // end_col
+            1,                          // offset
         )
     );
 }

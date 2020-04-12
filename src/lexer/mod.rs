@@ -18,7 +18,7 @@ use reserved::{
 pub struct TokenHandler {
     input: String, 
     partial_token: String,
-    partial_token_start: usize,
+    partial_token_offset: usize,
     current_line: usize,
 }
 
@@ -34,7 +34,7 @@ impl TokenHandler {
         TokenHandler{
             input: input,
             partial_token: "".to_string(),
-            partial_token_start: 1,
+            partial_token_offset: 1,
             current_line: 1,
         }
     }
@@ -75,16 +75,23 @@ impl TokenHandler {
      * Crates a token from the partial token.
      */
     fn tokenize(&mut self, token_type: TokenType) -> Token {
-        let current_col: usize = self.partial_token_start + self.partial_token.chars().count();
+        let current_col: usize = self.partial_token_offset + self.partial_token.chars().count();
         let token: Token = Token::new(
-            token_type, 
+            token_type.clone(), 
             self.partial_token.clone(), 
             self.current_line, 
-            self.partial_token_start, 
-            current_col);
+            self.partial_token_offset);
 
         self.partial_token = "".to_string();
-        self.partial_token_start = current_col;
+        self.partial_token_offset = current_col;
+
+        match token_type {
+            TokenType::NewLine => {
+                self.current_line += 1;
+                self.partial_token_offset = 1;
+            },
+            _ => (),
+        };
 
         return token;
     }

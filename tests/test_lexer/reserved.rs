@@ -18,8 +18,7 @@ fn test_tokenize_fn() {
             TokenType::Fn,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -37,8 +36,7 @@ fn test_tokenize_while() {
             TokenType::While,   // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            6,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -56,8 +54,7 @@ fn test_tokenize_if() {
             TokenType::If,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -75,8 +72,7 @@ fn test_tokenize_else() {
             TokenType::Else,    // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            5,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -94,8 +90,7 @@ fn test_tokenize_let() {
             TokenType::Let,     // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            4,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -113,8 +108,7 @@ fn test_tokenize_mut() {
             TokenType::Mut,     // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            4,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -132,8 +126,7 @@ fn test_tokenize_false() {
             TokenType::Boolean, // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            6,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -151,8 +144,7 @@ fn test_tokenize_true() {
             TokenType::Boolean, // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            5,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -170,8 +162,7 @@ fn test_tokenize_bool() {
             TokenType::Type,    // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            5,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -189,8 +180,7 @@ fn test_tokenize_i32() {
             TokenType::Type,    // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            4,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -208,8 +198,7 @@ fn test_tokenize_f32() {
             TokenType::Type,    // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            4,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -227,8 +216,7 @@ fn test_tokenize_string() {
             TokenType::Type,    // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            7,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -246,8 +234,7 @@ fn test_tokenize_return() {
             TokenType::Return,  // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            7,                  // end_col
+            1,                  // offset
         )
     );
 }

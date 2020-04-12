@@ -18,8 +18,7 @@ fn test_tokenize_fn_return_type() {
             TokenType::FnType,  // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -37,8 +36,7 @@ fn test_tokenize_none_type() {
             TokenType::Type,    // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -56,8 +54,7 @@ fn test_tokenize_not_equal() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -75,8 +72,7 @@ fn test_tokenize_equal() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -94,8 +90,7 @@ fn test_tokenize_plus_equal() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -113,8 +108,7 @@ fn test_tokenize_minus_equal() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -132,8 +126,7 @@ fn test_tokenize_grater_equal() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -151,8 +144,7 @@ fn test_tokenize_less_equal() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -170,8 +162,7 @@ fn test_tokenize_and() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -189,8 +180,7 @@ fn test_tokenize_or() {
             TokenType::Op,      // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            3,                  // end_col
+            1,                  // offset
         )
     );
 }

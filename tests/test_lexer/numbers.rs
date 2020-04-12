@@ -18,8 +18,7 @@ fn test_tokenize_int_number() {
             TokenType::Number,  // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            2,                  // end_col
+            1,                  // offset
         )
     );
 
@@ -30,8 +29,7 @@ fn test_tokenize_int_number() {
             TokenType::Number,  // token_type
             test2_input,        // value
             1,                  // line
-            1,                  // start_col
-            9,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -49,8 +47,7 @@ fn test_tokenize_float_number() {
             TokenType::Number,  // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            4,                  // end_col
+            1,                  // offset
         )
     );
 
@@ -61,8 +58,7 @@ fn test_tokenize_float_number() {
             TokenType::Number,  // token_type
             test2_input,        // value
             1,                  // line
-            1,                  // start_col
-            11,                  // end_col
+            1,                  // offset
         )
     );
 }

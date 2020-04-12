@@ -5,10 +5,6 @@ pub mod expressions;
 pub mod operations;
 pub mod ast;
 
-// pub use super::error_handler::{
-//     Error,
-// };
-
 pub use types::{
     Type,
     Literal,
@@ -20,6 +16,7 @@ pub use expressions::{
 
 use super::lexer::token::{
     Token,
+    TokenHandler,
     // TokenType,
 };
 
@@ -27,7 +24,7 @@ use super::lexer::token::{
 /**
  * Parses the tokens and returns a Ast. 
  */
-pub fn parse_tokens(tokens: &mut Vec<Token>) {
+pub fn parse_tokens(tokens_handler: &mut TokenHandler) {
     while tokens.len() > 0 {
         // let token: Token = tokens.remove(0);
         check_token(tokens);

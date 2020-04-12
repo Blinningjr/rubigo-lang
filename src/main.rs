@@ -1,6 +1,5 @@
 mod lexer;
-mod parser;
-pub mod error_handler;
+//mod parser;
 
 use std::fs;
 use lexer::{
@@ -17,9 +16,9 @@ fn main() {
         .expect("Something went wrong reading the file");
     println!("With text:\n{}", contents);
 
-    let mut tokens: Vec<Token> = Vec::new();
-//    println!("Tokens:\n{:#?}", tokens);
+//    parse_tokens(&mut TokenHandler::new(contents))
 
+    let mut tokens: Vec<Token> = Vec::new();
     let mut token_handler: TokenHandler = TokenHandler::new(contents); 
     let mut hungry: bool = true;
     while hungry {
@@ -30,6 +29,5 @@ fn main() {
     }
     println!("Tokens:\n{:#?}", tokens);
 
-//    parser::parse_tokens(&mut tokens);
 }
 

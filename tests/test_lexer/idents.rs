@@ -19,8 +19,7 @@ fn test_tokenize_alphabetic_ident() {
             TokenType::Ident,   // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            4,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -38,8 +37,7 @@ fn test_tokenize_alphanumeric_ident() {
             TokenType::Ident,   // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            8,                  // end_col
+            1,                  // offset
         )
     );
 }
@@ -57,8 +55,7 @@ fn test_tokenize_underscore_ident() {
             TokenType::Ident,   // token_type
             test1_input,        // value
             1,                  // line
-            1,                  // start_col
-            8,                  // end_col
+            1,                  // offset
         )
     );
 }
