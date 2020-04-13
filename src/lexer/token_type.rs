@@ -22,6 +22,7 @@ pub enum TokenType {
     Type,
     Boolean,
     Number,
+    FloatNumber,
     Op,
 
     String,

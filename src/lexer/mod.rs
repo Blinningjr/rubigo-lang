@@ -191,7 +191,7 @@ impl TokenHandler {
                                 if look_a_head.is_numeric() {
                                     self.consume();
                                     self.consume();
-                                    return self.fsm_number();
+                                    return self.fsm_float_number();
                                 } else {
                                     return self.tokenize(TokenType::Number);
                                 }
@@ -204,6 +204,26 @@ impl TokenHandler {
             }
         } else {
             return self.tokenize(TokenType::Number);
+        }
+    }
+
+    
+    /**
+     * FSM for converting string to token of type float.
+     */
+    fn fsm_float_number(&mut self) -> Token {
+        if self.hungry() {
+            let mut chs: std::str::Chars<'_> = self.input.chars();
+            let ch: char = chs.next().unwrap();
+
+            if ch.is_numeric() {
+                self.consume();
+                return self.fsm_float_number();
+            } else {
+                return self.tokenize(TokenType::FloatNumber);
+            }
+        } else {
+            return self.tokenize(TokenType::FloatNumber);
         }
     }
 }
