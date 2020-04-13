@@ -25,6 +25,7 @@ pub enum TokenType {
     FloatNumber,
     Op,
 
+    Char,
     String,
 
     BodyStart,

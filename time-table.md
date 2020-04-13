@@ -20,5 +20,6 @@
 | Date		| Start | End	| Hours	| Activity						|
 |---------------|:-----:|:-----:|------:|:------------------------------------------------------|
 | 2020-04-13	| 11:12 | 12:07	| 1	| Added token type FloatNumber and worked on parser.	|
-| Total Time	| 	|	| 1	|							|
+| 2020-04-13	| 14:32 | 16:49	| 2	| Implemented simple parsers for char.			|
+| Total Time	| 	|	| 3	|							|
 

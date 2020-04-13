@@ -1,35 +1,40 @@
 use super::{
     Type,
     Literal,
+    Span,
 };
 
 
 /**
  * Defines all expressions in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
     Function(Box<Function>),
     While(Box<While>),
     If(Box<If>),
     Let(Box<Let>),
-    Return(Return),
+    Return(Box<Return>),
     FunctionCall(Box<FunctionCall>),
-    Math(),
-    Body(Box<Body>)
+    Math(Span<Literal>),
+    Body(Box<Body>),
+    
 }
 
 
 /**
  * Defines Body in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct Body {
-    Body: Vec<Expression>,
+    body: Vec<Expression>,
 }
 
 
 /**
  * Defines function in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct Function {
     ident: String,
     parameters: Vec<Parameter>,
@@ -39,6 +44,7 @@ pub struct Function {
 
 
 /** Defines while in Rubigo.  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct While {
     condition: Expression,
     body: Body,
@@ -48,6 +54,7 @@ pub struct While {
 /**
  * Defines if in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct If {
     condition: Expression,
     if_body: Body,
@@ -58,6 +65,7 @@ pub struct If {
 /**
  * Defines let in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct Let {
     ident: String,
     r#type: Type,
@@ -68,6 +76,7 @@ pub struct Let {
 /**
  * Defines return in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct Return {
    r#type: Type,
    valuse: Expression,
@@ -77,6 +86,7 @@ pub struct Return {
 /**
  * Defines function call in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct FunctionCall {
     ident: String,
     parameters: Vec<Parameter>,
@@ -86,6 +96,7 @@ pub struct FunctionCall {
 /**
  * Defines parameter in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct Parameter {
     ident: String,
     r#type: Type,
@@ -98,7 +109,9 @@ pub struct Parameter {
 /**
  * Defines parameter in Rubigo.
  */
+#[derive(Debug, Clone, PartialEq)]
 pub struct Math {
     ident: String,
     r#type: Type,
 }
+

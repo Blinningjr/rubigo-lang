@@ -68,6 +68,7 @@ pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static 
 
             ';' => Ok(TokenType::EndExpression),
             ':' => Ok(TokenType::TypeDec),
+            '\'' => Ok(TokenType::Char),
             '"' => Ok(TokenType::String),
             '{' => Ok(TokenType::BodyStart),
             '}' => Ok(TokenType::BodyEnd),
