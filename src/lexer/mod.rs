@@ -2,6 +2,7 @@ pub mod token_type;
 pub mod token;
 pub mod reserved;
 
+pub use super::span::Span;
 pub use token_type::TokenType;
 pub use token::Token;
 
@@ -17,6 +18,9 @@ use reserved::{
  */
 pub struct TokenHandler {
     input: String, 
+    partial_expression: String,
+    partial_expression_offset: usize,
+    partial_expression_line: usize,
     partial_token: String,
     partial_token_offset: usize,
     current_line: usize,
@@ -33,6 +37,9 @@ impl TokenHandler {
     pub fn new(input: String) -> TokenHandler {
         TokenHandler{
             input: input,
+            partial_expression: "".to_string(),
+            partial_expression_offset: 1,
+            partial_expression_line: 1,
             partial_token: "".to_string(),
             partial_token_offset: 1,
             current_line: 1,
@@ -43,11 +50,24 @@ impl TokenHandler {
     /**
      * Creates the next token of the input.
      */
-    pub fn next_token(&mut self) -> Result<Token, &'static str> {
-        if self.hungry() {
-            return Ok(self.fsm_start());
-        } else {
+    pub fn next_token(&mut self, no_whitespace: bool) ->
+            Result<Token, &'static str> {
+        if no_whitespace {
+            while self.hungry() {
+                let token: Token = self.fsm_start();
+                match token.get_type() {
+                    TokenType::Space => (),
+                    TokenType::NewLine => (),
+                    _ => return Ok(token),
+                };
+            }
             return Err("Out of string to tokenize");
+        } else {
+            if self.hungry() {
+                return Ok(self.fsm_start());
+            } else {
+                return Err("Out of string to tokenize");
+            }
         }
     }
 
@@ -75,7 +95,9 @@ impl TokenHandler {
      * Crates a token from the partial token.
      */
     fn tokenize(&mut self, token_type: TokenType) -> Token {
-        let current_col: usize = self.partial_token_offset + self.partial_token.chars().count();
+        let current_col: usize =
+            self.partial_token_offset +
+            self.partial_token.chars().count();
         let token: Token = Token::new(
             token_type.clone(), 
             self.partial_token.clone(), 
@@ -93,7 +115,36 @@ impl TokenHandler {
             _ => (),
         };
 
+        self.add_partial_expression(& token);
+
         return token;
+    }
+
+
+    /**
+     * Gets the original string of all the latest tokens.
+     */
+    pub fn get_original(&mut self) -> Span<String> {
+        let original: Span<String> = Span::new(
+            self.partial_expression.clone(),
+            self.partial_expression_line,
+            self.partial_expression_offset
+        );
+
+        self.partial_expression = "".to_string();
+        return original;
+    }
+
+
+    /**
+     * Adds to the partial expression or starts one.
+     */
+    fn add_partial_expression(&mut self, token: & Token) -> () {
+        if self.partial_expression == "" {
+            self.partial_expression_offset = token.get_offset();
+            self.partial_expression_line = token.get_line();
+        }
+        self.partial_expression.push_str(& token.get_value());
     }
 
 

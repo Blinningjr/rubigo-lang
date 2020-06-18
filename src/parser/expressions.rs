@@ -1,6 +1,7 @@
 use super::{
     Type,
     Literal,
+    Atom,
     Span,
 };
 
@@ -13,10 +14,10 @@ pub enum Expression {
     Function(Box<Function>),
     While(Box<While>),
     If(Box<If>),
-    Let(Box<Let>),
-    Return(Box<Return>),
+    Let(Let),
+    Return(Vec<Span<Atom>>),
     FunctionCall(Box<FunctionCall>),
-    Math(Span<Literal>),
+    Math(Vec<Span<Atom>>),
     Body(Box<Body>),
     
 }
@@ -67,9 +68,10 @@ pub struct If {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Let {
-    ident: String,
-    r#type: Type,
-    parameters: Vec<Parameter>,
+    pub original: Span<String>,
+    pub ident: Span<String>,
+    pub r#type: Span<Type>,
+    pub value: Vec<Span<Atom>>,
 }
 
 
@@ -103,15 +105,5 @@ pub struct Parameter {
     line: usize,
     start_col: usize,
     end_col: usize,
-}
-
-
-/**
- * Defines parameter in Rubigo.
- */
-#[derive(Debug, Clone, PartialEq)]
-pub struct Math {
-    ident: String,
-    r#type: Type,
 }
 

@@ -19,10 +19,11 @@ pub fn check_reserved_idents(ident: &str) -> TokenType {
         "true" => TokenType::Boolean,
         "false" => TokenType::Boolean,
         
-        "bool" => TokenType::Type,
-        "i32" => TokenType::Type,
-        "f32" => TokenType::Type,
-        "String" => TokenType::Type,
+        "bool" => TokenType::TBool,
+        "i32" => TokenType::Ti32,
+        "f32" => TokenType::Tf32,
+        "Char" => TokenType::TChar,
+        "String" => TokenType::TString,
 
         _ => TokenType::Ident,
     }
@@ -40,17 +41,16 @@ pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static 
 
     return match &input[..] {
         "->" => Ok(TokenType::FnType),
-        "()" => Ok(TokenType::Type),
 
-        "!=" => Ok(TokenType::Op),
-        "==" => Ok(TokenType::Op),
-        "+=" => Ok(TokenType::Op),
-        "-=" => Ok(TokenType::Op),
-        ">=" => Ok(TokenType::Op),
-        "<=" => Ok(TokenType::Op),
+        "!=" => Ok(TokenType::NotEqual),
+        "==" => Ok(TokenType::Equal),
+        "+=" => Ok(TokenType::PlusEquals),
+        "-=" => Ok(TokenType::MinusEquals),
+        ">=" => Ok(TokenType::GreaterEqual),
+        "<=" => Ok(TokenType::LessEqual),
 
-        "&&" => Ok(TokenType::Op),
-        "||" => Ok(TokenType::Op),
+        "&&" => Ok(TokenType::And),
+        "||" => Ok(TokenType::Or),
 
         _ => Err("Symbols are not reserved"),
     };
@@ -61,31 +61,31 @@ pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static 
  * Cheacks if symbole is reserved.
  * Returns token type or error.
  */
-    pub fn check_symbol(ch: char) -> Result<TokenType, &'static str> {
-        return match ch {
-            ' ' => Ok(TokenType::Space),
-            '\n' => Ok(TokenType::NewLine),
+pub fn check_symbol(ch: char) -> Result<TokenType, &'static str> {
+    return match ch {
+        ' ' => Ok(TokenType::Space),
+        '\n' => Ok(TokenType::NewLine),
 
-            ';' => Ok(TokenType::EndExpression),
-            ':' => Ok(TokenType::TypeDec),
-            '\'' => Ok(TokenType::Char),
-            '"' => Ok(TokenType::String),
-            '{' => Ok(TokenType::BodyStart),
-            '}' => Ok(TokenType::BodyEnd),
-            '(' => Ok(TokenType::ParenthesisStart),
-            ')' => Ok(TokenType::ParenthesisEnd),
+        ';' => Ok(TokenType::EndExpression),
+        ':' => Ok(TokenType::TypeDec),
+        '\'' => Ok(TokenType::Char),
+        '"' => Ok(TokenType::String),
+        '{' => Ok(TokenType::BodyStart),
+        '}' => Ok(TokenType::BodyEnd),
+        '(' => Ok(TokenType::ParenthesisStart),
+        ')' => Ok(TokenType::ParenthesisEnd),
 
-            '&' => Ok(TokenType::Borrow),
+        '&' => Ok(TokenType::Borrow),
 
-            '=' => Ok(TokenType::Op),
-            '!' => Ok(TokenType::Op),
-            '+' => Ok(TokenType::Op),
-            '-' => Ok(TokenType::Op),
-            '/' => Ok(TokenType::Op),
-            '*' => Ok(TokenType::Op),
-            '%' => Ok(TokenType::Op),
-        '<' => Ok(TokenType::Op),
-        '>' => Ok(TokenType::Op),
+        '=' => Ok(TokenType::Equals),
+        '!' => Ok(TokenType::Not),
+        '+' => Ok(TokenType::Plus),
+        '-' => Ok(TokenType::Minus),
+        '/' => Ok(TokenType::ForwardSlash),
+        '*' => Ok(TokenType::Star),
+        '%' => Ok(TokenType::Modilus),
+        '<' => Ok(TokenType::LessThen),
+        '>' => Ok(TokenType::GreaterThen),
         
         _ => Err("Symbol is not reserved"),
     };

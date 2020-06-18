@@ -19,11 +19,35 @@ pub enum TokenType {
     Space,
 
     Ident,
-    Type,
+    
+    TBool,
+    Ti32,
+    Tf32,
+    TChar,
+    TString,
+
     Boolean,
     Number,
     FloatNumber,
-    Op,
+
+    NotEqual,
+    Equal,
+    PlusEquals,
+    MinusEquals,
+    GreaterEqual,
+    LessEqual,
+    And,
+    Or,
+
+    Equals,
+    Not,
+    Plus,
+    Minus,
+    ForwardSlash,
+    Star,
+    Modilus,
+    LessThen,
+    GreaterThen,
 
     Char,
     String,
