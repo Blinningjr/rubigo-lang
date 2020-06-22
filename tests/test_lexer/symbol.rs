@@ -177,10 +177,10 @@ fn test_tokenize_equals() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
-            test1_input,        // value
-            1,                  // line
-            1,                  // offset
+            TokenType::Equals,      // token_type
+            test1_input,            // value
+            1,                      // line
+            1,                      // offset
         )
     );
 }
@@ -195,7 +195,7 @@ fn test_tokenize_not() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
+            TokenType::Not,     // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -213,7 +213,7 @@ fn test_tokenize_plus() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
+            TokenType::Plus,    // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -231,7 +231,7 @@ fn test_tokenize_minus() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
+            TokenType::Minus,   // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -249,10 +249,10 @@ fn test_tokenize_divide() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
-            test1_input,        // value
-            1,                  // line
-            1,                  // offset
+            TokenType::ForwardSlash,    // token_type
+            test1_input,                // value
+            1,                          // line
+            1,                          // offset
         )
     );
 }
@@ -267,7 +267,7 @@ fn test_tokenize_multiply() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
+            TokenType::Star,    // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -285,10 +285,10 @@ fn test_tokenize_modulus() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
-            test1_input,        // value
-            1,                  // line
-            1,                  // offset
+            TokenType::Modilus,     // token_type
+            test1_input,            // value
+            1,                      // line
+            1,                      // offset
         )
     );
 }
@@ -303,10 +303,10 @@ fn test_tokenize_less_then() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
-            test1_input,        // value
-            1,                  // line
-            1,                  // offset
+            TokenType::LessThen,    // token_type
+            test1_input,            // value
+            1,                      // line
+            1,                      // offset
         )
     );
 }
@@ -321,10 +321,10 @@ fn test_tokenize_greater_then() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Op,      // token_type
-            test1_input,        // value
-            1,                  // line
-            1,                  // offset
+            TokenType::GreaterThen,      // token_type
+            test1_input,                // value
+            1,                          // line
+            1,                          // offset
         )
     );
 }

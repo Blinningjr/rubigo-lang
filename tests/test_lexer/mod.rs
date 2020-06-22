@@ -1,5 +1,8 @@
 #![allow(dead_code)]
 
+#[path = "../../src/span.rs"]
+mod span;
+
 #[path = "../../src/lexer/mod.rs"]
 pub mod lexer;
 
@@ -8,6 +11,7 @@ mod numbers;
 mod reserved;
 mod symbol;
 mod symbols;
+
 
 use lexer::{
     Token,
@@ -23,7 +27,7 @@ pub fn tokenize_string(input: String) -> Vec<Token> {
     let mut tokens: Vec<Token> = Vec::new();
     let mut token_handler: TokenHandler = TokenHandler::new(input);
     while hungry {
-        match token_handler.next_token() {
+        match token_handler.next_token(false) {
             Ok(token) => tokens.push(token),
             Err(_err) => hungry = false,
         };

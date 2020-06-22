@@ -159,7 +159,7 @@ fn test_tokenize_bool() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Type,    // token_type
+            TokenType::TBool,    // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -177,7 +177,7 @@ fn test_tokenize_i32() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Type,    // token_type
+            TokenType::Ti32,    // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -195,7 +195,7 @@ fn test_tokenize_f32() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Type,    // token_type
+            TokenType::Tf32,    // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -213,7 +213,7 @@ fn test_tokenize_string() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Type,    // token_type
+            TokenType::TString,    // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
