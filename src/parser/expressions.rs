@@ -28,7 +28,7 @@ pub enum Expression {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Body {
-    body: Vec<Expression>,
+    pub body: Vec<Expression>,
 }
 
 
@@ -57,9 +57,9 @@ pub struct While {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct If {
-    condition: Expression,
-    if_body: Body,
-    else_body: Body,
+    pub condition: Vec<Span<Atom>>,
+    pub if_body: Body,
+    pub else_body: Option<Body>,
 }
 
 

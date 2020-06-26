@@ -5,6 +5,7 @@ use super::{
     Atom,
 };
 
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Operation {
    ParenthesisStart,

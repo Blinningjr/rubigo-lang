@@ -40,6 +40,8 @@ pub use literal::{
 pub use expressions::{
     Expression,
     Let,
+    Body,
+    If,
 };
 
 use super::lexer::{
@@ -76,7 +78,8 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         TokenType::FloatNumber => Expression::Math(
             vec!(parse_float_number(& token))
         ),
-        TokenType::Let => parse_let(token_handler, token),
+        TokenType::Let => parse_let(token_handler, & token),
+        TokenType::If => parse_if(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
     };
 }
@@ -120,24 +123,38 @@ fn parse_until(token_handler: &mut TokenHandler, token_type: TokenType) -> Vec<T
 
 
 /**
+ * Parses a expression.
+ */
+fn parse_expression(token_handler: &mut TokenHandler,
+                    token: & Token) -> Expression {
+    return match token.get_type() {
+        TokenType::Let => parse_let(token_handler, token),
+        TokenType::If => parse_if(token_handler, token),
+        _ => panic!("Syntax error: Expexted an expression."),
+    };
+}
+
+
+/**
  * Parses token that is of type token_type.
  */
 fn parse_token(token: & Token, token_type: TokenType) -> Span<String> {
-    match token.get_type() {
-        token_type => return Span::new(
+    if token.get_type() == token_type {
+        return Span::new(
             token.get_value(),
             token.get_line(),
             token.get_offset()
-        ),
-        _ => panic!("Syntax error: expected {}", token.get_value()),
-    };
+        );
+    } else {
+        panic!("Syntax error: expected {}", token.get_value());
+    }
 }
 
 
 /**
  * Parses token of type Let into Let expression.
  */
-fn parse_let(token_handler: &mut TokenHandler, token: Token) -> Expression {
+fn parse_let(token_handler: &mut TokenHandler, token: & Token) -> Expression {
     match token.get_type() {
         TokenType::Let => {
             let ident: Span<String> = parse_token(
@@ -155,7 +172,8 @@ fn parse_let(token_handler: &mut TokenHandler, token: Token) -> Expression {
                 & token_handler.next_token(true).unwrap(),
                 TokenType::Equals
             );
-            let value: Vec<Span<Atom>> = parse_atoms(token_handler);
+            let value: Vec<Span<Atom>> =
+                parse_atoms(token_handler, TokenType::EndExpression);
 
             return Expression::Let(Let{
                 original: token_handler.get_original(),
@@ -165,6 +183,53 @@ fn parse_let(token_handler: &mut TokenHandler, token: Token) -> Expression {
             });
         },
         _ => panic!("Syntax error: could not parse let"),
+    };
+}
+
+
+/**
+ * Parses a body expression.
+ */
+fn parse_body(token_handler: &mut TokenHandler, token: & Token) -> Body {
+    match token.get_type() {
+        TokenType::BodyStart => {
+            let mut body: Vec<Expression> = Vec::new();
+            while token_handler.hungry() {
+                let next_token: Token = token_handler.next_token(true).unwrap();
+                match next_token.get_type() {
+                    TokenType::BodyEnd => {
+                        return Body{
+                            body: body,
+                        };
+                    },
+                    _ => body.push(parse_expression(token_handler, & next_token)),
+                };
+            }
+            panic!("Syntax error: expected {.");
+        },
+        _ => panic!("Syntax error: expected {."),
+    };
+}
+
+
+/**
+ * Parses a if expresion.
+ */
+fn parse_if(token_handler: &mut TokenHandler, token: & Token) -> Expression {
+    match token.get_type() {
+        TokenType::If => {
+            let condition: Vec<Span<Atom>> =
+                parse_atoms(token_handler, TokenType::BodyStart);
+            let if_body: Body =
+                parse_body(token_handler,
+                            & token_handler.get_last_token().unwrap());
+            return Expression::If(Box::new(If{
+              condition: condition,
+              if_body: if_body,
+              else_body: Option::None,
+            }));
+        },
+        _ => panic!("Syntax error: Expected If expression."),
     };
 }
 

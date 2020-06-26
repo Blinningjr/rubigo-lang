@@ -24,6 +24,7 @@ pub struct TokenHandler {
     partial_token: String,
     partial_token_offset: usize,
     current_line: usize,
+    last_token: Option<Token>,
 }
 
 
@@ -43,6 +44,7 @@ impl TokenHandler {
             partial_token: "".to_string(),
             partial_token_offset: 1,
             current_line: 1,
+            last_token: Option::None,
         }
     }
 
@@ -58,13 +60,17 @@ impl TokenHandler {
                 match token.get_type() {
                     TokenType::Space => (),
                     TokenType::NewLine => (),
-                    _ => return Ok(token),
+                    _ => {
+                        self.last_token = Some(token.clone());
+                        return Ok(token);
+                    },
                 };
             }
             return Err("Out of string to tokenize");
         } else {
             if self.hungry() {
-                return Ok(self.fsm_start());
+                self.last_token = Some(self.fsm_start());
+                return Ok(self.last_token.clone().unwrap());
             } else {
                 return Err("Out of string to tokenize");
             }
@@ -133,6 +139,14 @@ impl TokenHandler {
 
         self.partial_expression = "".to_string();
         return original;
+    }
+
+
+    /**
+     * Gets the last token.
+     */
+    pub fn get_last_token(&self) -> Option<Token> {
+        return self.last_token.clone();
     }
 
 

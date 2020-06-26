@@ -41,19 +41,19 @@ pub fn parse_atom(token_handler: &mut TokenHandler,
 /**
  * Parses atoms into a vec of atoms.
  */
-pub fn parse_atoms(token_handler: &mut TokenHandler) -> Vec<Span<Atom>> {
+pub fn parse_atoms(token_handler: &mut TokenHandler,
+                   end_token_type: TokenType) -> Vec<Span<Atom>> {
     let mut atoms: Vec<Span<Atom>> = Vec::new();
     while token_handler.hungry() {
         let token: Token = token_handler.next_token(true).unwrap();
-        match token.get_type() {
-            TokenType::EndExpression => {
-                if atoms.len() < 1 {
-                    panic!("Syntax error: Expected one or more atoms");
-                }
-                return atoms;
-            },
-            _ => atoms.push(parse_atom(token_handler, & token)),
-        };
+        if token.get_type() == end_token_type {
+            if atoms.len() < 1 {
+                panic!("Syntax error: Expected one or more atoms");
+            }
+            return atoms;
+        } else {
+            atoms.push(parse_atom(token_handler, & token));
+        }
     }
     panic!("Syntax error: Expected ;");
 }

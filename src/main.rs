@@ -21,7 +21,10 @@ fn main() {
         .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
 
-    let test: String = "let test: i32 = 123 - 122;".to_string();
+    let test: String = "if true {
+        let test1: i32 = 1;
+        let test2: f32 = 1.2;
+    }".to_string();
     println!("\nWith text:\n{}\n", test);
 
     let parsed: Expression = create_ast(&mut TokenHandler::new(test));
