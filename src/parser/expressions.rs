@@ -15,6 +15,7 @@ pub enum Expression {
     While(Box<While>),
     If(Box<If>),
     Let(Let),
+    Assigment(Assigment),
     Return(Vec<Span<Atom>>),
     FunctionCall(Box<FunctionCall>),
     Math(Vec<Span<Atom>>),
@@ -28,6 +29,8 @@ pub enum Expression {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Body {
+    pub raw_start: Span<String>,
+    pub raw_end: Span<String>,
     pub body: Vec<Expression>,
 }
 
@@ -57,6 +60,7 @@ pub struct While {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct If {
+    pub original: Span<String>,
     pub condition: Vec<Span<Atom>>,
     pub if_body: Body,
     pub else_body: Option<Body>,
@@ -71,6 +75,17 @@ pub struct Let {
     pub original: Span<String>,
     pub ident: Span<String>,
     pub r#type: Span<Type>,
+    pub value: Vec<Span<Atom>>,
+}
+
+
+/**
+ * Defines Assigment in Rubigo.
+ */
+#[derive(Debug, Clone, PartialEq)]
+pub struct Assigment {
+    pub original: Span<String>,
+    pub ident: Span<String>,
     pub value: Vec<Span<Atom>>,
 }
 

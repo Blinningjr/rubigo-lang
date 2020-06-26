@@ -40,6 +40,7 @@ pub use literal::{
 pub use expressions::{
     Expression,
     Let,
+    Assigment,
     Body,
     If,
 };
@@ -80,6 +81,7 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         ),
         TokenType::Let => parse_let(token_handler, & token),
         TokenType::If => parse_if(token_handler, & token),
+        TokenType::Ident => parse_assigment(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
     };
 }
@@ -130,6 +132,7 @@ fn parse_expression(token_handler: &mut TokenHandler,
     return match token.get_type() {
         TokenType::Let => parse_let(token_handler, token),
         TokenType::If => parse_if(token_handler, token),
+        TokenType::Ident => parse_assigment(token_handler, token),
         _ => panic!("Syntax error: Expexted an expression."),
     };
 }
@@ -146,7 +149,7 @@ fn parse_token(token: & Token, token_type: TokenType) -> Span<String> {
             token.get_offset()
         );
     } else {
-        panic!("Syntax error: expected {}", token.get_value());
+        panic!("Syntax error: expected {:?}", token_type);
     }
 }
 
@@ -188,6 +191,36 @@ fn parse_let(token_handler: &mut TokenHandler, token: & Token) -> Expression {
 
 
 /**
+ * Parses token of type ident into Let expression.
+ */
+fn parse_assigment(token_handler: &mut TokenHandler,
+                   token: & Token) -> Expression {
+    match token.get_type() {
+        TokenType::Ident => {
+            let ident: Span<String> = Span::new(
+                token.get_value(),
+                token.get_line(),
+                token.get_offset()
+            );
+            let _equals: Span<String> = parse_token(
+                & token_handler.next_token(true).unwrap(),
+                TokenType::Equals
+            );
+            let value: Vec<Span<Atom>> =
+                parse_atoms(token_handler, TokenType::EndExpression);
+
+            return Expression::Assigment(Assigment{
+                original: token_handler.get_original(),
+                ident: ident,
+                value: value,
+            });
+        },
+        _ => panic!("Syntax error: could not parse assigment expression."),
+    };
+}
+
+
+/**
  * Parses a body expression.
  */
 fn parse_body(token_handler: &mut TokenHandler, token: & Token) -> Body {
@@ -199,6 +232,12 @@ fn parse_body(token_handler: &mut TokenHandler, token: & Token) -> Body {
                 match next_token.get_type() {
                     TokenType::BodyEnd => {
                         return Body{
+                            raw_start: Span::new(
+                                token.get_value(),
+                                token.get_line(),
+                                token.get_offset()
+                            ),
+                            raw_end: token_handler.get_original(),
                             body: body,
                         };
                     },
@@ -220,13 +259,15 @@ fn parse_if(token_handler: &mut TokenHandler, token: & Token) -> Expression {
         TokenType::If => {
             let condition: Vec<Span<Atom>> =
                 parse_atoms(token_handler, TokenType::BodyStart);
+            let original: Span<String> = token_handler.get_original(); 
             let if_body: Body =
                 parse_body(token_handler,
                             & token_handler.get_last_token().unwrap());
             return Expression::If(Box::new(If{
-              condition: condition,
-              if_body: if_body,
-              else_body: Option::None,
+                original: original,
+                condition: condition,
+                if_body: if_body,
+                else_body: Option::None,
             }));
         },
         _ => panic!("Syntax error: Expected If expression."),

@@ -22,8 +22,8 @@ fn main() {
     //println!("With text:\n{}", contents);
 
     let test: String = "if true {
-        let test1: i32 = 1;
-        let test2: f32 = 1.2;
+        let test: i32 = 123 - 122;
+        test = 4;
     }".to_string();
     println!("\nWith text:\n{}\n", test);
 
