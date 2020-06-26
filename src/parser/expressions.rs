@@ -16,7 +16,7 @@ pub enum Expression {
     If(Box<If>),
     Let(Let),
     Assigment(Assigment),
-    Return(Vec<Span<Atom>>),
+    Return(Return),
     FunctionCall(Box<FunctionCall>),
     Math(Vec<Span<Atom>>),
     Body(Box<Body>),
@@ -95,8 +95,8 @@ pub struct Assigment {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Return {
-   r#type: Type,
-   valuse: Expression,
+    pub original: Span<String>,
+    pub value: Vec<Span<Atom>>,
 }
 
 

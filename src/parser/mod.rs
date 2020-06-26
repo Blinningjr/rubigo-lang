@@ -43,6 +43,7 @@ pub use expressions::{
     Assigment,
     Body,
     If,
+    Return,
 };
 
 use super::lexer::{
@@ -82,6 +83,7 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         TokenType::Let => parse_let(token_handler, & token),
         TokenType::If => parse_if(token_handler, & token),
         TokenType::Ident => parse_assigment(token_handler, & token),
+        TokenType::Return => parse_return(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
     };
 }
@@ -133,6 +135,7 @@ fn parse_expression(token_handler: &mut TokenHandler,
         TokenType::Let => parse_let(token_handler, token),
         TokenType::If => parse_if(token_handler, token),
         TokenType::Ident => parse_assigment(token_handler, token),
+        TokenType::Return => parse_return(token_handler, token),
         _ => panic!("Syntax error: Expexted an expression."),
     };
 }
@@ -271,6 +274,25 @@ fn parse_if(token_handler: &mut TokenHandler, token: & Token) -> Expression {
             }));
         },
         _ => panic!("Syntax error: Expected If expression."),
+    };
+}
+
+
+/**
+ * Parses a return expression.
+ */
+fn parse_return(token_handler: &mut TokenHandler, token: & Token) -> Expression {
+    match token.get_type() {
+        TokenType::Return => { 
+            let value: Vec<Span<Atom>> =
+                parse_atoms(token_handler, TokenType::EndExpression);
+
+            return Expression::Return(Return{
+                original: token_handler.get_original(),
+                value: value,
+            });
+        },
+        _ => panic!("Syntax error: Expected retrun expression."),
     };
 }
 
