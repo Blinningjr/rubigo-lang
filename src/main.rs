@@ -24,6 +24,10 @@ fn main() {
     let test: String = "if true {
         let test: i32 = 123 - 122;
         test = 4;
+        while true {
+            let a: f32 = 1.2;
+            return 11;
+        }
         return 10;
     }".to_string();
     println!("\nWith text:\n{}\n", test);

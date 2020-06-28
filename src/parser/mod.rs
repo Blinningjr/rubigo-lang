@@ -43,6 +43,7 @@ pub use expressions::{
     Assigment,
     Body,
     If,
+    While,
     Return,
 };
 
@@ -82,6 +83,7 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         ),
         TokenType::Let => parse_let(token_handler, & token),
         TokenType::If => parse_if(token_handler, & token),
+        TokenType::While => parse_while(token_handler, & token),
         TokenType::Ident => parse_assigment(token_handler, & token),
         TokenType::Return => parse_return(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
@@ -134,6 +136,7 @@ fn parse_expression(token_handler: &mut TokenHandler,
     return match token.get_type() {
         TokenType::Let => parse_let(token_handler, token),
         TokenType::If => parse_if(token_handler, token),
+        TokenType::While => parse_while(token_handler, token),
         TokenType::Ident => parse_assigment(token_handler, token),
         TokenType::Return => parse_return(token_handler, token),
         _ => panic!("Syntax error: Expexted an expression."),
@@ -294,5 +297,28 @@ fn parse_return(token_handler: &mut TokenHandler, token: & Token) -> Expression 
         },
         _ => panic!("Syntax error: Expected retrun expression."),
     };
+}
+
+
+/**
+ * Parses a while expression.
+ */
+fn parse_while(token_handler: &mut TokenHandler, token: & Token) -> Expression {
+    match token.get_type() {
+        TokenType::While => {
+            let condition: Vec<Span<Atom>> =
+                parse_atoms(token_handler, TokenType::BodyStart);
+            let original: Span<String> = token_handler.get_original(); 
+            let body: Body =
+                parse_body(token_handler,
+                            & token_handler.get_last_token().unwrap());
+            return Expression::While(Box::new(While{
+                original: original,
+                condition: condition,
+                body: body,
+            }));
+        },
+        _ => panic!("Syntax error: Expected while expression."),
+    };  
 }
 

@@ -50,8 +50,9 @@ pub struct Function {
 /** Defines while in Rubigo.  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct While {
-    condition: Expression,
-    body: Body,
+    pub original: Span<String>, 
+    pub condition: Vec<Span<Atom>>,
+    pub body: Body,
 }
 
 
