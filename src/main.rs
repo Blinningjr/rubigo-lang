@@ -23,7 +23,7 @@ fn main() {
 
     let test: String = "if true {
         let test: i32 = 123 - 122;
-        test = 4;
+        apa(123);
         while true {
             let a: f32 = 1.2;
             return 11;

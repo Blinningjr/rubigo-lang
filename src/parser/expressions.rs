@@ -18,7 +18,7 @@ pub enum Expression {
     Assigment(Assigment),
     Return(Return),
     FunctionCall(Box<FunctionCall>),
-    Math(Vec<Span<Atom>>),
+    Math(Vec<Span<Atom>>), // This is not needed?
     Body(Box<Body>),
     
 }
@@ -106,8 +106,9 @@ pub struct Return {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionCall {
-    ident: String,
-    parameters: Vec<Parameter>,
+    pub original: Span<String>,
+    pub ident: String,
+    pub parameters: Vec<Vec<Span<Atom>>>,
 }
 
 

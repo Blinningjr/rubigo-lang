@@ -45,6 +45,7 @@ pub use expressions::{
     If,
     While,
     Return,
+    FunctionCall,
 };
 
 use super::lexer::{
@@ -84,8 +85,9 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         TokenType::Let => parse_let(token_handler, & token),
         TokenType::If => parse_if(token_handler, & token),
         TokenType::While => parse_while(token_handler, & token),
-        TokenType::Ident => parse_assigment(token_handler, & token),
+        //TokenType::Ident => parse_assigment(token_handler, & token),
         TokenType::Return => parse_return(token_handler, & token),
+        TokenType::Ident => parse_function_call(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
     };
 }
@@ -137,8 +139,9 @@ fn parse_expression(token_handler: &mut TokenHandler,
         TokenType::Let => parse_let(token_handler, token),
         TokenType::If => parse_if(token_handler, token),
         TokenType::While => parse_while(token_handler, token),
-        TokenType::Ident => parse_assigment(token_handler, token),
+        //TokenType::Ident => parse_assigment(token_handler, token),
         TokenType::Return => parse_return(token_handler, token),
+        TokenType::Ident => parse_function_call(token_handler, & token),
         _ => panic!("Syntax error: Expexted an expression."),
     };
 }
@@ -320,5 +323,43 @@ fn parse_while(token_handler: &mut TokenHandler, token: & Token) -> Expression {
         },
         _ => panic!("Syntax error: Expected while expression."),
     };  
+}
+
+
+/**
+ * Parses input parameters of function call.
+ */
+fn parse_input_parameters(token_handler: &mut TokenHandler,
+                          token: & Token) -> Vec<Vec<Span<Atom>>> {
+    match token.get_type() {
+        TokenType::ParenthesisStart => {
+            let mut input: Vec<Vec<Span<Atom>>> = Vec::new();
+            input.push(parse_atoms(token_handler, TokenType::ParenthesisEnd));
+            return input;
+        },
+        _ => panic!("Syntax error: Expected Parameters."),
+    };
+}
+
+
+/**
+ * Parsese Function Call expression.
+ */
+fn parse_function_call(token_handler: &mut TokenHandler,
+                       token: & Token) -> Expression {
+    match token.get_type() {
+        TokenType::Ident => {
+            let next_token: Token = token_handler.next_token(true).unwrap();
+            let parameters: Vec<Vec<Span<Atom>>> =
+                parse_input_parameters(token_handler, & next_token);
+            let _semi_colon: Span<String> = parse_token(& token_handler.next_token(true).unwrap(), TokenType::EndExpression); 
+            return Expression::FunctionCall(Box::new(FunctionCall{
+                original: token_handler.get_original(),
+                ident: token.get_value(),
+                parameters: parameters,
+            })); 
+        },
+        _ => panic!("Syntax error: Expacted function call expression."),
+    };
 }
 
