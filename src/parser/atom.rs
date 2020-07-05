@@ -21,6 +21,7 @@ use super ::{
 pub enum Atom {
     Literal(Literal),
     Operation(Operation),
+    Variable(String),
 }
 
 
@@ -33,6 +34,8 @@ pub fn parse_atom(token_handler: &mut TokenHandler,
         return parse_literal(token_handler, token);
     } else if is_operation(token) {
         return parse_operation(token);
+    } else if token.get_type() == TokenType::Ident {
+        return parse_variable(token);
     }
     panic!("Syntax error: Expected literal or operation");
 }
@@ -56,5 +59,18 @@ pub fn parse_atoms(token_handler: &mut TokenHandler,
         }
     }
     panic!("Syntax error: Expected ;");
+}
+
+pub fn parse_variable(token: & Token) -> {
+    match token.get_type() {
+        TokenType::Ident => {
+            return Span::new(
+                Atom::Variable(token.get_value()),
+                token.get_line(),
+                token.get_offset(), 
+            );
+        },
+        _ => panic!("Syntax error: Expected variable."),
+    };
 }
 

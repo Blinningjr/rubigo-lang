@@ -21,7 +21,7 @@ fn main() {
         .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
 
-    let test: String = "if true {
+    let test: String = "fn testfn(apa) -> i32 {
         let test: i32 = 123 - 122;
         apa(123);
         while true {

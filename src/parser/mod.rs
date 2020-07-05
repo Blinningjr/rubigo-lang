@@ -13,6 +13,7 @@ pub use atom::{
     Atom,
     parse_atom,
     parse_atoms,
+    parse_variable,
 };
 
 pub use operations::{
@@ -46,6 +47,7 @@ pub use expressions::{
     While,
     Return,
     FunctionCall,
+    Function,
 };
 
 use super::lexer::{
@@ -88,6 +90,7 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         //TokenType::Ident => parse_assigment(token_handler, & token),
         TokenType::Return => parse_return(token_handler, & token),
         TokenType::Ident => parse_function_call(token_handler, & token),
+        TokenType::Fn => parse_function(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
     };
 }
@@ -351,8 +354,12 @@ fn parse_function_call(token_handler: &mut TokenHandler,
         TokenType::Ident => {
             let next_token: Token = token_handler.next_token(true).unwrap();
             let parameters: Vec<Vec<Span<Atom>>> =
-                parse_input_parameters(token_handler, & next_token);
-            let _semi_colon: Span<String> = parse_token(& token_handler.next_token(true).unwrap(), TokenType::EndExpression); 
+                parse_input_parameters(token_handler, & next_token
+            );
+            let _semi_colon: Span<String> =
+                parse_token(& token_handler.next_token(true).unwrap(),
+                TokenType::EndExpression
+            ); 
             return Expression::FunctionCall(Box::new(FunctionCall{
                 original: token_handler.get_original(),
                 ident: token.get_value(),
@@ -360,6 +367,72 @@ fn parse_function_call(token_handler: &mut TokenHandler,
             })); 
         },
         _ => panic!("Syntax error: Expacted function call expression."),
+    };
+}
+
+
+/**
+ * Parses function decleration.
+ */
+fn parse_function(token_handler: &mut TokenHandler,
+                  token: & Token) -> Expression {
+    match token.get_type() {
+        TokenType::Fn => {
+            let ident: Span<String> =
+                parse_token(& token_handler.next_token(true).unwrap(),
+                TokenType::Ident
+            );
+            let parameter_token: Token = token_handler.next_token(true).unwrap();
+            let parameters: Vec<Vec<Span<Atom>>> =
+                parse_input_parameters(token_handler, & parameter_token);
+            let _arrow: Span<String> =
+                parse_token(& token_handler.next_token(true).unwrap(),
+                TokenType::FnType
+            );
+            let return_type: Span<Type> =
+                parse_type(& token_handler.next_token(true).unwrap());
+            let body_token: Token = token_handler.next_token(true).unwrap();
+            let body: Body = parse_body(token_handler, & body_token);
+
+            return Expression::Function(Box::new(Function{
+                original: token_handler.get_original(),
+                ident: token.get_value(),
+                parameters: parameters,
+                return_type: return_type,
+                body: body,
+            })); 
+        },
+        _ => panic!("Syntax error: expected function decleration,"),
+    }; 
+}
+
+
+/**
+ * Parse parameters.
+ */
+fn parse_parameters(token_handler: &mut TokenHandler,
+                    token: & Token) -> Vec<Vec<Span<Atom>>> {
+    match token.get_type() {
+        TokenType::ParenthesisStart => {
+            let mut parameters: Vec<Vec<Span<Atom>>> = Vec::new();
+            while token_handler.hungry() {
+                let next_token: Token = token_handler.next_token(true).unwrap();
+                match next_token.get_type() {
+                    TokenType::ParenthesisEnd => return parameters,
+                    tokenType::Ident => {
+                        let _colon: Span<String> =
+                            parse_token(& token_handler.next_token(true).unwrap(),
+                            TokenType::TypeDec);
+                        let r#type: Span<Type> =
+                            parse_type(& token_handler.next_token(true).unwrap());
+                        parameters.push(
+                    },
+                    _ => panic!("Syntax error: Expected parameters."),
+                };
+            }
+            panic!("Syntax error: expected ).");
+        },
+        _ => panic!("Syntax error: Expected parameters."),
     };
 }
 

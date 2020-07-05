@@ -40,10 +40,11 @@ pub struct Body {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Function {
-    ident: String,
-    parameters: Vec<Parameter>,
-    return_type: Type,
-    body: Body,
+    pub original: Span<String>,
+    pub ident: String,
+    pub parameters: Vec<Vec<Span<Atom>>>,
+    pub return_type: Span<Type>,
+    pub body: Body,
 }
 
 
