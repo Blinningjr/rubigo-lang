@@ -247,8 +247,7 @@ fn parse_body(token_handler: &mut TokenHandler, token: & Token) -> Body {
                             raw_start: Span::new(
                                 token.get_value(),
                                 token.get_line(),
-                                token.get_offset()
-                            ),
+                                token.get_offset()),
                             raw_end: token_handler.get_original(),
                             body: body,
                         };
