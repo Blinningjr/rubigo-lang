@@ -93,9 +93,8 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         TokenType::Let => parse_let(token_handler, & token),
         TokenType::If => parse_if(token_handler, & token),
         TokenType::While => parse_while(token_handler, & token),
-        //TokenType::Ident => parse_assigment(token_handler, & token),
+        TokenType::Ident => parse_ident(token_handler, & token),
         TokenType::Return => parse_return(token_handler, & token),
-        TokenType::Ident => parse_function_call(token_handler, & token),
         TokenType::Fn => parse_function(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
     };
@@ -148,9 +147,8 @@ fn parse_expression(token_handler: &mut TokenHandler,
         TokenType::Let => parse_let(token_handler, token),
         TokenType::If => parse_if(token_handler, token),
         TokenType::While => parse_while(token_handler, token),
-        //TokenType::Ident => parse_assigment(token_handler, token),
+        TokenType::Ident => parse_ident(token_handler, token),
         TokenType::Return => parse_return(token_handler, token),
-        TokenType::Ident => parse_function_call(token_handler, & token),
         _ => panic!("Syntax error: Expexted an expression."),
     };
 }
@@ -207,10 +205,24 @@ fn parse_let(token_handler: &mut TokenHandler, token: & Token) -> Expression {
 }
 
 
+fn parse_ident(token_handler: &mut TokenHandler, token: & Token) -> Expression {    
+    match token.get_type() {
+        TokenType::Ident => {
+            let next_token: Token = token_handler.next_token(true).unwrap();
+            return match next_token.get_type() {
+                TokenType::Equals => parse_assignment(token_handler, token),
+                TokenType::ParenthesisStart => parse_function_call(token_handler, token, & next_token),
+                _ => panic!("Syntax error: Expected assignment or function call."),
+            };
+        },
+        _ => panic!("Syntax error: expected ident."),
+    };
+}
+
 /**
  * Parses token of type ident into Let expression.
  */
-fn parse_assigment(token_handler: &mut TokenHandler,
+fn parse_assignment(token_handler: &mut TokenHandler,
                    token: & Token) -> Expression {
     match token.get_type() {
         TokenType::Ident => {
@@ -218,10 +230,6 @@ fn parse_assigment(token_handler: &mut TokenHandler,
                 token.get_value(),
                 token.get_line(),
                 token.get_offset()
-            );
-            let _equals: Span<String> = parse_token(
-                & token_handler.next_token(true).unwrap(),
-                TokenType::Equals
             );
             let value: Vec<Span<Atom>> =
                 parse_atoms(token_handler, TokenType::EndExpression);
@@ -353,10 +361,10 @@ fn parse_input_parameters(token_handler: &mut TokenHandler,
  * Parsese Function Call expression.
  */
 fn parse_function_call(token_handler: &mut TokenHandler,
-                       token: & Token) -> Expression {
+                       token: & Token,
+                       next_token: & Token) -> Expression {
     match token.get_type() {
         TokenType::Ident => {
-            let next_token: Token = token_handler.next_token(true).unwrap();
             let parameters: Vec<Vec<Span<Atom>>> =
                 parse_input_parameters(token_handler, & next_token
             );
