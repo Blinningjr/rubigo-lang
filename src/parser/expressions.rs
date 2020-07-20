@@ -3,6 +3,7 @@ use super::{
     Literal,
     Atom,
     Span,
+    TypeDecleration,
 };
 
 
@@ -76,7 +77,7 @@ pub struct If {
 pub struct Let {
     pub original: Span<String>,
     pub ident: Span<String>,
-    pub r#type: Span<Type>,
+    pub type_dec: TypeDecleration,
     pub value: Vec<Span<Atom>>,
 }
 

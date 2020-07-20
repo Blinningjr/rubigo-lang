@@ -14,7 +14,7 @@ use super::{
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeDecleration {
     pub borrow: Option<Span<String>>,
-    pub mut: Option<Span<String>>,
+    pub mutable: Option<Span<String>>,
     pub r#type: Span<Type>,
 }
 
@@ -22,11 +22,11 @@ pub struct TypeDecleration {
 /**
  * Parse Type Decleration
  */
-fn parse_type_decleration(token_handler: &mut TokenHandler,
-                          token_1: & Token -> TypeDecleration {
+pub fn parse_type_decleration(token_handler: &mut TokenHandler,
+                          token_1: & Token) -> TypeDecleration {
     match token_1.get_type() {
         TokenType::Borrow => {
-            let borrow: Option::Some(Span<String> = Span::new(
+            let borrow: Option<Span<String>> = Option::Some(Span::new(
                 token_1.get_value(),
                 token_1.get_line(),
                 token_1.get_offset()));
@@ -38,7 +38,7 @@ fn parse_type_decleration(token_handler: &mut TokenHandler,
                     
                     return TypeDecleration{
                         borrow: borrow,
-                        mut: Option::Some(Span::new(
+                        mutable: Option::Some(Span::new(
                             token_2.get_value(),
                             token_2.get_line(),
                             token_2.get_offset())),
@@ -50,7 +50,7 @@ fn parse_type_decleration(token_handler: &mut TokenHandler,
                     
                     return TypeDecleration{
                         borrow: borrow,
-                        mut: Option::None,
+                        mutable: Option::None,
                         r#type: parse_type(& token_2),
                     };
                 },
@@ -61,7 +61,7 @@ fn parse_type_decleration(token_handler: &mut TokenHandler,
             
             return TypeDecleration{
                 borrow: Option::None,
-                mut: Option::Some(Span::new(
+                mutable: Option::Some(Span::new(
                     token_1.get_value(),
                     token_1.get_line(),
                     token_1.get_offset())),
@@ -71,7 +71,7 @@ fn parse_type_decleration(token_handler: &mut TokenHandler,
         _ => {
             return TypeDecleration{
                 borrow: Option::None,
-                mut: Option::None,
+                mutable: Option::None,
                 r#type: parse_type(& token_1),
             };
         },

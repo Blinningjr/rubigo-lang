@@ -61,7 +61,7 @@ pub fn parse_atoms(token_handler: &mut TokenHandler,
     panic!("Syntax error: Expected ;");
 }
 
-pub fn parse_variable(token: & Token) -> {
+pub fn parse_variable(token: & Token) -> Span<Atom> {
     match token.get_type() {
         TokenType::Ident => {
             return Span::new(
