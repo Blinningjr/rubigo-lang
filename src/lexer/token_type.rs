@@ -60,5 +60,7 @@ pub enum TokenType {
     TypeDec,
 
     FnType,
+
+    Comma,
 }
 

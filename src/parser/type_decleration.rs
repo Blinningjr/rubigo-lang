@@ -46,8 +46,6 @@ pub fn parse_type_decleration(token_handler: &mut TokenHandler,
                     };
                 },
                 _ => {
-                    let token_2: Token = token_handler.next_token(true).unwrap();
-                    
                     return TypeDecleration{
                         borrow: borrow,
                         mutable: Option::None,

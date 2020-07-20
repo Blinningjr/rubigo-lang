@@ -395,8 +395,8 @@ fn parse_function(token_handler: &mut TokenHandler,
                 TokenType::Ident
             );
             let parameter_token: Token = token_handler.next_token(true).unwrap();
-            let parameters: Vec<Vec<Span<Atom>>> =
-                parse_input_parameters(token_handler, & parameter_token);
+            let parameters: Vec<(Span<String>, TypeDecleration)> =
+                parse_parameters(token_handler, & parameter_token);
             let _arrow: Span<String> =
                 parse_token(& token_handler.next_token(true).unwrap(),
                 TokenType::FnType
@@ -419,32 +419,38 @@ fn parse_function(token_handler: &mut TokenHandler,
 }
 
 
-// /**
-// * Parse parameters.
-// */
-//fn parse_parameters(token_handler: &mut TokenHandler,
-//                    token: & Token) -> Vec<Vec<Span<Atom>>> {
-//    match token.get_type() {
-//        TokenType::ParenthesisStart => {
-//            let mut parameters: Vec<Vec<Span<Atom>>> = Vec::new();
-//            while token_handler.hungry() {
-//                let next_token: Token = token_handler.next_token(true).unwrap();
-//                match next_token.get_type() {
-//                    TokenType::ParenthesisEnd => return parameters,
-//                    tokenType::Ident => {
-//                        let _colon: Span<String> =
-//                            parse_token(& token_handler.next_token(true).unwrap(),
-//                            TokenType::TypeDec);
-//                        let r#type: Span<Type> =
-//                            parse_type(& token_handler.next_token(true).unwrap());
-//                        parameters.push(
-//                    },
-//                    _ => panic!("Syntax error: Expected parameters."),
-//                };
-//            }
-//            panic!("Syntax error: expected ).");
-//        },
-//        _ => panic!("Syntax error: Expected parameters."),
-//    };
-//}
+/**
+ * Parse parameters.
+ */
+fn parse_parameters(token_handler: &mut TokenHandler,
+                    token: & Token) -> Vec<(Span<String>, TypeDecleration)> {
+    match token.get_type() {
+        TokenType::ParenthesisStart => {
+            let mut parameters: Vec<(Span<String>, TypeDecleration)> = Vec::new();
+            while token_handler.hungry() {
+                let next_token: Token = token_handler.next_token(true).unwrap();
+                match next_token.get_type() {
+                    TokenType::ParenthesisEnd => return parameters,
+                    TokenType::Comma => continue,
+                    TokenType::Ident => {
+                        let ident: Span<String> = Span::new(
+                            next_token.get_value(),
+                            next_token.get_line(),
+                            next_token.get_offset());
+                        let _colon: Span<String> =
+                            parse_token(& token_handler.next_token(true).unwrap(),
+                            TokenType::TypeDec);
+                        let type_token: Token = token_handler.next_token(true).unwrap();
+                        let type_dec: TypeDecleration = parse_type_decleration(token_handler,
+                                                                               & type_token);
+                        parameters.push((ident, type_dec));
+                    },
+                    _ => panic!("Syntax error: Expected parameters."),
+                };
+            }
+            panic!("Syntax error: expected ).");
+        },
+        _ => panic!("Syntax error: Expected parameters."),
+    };
+}
 

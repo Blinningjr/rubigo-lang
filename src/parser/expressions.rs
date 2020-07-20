@@ -43,7 +43,7 @@ pub struct Body {
 pub struct Function {
     pub original: Span<String>,
     pub ident: String,
-    pub parameters: Vec<Vec<Span<Atom>>>,
+    pub parameters: Vec<(Span<String>, TypeDecleration)>,
     pub return_type: Span<Type>,
     pub body: Body,
 }

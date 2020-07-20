@@ -75,6 +75,8 @@ pub fn check_symbol(ch: char) -> Result<TokenType, &'static str> {
         '(' => Ok(TokenType::ParenthesisStart),
         ')' => Ok(TokenType::ParenthesisEnd),
 
+        ',' => Ok(TokenType::Comma),
+
         '&' => Ok(TokenType::Borrow),
 
         '=' => Ok(TokenType::Equals),
