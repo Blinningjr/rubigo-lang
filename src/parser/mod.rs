@@ -403,11 +403,14 @@ fn parse_function(token_handler: &mut TokenHandler,
             );
             let return_type: Span<Type> =
                 parse_type(& token_handler.next_token(true).unwrap());
+
+            let original: Span<String> = token_handler.get_original();
+
             let body_token: Token = token_handler.next_token(true).unwrap();
             let body: Body = parse_body(token_handler, & body_token);
 
             return Expression::Function(Box::new(Function{
-                original: token_handler.get_original(),
+                original: original,
                 ident: token.get_value(),
                 parameters: parameters,
                 return_type: return_type,
