@@ -45,6 +45,7 @@ pub use expressions::{
     Assigment,
     Body,
     If,
+    Else,
     While,
     Return,
     FunctionCall,
@@ -92,20 +93,13 @@ fn check_token(token_handler: &mut TokenHandler) -> Expression {
         ),
         TokenType::Let => parse_let(token_handler, & token),
         TokenType::If => parse_if(token_handler, & token),
+        TokenType::Else => parse_else(token_handler, & token),
         TokenType::While => parse_while(token_handler, & token),
         TokenType::Ident => parse_ident(token_handler, & token),
         TokenType::Return => parse_return(token_handler, & token),
         TokenType::Fn => parse_function(token_handler, & token),
         _ => panic!("Syntax error: Token not implemented {:?}", token),
     };
-}
-
-
-/**
- * Collects all parameters into a list.
- */
-fn collect_parameters() {
-
 }
 
 
@@ -146,6 +140,7 @@ fn parse_expression(token_handler: &mut TokenHandler,
     return match token.get_type() {
         TokenType::Let => parse_let(token_handler, token),
         TokenType::If => parse_if(token_handler, token),
+        TokenType::Else => parse_else(token_handler, token),
         TokenType::While => parse_while(token_handler, token),
         TokenType::Ident => parse_ident(token_handler, token),
         TokenType::Return => parse_return(token_handler, token),
@@ -265,7 +260,22 @@ fn parse_body(token_handler: &mut TokenHandler, token: & Token) -> Body {
                             body: body,
                         };
                     },
-                    _ => body.push(parse_expression(token_handler, & next_token)),
+                    _ => {
+                        let expression: Expression = parse_expression(token_handler, & next_token);
+                        match expression {
+                            Expression::Else(else_expr) => {
+                                let if_expression: Expression = body.pop().unwrap();
+                                match if_expression {
+                                    Expression::If(mut if_expr) => {
+                                        if_expr.else_stmt = Option::Some(*else_expr);
+                                        body.push(Expression::If(if_expr));
+                                    },
+                                    _ => panic!("Syntax Error: Missing If before else."),
+                                };
+                            },
+                            _ => body.push(expression),
+                        };
+                    },
                 };
             }
             panic!("Syntax error: expected {.");
@@ -291,10 +301,27 @@ fn parse_if(token_handler: &mut TokenHandler, token: & Token) -> Expression {
                 original: original,
                 condition: condition,
                 if_body: if_body,
-                else_body: Option::None,
+                else_stmt: Option::None,
             }));
         },
         _ => panic!("Syntax error: Expected If expression."),
+    };
+}
+
+
+/**
+ * Parses else part of if statment.
+ */
+fn parse_else(token_handler: &mut TokenHandler, token: & Token) -> Expression {
+    match token.get_type() {
+        TokenType::Else => {
+            let body_token: Token = token_handler.next_token(true).unwrap();
+            return Expression::Else(Box::new(Else{
+                original: token_handler.get_original(),
+                body: parse_body(token_handler, & body_token),
+            })); 
+        },
+        _ => panic!("Syntax error: Expected Else statment"),
     };
 }
 

@@ -24,6 +24,11 @@ fn main() {
     let test: String = "fn testfn(apa: i32, te: i32) -> i32 {
         let test: &mut i32 = 123 - 122;
         apa(123);
+        if 10 == apa(123) {
+            return 10;
+        } else {
+            return apa(123);
+        }
         while true {
             let a: f32 = 1.2;
             return 11;

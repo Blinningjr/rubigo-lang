@@ -15,6 +15,7 @@ pub enum Expression {
     Function(Box<Function>),
     While(Box<While>),
     If(Box<If>),
+    Else(Box<Else>),
     Let(Let),
     Assigment(Assigment),
     Return(Return),
@@ -66,7 +67,13 @@ pub struct If {
     pub original: Span<String>,
     pub condition: Vec<Span<Atom>>,
     pub if_body: Body,
-    pub else_body: Option<Body>,
+    pub else_stmt: Option<Else>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Else {
+    pub original: Span<String>,
+    pub body: Body,
 }
 
 
