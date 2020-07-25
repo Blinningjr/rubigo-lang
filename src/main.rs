@@ -22,7 +22,7 @@ fn main() {
     //println!("With text:\n{}", contents);
 
     let test: String = "fn testfn(apa: i32, te: i32) -> i32 {
-        let test: &mut i32 = 123 - 122;
+        let test: &mut i32 = 2 * (123 - 122);
         apa(123);
         if 10 == apa(123) {
             return 10;

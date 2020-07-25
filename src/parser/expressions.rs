@@ -54,6 +54,11 @@ impl Parser {
 
         } else if self.is_literal() {
             expression = Expression::Literal(self.parse_literal());
+        
+        } else if self.is_tokentype(TokenType::ParenthesisStart) {
+            let _start: Token = self.next_token(true);
+            expression = self.parse_expression();
+            let _end: Token = self.parse_type(TokenType::ParenthesisEnd);
 
         } else {
             panic!("Expression not Implemented yet.");
