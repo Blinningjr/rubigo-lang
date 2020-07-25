@@ -48,7 +48,7 @@ impl Parser {
      * Parse i32.
      */
     fn parse_i32(&mut self) -> Literal {
-        let token: Token = self.next_token(true);
+        let token: Token = self.next_token();
         return Literal::I32(token.get_value().parse::<i32>().unwrap());
     }
 
@@ -57,7 +57,7 @@ impl Parser {
      * Parse f32.
      */
     fn parse_f32(&mut self) -> Literal {
-        let token: Token = self.next_token(true);
+        let token: Token = self.next_token();
         return Literal::F32(token.get_value().parse::<f32>().unwrap());
     }
 
@@ -66,7 +66,7 @@ impl Parser {
      * Parse bool.
      */
     fn parse_bool(&mut self) -> Literal {
-        let token: Token = self.next_token(true);
+        let token: Token = self.next_token();
         return Literal::Bool(token.get_value().parse::<bool>().unwrap());
     }
 
@@ -75,7 +75,7 @@ impl Parser {
      * Parse char.
      */
     fn parse_char(&mut self) -> Literal {
-        let token: Token = self.next_token(true);
+        let token: Token = self.next_token();
         return Literal::Char(token.get_value().parse::<char>().unwrap());
     }
 
@@ -84,7 +84,7 @@ impl Parser {
      * Parse string.
      */
     fn parse_string(&mut self) -> Literal {
-        let _token: Token = self.next_token(true);
+        let _token: Token = self.next_token();
 
         panic!("Not Implemented yet.");
 
@@ -96,7 +96,7 @@ impl Parser {
      * Checks if token is literal.
      */
     pub(super) fn is_literal(&mut self) -> bool {
-        return match self.lexer.peak(true).unwrap().get_type() { 
+        return match self.peak().get_type() { 
             TokenType::String => true,
             TokenType::Boolean => true,
             TokenType::FloatNumber => true,

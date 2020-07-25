@@ -131,14 +131,14 @@ impl Parser {
      * Parse function.
      */
     fn parse_function(&mut self) -> Statement {
-        let _fn: Token = self.next_token(true);
+        let _fn: Token = self.next_token();
         let fn_identifier: Token = self.parse_type(TokenType::Identifier);
         let _start_p: Token = self.parse_type(TokenType::ParenthesisStart);
        
         let mut parameters: Vec<(String, TypeDecleration)> = Vec::new();
         let mut until: bool = true;
         while until {
-            let token: Token = self.next_token(true);
+            let token: Token = self.next_token();
             match & token.get_type() {
                 TokenType::ParenthesisEnd => until = false,
                 _ => {
@@ -147,7 +147,7 @@ impl Parser {
                     parameters.push((token.get_value(), type_dec));
 
                     if self.is_tokentype(TokenType::Comma) {
-                        let _comma: Token = self.next_token(true);
+                        let _comma: Token = self.next_token();
                     }
                 },
             };
@@ -177,7 +177,7 @@ impl Parser {
      * Parse while.
      */
     fn parse_while(&mut self) -> Statement {
-        let _while: Token = self.next_token(true);
+        let _while: Token = self.next_token();
         let expression: Expression = self.parse_expression();
         
         let body: Body;
@@ -200,7 +200,7 @@ impl Parser {
      * Parse if.
      */
     fn parse_if(&mut self) -> Statement {
-        let _if: Token = self.next_token(true);
+        let _if: Token = self.next_token();
         let expression: Expression = self.parse_expression(); 
         
         let if_body: Body;
@@ -213,8 +213,8 @@ impl Parser {
 
         let mut else_body: Option<Body> = None;
 
-        if self.lexer.peak(true).unwrap().get_type() == TokenType::Else {
-            let _else: Token = self.next_token(true);
+        if self.peak().get_type() == TokenType::Else {
+            let _else: Token = self.next_token();
 
             if self.is_tokentype(TokenType::BodyStart) {
 
@@ -246,7 +246,7 @@ impl Parser {
      * Parse let.
      */
     fn parse_let(&mut self) -> Statement {
-        let _let: Token = self.next_token(true);
+        let _let: Token = self.next_token();
         let identifier: Token = self.parse_type(TokenType::Identifier);
 
         let _type_dec: Token = self.parse_type(TokenType::TypeDec);
@@ -254,7 +254,7 @@ impl Parser {
         
         let _equal: Token = self.parse_type(TokenType::Equals);
         let expression: Expression = self.parse_expression();
-        let _end: Token = self.next_token(true);
+        let _end: Token = self.next_token();
         
         self.empty_tokens();
         return Statement::Let(Let {
@@ -269,7 +269,7 @@ impl Parser {
      * Parse assignment.
      */
     fn parse_identifier_statement(&mut self) -> Statement {
-        let identifier: Token = self.next_token(true);
+        let identifier: Token = self.next_token();
 
         if self.is_tokentype(TokenType::Equals) {
             return self.parse_assignment(identifier);
@@ -289,9 +289,9 @@ impl Parser {
      * Parse assignment.
      */
     fn parse_assignment(&mut self, identifier: Token) -> Statement {
-        let _equal: Token = self.next_token(true);
+        let _equal: Token = self.next_token();
         let expression: Expression = self.parse_expression();
-        let _end: Token = self.next_token(true);
+        let _end: Token = self.next_token();
         
         self.empty_tokens();
         return Statement::Assignment(Assignment {
@@ -305,9 +305,9 @@ impl Parser {
      * Parse return.
      */
     fn parse_return(&mut self) -> Statement {
-        let _return: Token = self.next_token(true);
+        let _return: Token = self.next_token();
         let expression: Expression = self.parse_expression();
-        let _end: Token = self.next_token(true);
+        let _end: Token = self.next_token();
         
         self.empty_tokens();
         return Statement::Return(Return {
@@ -320,14 +320,14 @@ impl Parser {
      * Parse body.
      */
     fn parse_body(&mut self) -> Statement {
-        let _start: Token = self.next_token(true);
+        let _start: Token = self.next_token();
         let mut statements: Vec<Statement> = Vec::new();
 
         loop {
-            let token: Token = self.lexer.peak(true).unwrap();
+            let token: Token = self.peak();
             match token.get_type() {
                 TokenType::BodyEnd => {
-                    let _end: Token = self.next_token(true);
+                    let _end: Token = self.next_token();
 
                     self.empty_tokens();
                     return Statement::Body(Box::new(Body {

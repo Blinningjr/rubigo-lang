@@ -27,7 +27,7 @@ pub fn tokenize_string(input: String) -> Vec<Token> {
     let mut tokens: Vec<Token> = Vec::new();
     let mut lexer: Lexer = Lexer::new(input);
     while hungry {
-        match lexer.next_token(false) {
+        match lexer.next_token() {
             Ok(token) => tokens.push(token),
             Err(_err) => hungry = false,
         };

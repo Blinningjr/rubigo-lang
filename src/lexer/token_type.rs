@@ -15,9 +15,6 @@ pub enum TokenType {
     Mut,
     Borrow,
    
-    NewLine,
-    Space,
-
     Identifier,
     
     TBool,

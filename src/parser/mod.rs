@@ -54,15 +54,21 @@ impl Parser {
     }
 
 
-    fn next_token(&mut self, no_whitespace: bool) -> Token {
-        let token: Token = self.lexer.next_token(no_whitespace).unwrap();
+    fn next_token(&mut self) -> Token {
+        let token: Token = self.lexer.next_token().unwrap();
         self.tokens.push(token.clone());
         return token; 
     }
 
 
+    fn peak(&mut self) -> Token {
+        let token: Token = self.lexer.peak().unwrap();
+        return token; 
+    }
+
+
     fn parse_type(&mut self, token_type: TokenType) -> Token {
-        let token: Token = self.next_token(true);
+        let token: Token = self.next_token();
         if token.get_type() == token_type {
             return token; 
         } else {
@@ -77,7 +83,7 @@ impl Parser {
     
 
     fn is_tokentype(&mut self, token_type: TokenType) -> bool {
-        let token: Token = self.lexer.peak(true).unwrap();
+        let token: Token = self.peak();
         return token.get_type() == token_type;
     }
 }

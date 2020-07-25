@@ -56,7 +56,7 @@ impl Parser {
             expression = Expression::Literal(self.parse_literal());
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
-            let _start: Token = self.next_token(true);
+            let _start: Token = self.next_token();
             expression = self.parse_expression();
             let _end: Token = self.parse_type(TokenType::ParenthesisEnd);
 
@@ -76,7 +76,7 @@ impl Parser {
      * Parse expressions starting with identifier.
      */
     fn parse_identifier_expression(&mut self) -> Expression {
-        let identifier: Token = self.next_token(true);
+        let identifier: Token = self.next_token();
         if self.is_tokentype(TokenType::ParenthesisStart) {
             self.empty_tokens();
             return self.parse_function_call(identifier); 
@@ -95,22 +95,22 @@ impl Parser {
      * :param identifier: Token of type identifier.
      */
     pub(super) fn parse_function_call(&mut self, identifier: Token) -> Expression {
-        let _param_start: Token = self.next_token(true);
+        let _param_start: Token = self.next_token();
 
         let mut parameters: Vec<Expression> = Vec::new();
         let mut until: bool = true;
         while until {
             if self.is_tokentype(TokenType::ParenthesisEnd) { 
-                let _end: Token = self.next_token(true);
+                let _end: Token = self.next_token();
                 until = false;
 
             } else {
                 parameters.push(self.parse_expression());
                 if self.is_tokentype(TokenType::Comma) {
-                    let _comma: Token = self.next_token(true);
+                    let _comma: Token = self.next_token();
 
                 } else if self.is_tokentype(TokenType::ParenthesisEnd) {
-                    let _end: Token = self.next_token(true); 
+                    let _end: Token = self.next_token(); 
                     until = false;
 
                 } else {

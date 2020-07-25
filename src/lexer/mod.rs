@@ -47,9 +47,9 @@ impl Lexer {
     /**
      * Gets the next token and removes it.
      */
-    pub fn next_token(&mut self, no_whitespace: bool) ->
+    pub fn next_token(&mut self) ->
             Result<Token, &'static str> {
-        let token: Result<Token, &'static str> = self.peak(no_whitespace);
+        let token: Result<Token, &'static str> = self.peak();
         self.next_token = None;
                 
         return token;
@@ -59,30 +59,19 @@ impl Lexer {
     /**
      * Gets the next token.
      */
-    pub fn peak(&mut self, no_whitespace: bool) ->
+    pub fn peak(&mut self) ->
             Result<Token, &'static str> {
         match & self.next_token {
             Some(token) => {
-                if no_whitespace {
-                    match token.get_type() { 
-                        TokenType::Space => {
-                            self.next_token = None;
-                            return self.peak(no_whitespace);
-                        },
-                        TokenType::NewLine => {
-                            self.next_token = None;
-                            return self.peak(no_whitespace);
-                        },
-                        _ => {
-                            return Ok(token.clone());
-                        },
-                    };
-                } else {
-                    return Ok(token.clone());
-                }
+                return Ok(token.clone());
             },
             None => {
-                let token: Result<Token, &'static str> = self.create_token(no_whitespace); 
+                
+                let token: Result<Token, &'static str> = self.create_token(); 
+                match & token {
+                    Ok(t) => self.next_token = Some(t.clone()),
+                    Err(_e) => (),
+                };
                 return token;
             },
         }; 
@@ -92,27 +81,12 @@ impl Lexer {
     /**
      * Create next token in stream.
      */
-    fn create_token(&mut self, no_whitespace: bool) ->
+    fn create_token(&mut self) ->
             Result<Token, &'static str> {
-        if no_whitespace {
-            while self.hungry() {
-                let token: Token = self.fsm_start();
-                match & token.get_type() {
-                    TokenType::Space => (),
-                    TokenType::NewLine => (),
-                    _ => {
-                        self.next_token = Some(token.clone());
-                        return Ok(token);
-                    },
-                };
-            }
-            return Err("Out of string to tokenize");
+        if self.hungry() {
+            return Ok(self.fsm_start());
         } else {
-            if self.hungry() {
-                return Ok(self.fsm_start());
-            } else {
-                return Err("Out of string to tokenize");
-            }
+            return Err("Out of string to tokenize");
         }
     }
 
@@ -129,10 +103,20 @@ impl Lexer {
      * Adds the next char in input to partial token and removes it from input.
      * NOTE: Throws exception if input sting is empty
      */
-    fn consume(&mut self) {
+    fn consume(&mut self) -> () {
         let mut chs: std::str::Chars<'_> = self.input.chars();
         self.partial_token.push(chs.next().unwrap());
         self.input = chs.collect::<String>();
+    }
+
+
+    /**
+     * Discard char.
+     */
+    fn discard(&mut self) {
+        let mut chs: std::str::Chars<'_> = self.input.chars();
+        let _ch: char = chs.next().unwrap();
+        self.input = chs.collect::<String>(); 
     }
 
     
@@ -151,14 +135,6 @@ impl Lexer {
 
         self.partial_token = "".to_string();
         self.partial_token_offset = current_col;
-
-        match token_type {
-            TokenType::NewLine => {
-                self.current_line += 1;
-                self.partial_token_offset = 1;
-            },
-            _ => (),
-        };
 
         return token;
     }
@@ -187,6 +163,20 @@ impl Lexer {
                             return self.tokenize(token_type);
                         },
                         Err(_err) => {
+                            if ch == ' ' {
+                                self.discard();
+                                self.partial_token_offset = 1;
+                                
+                                return self.fsm_start();
+                            
+                            } else if ch == '\n' {
+                                self.discard();
+                                self.current_line += 1;
+                                self.partial_token_offset = 1;
+                                
+                                return self.fsm_start();
+                            }
+
                             match check_symbol(ch) {
                                 Ok(token_type) => {
                                     self.consume();

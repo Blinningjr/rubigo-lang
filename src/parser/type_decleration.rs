@@ -25,26 +25,26 @@ impl Parser {
         let mut mutable: bool = false;
 
         if self.is_tokentype(TokenType::Borrow) {
-            let _borrow: Token = self.next_token(true);
+            let _borrow: Token = self.next_token();
             borrow = true;
         }
 
         if self.is_tokentype(TokenType::Mut) { 
-            let _mutable: Token = self.next_token(true);
+            let _mutable: Token = self.next_token();
             mutable = true;
         }
 
-        match self.lexer.peak(true).unwrap().get_type() {
+        match self.peak().get_type() {
             TokenType::Identifier => (),
             TokenType::Ti32 => (),
             TokenType::Tf32 => (),
             TokenType::TBool => (),
             TokenType::TChar=> (),
             TokenType::TString => (),
-            _ => panic!("Expected Type \n{:#?}", self.lexer.peak(true).unwrap()),
+            _ => panic!("Expected Type \n{:#?}", self.peak()),
         };
         
-        let token: Token = self.next_token(true);
+        let token: Token = self.next_token();
 
         self.empty_tokens();
         return TypeDecleration {

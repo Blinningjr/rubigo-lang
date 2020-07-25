@@ -63,9 +63,6 @@ pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static 
  */
 pub fn check_symbol(ch: char) -> Result<TokenType, &'static str> {
     return match ch {
-        ' ' => Ok(TokenType::Space),
-        '\n' => Ok(TokenType::NewLine),
-
         ';' => Ok(TokenType::SemiColon),
         ':' => Ok(TokenType::TypeDec),
         '\'' => Ok(TokenType::Char),

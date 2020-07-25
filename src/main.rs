@@ -42,12 +42,11 @@ fn main() {
 //    let mut tokens: Vec<Token> = Vec::new(); let mut lexer: Lexer = Lexer::new(test); 
 //    let mut hungry: bool = true;
 //    while hungry {
-//        match lexer.next_token(false) {
+//        match lexer.next_token() {
 //            Ok(token) => tokens.push(token),
 //            Err(_err) => hungry = false,
 //        };
 //    }
 //    println!("Tokens:\n{:#?}", tokens);
-
 }
 

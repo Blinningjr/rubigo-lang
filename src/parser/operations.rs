@@ -93,7 +93,7 @@ impl Parser {
      * parse unary operator.
      */
     fn parse_op_un(&mut self) -> UnOperator {
-        return match self.next_token(true).get_type() {
+        return match self.next_token().get_type() {
             TokenType::Not => UnOperator::Not,
             TokenType::Minus => UnOperator::Minus,
             _ => panic!("Expected unary operator"),
@@ -105,7 +105,7 @@ impl Parser {
      * Parse binary operator.
      */
     fn parse_op_bin(&mut self) -> BinOperator {
-        return match self.next_token(true).get_type() {
+        return match self.next_token().get_type() {
             TokenType::Plus => BinOperator::Plus,
             TokenType::Minus => BinOperator::Minus,
             TokenType::ForwardSlash => BinOperator::Divition,
@@ -128,7 +128,7 @@ impl Parser {
      * Checks if next token is a unary operator.
      */
     pub(super) fn is_un_op(&mut self) -> bool {
-        return match self.lexer.peak(true).unwrap().get_type() {
+        return match self.peak().get_type() {
             TokenType::Not => true,
             TokenType::Minus => true,
             _ => false,
@@ -140,7 +140,7 @@ impl Parser {
      * Checks if next token is a binary operator.
      */
     pub(super) fn is_bin_op(&mut self) -> bool {
-        return match self.lexer.peak(true).unwrap().get_type() {
+        return match self.peak().get_type() {
             TokenType::Plus => true,
             TokenType::Minus => true,
             TokenType::ForwardSlash => true,
