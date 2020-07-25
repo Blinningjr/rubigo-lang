@@ -14,7 +14,7 @@ use parser::{
 
 
 fn main() {
-    let filename = "example-code/hello_world.rbg";
+    let filename = "example-code/example.rbg";
     println!("In file {}", filename);
 
     let contents = fs::read_to_string(filename)
@@ -23,6 +23,7 @@ fn main() {
 
     let test: String = "fn testfn(apa: i32, te: i32) -> i32 {
         let test: &mut i32 = 2 * (123 - 122);
+        let test: char = \" asd asd  \";
         apa(123);
         if 10 == apa(123) {
             return 10;

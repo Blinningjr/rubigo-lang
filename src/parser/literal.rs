@@ -84,11 +84,8 @@ impl Parser {
      * Parse string.
      */
     fn parse_string(&mut self) -> Literal {
-        let _token: Token = self.next_token();
-
-        panic!("Not Implemented yet.");
-
-        //return Literal::String(token.get_value());
+        let token: Token = self.next_token();
+        return Literal::String(token.get_value());
     }
 
     

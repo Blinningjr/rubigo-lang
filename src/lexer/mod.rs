@@ -147,12 +147,21 @@ impl Lexer {
         let mut chs: std::str::Chars<'_> = self.input.chars();
         let ch: char = chs.next().unwrap();
         if ch.is_alphabetic() || ch == '_' {
-            self.consume();
-            // Make it call reserved FSM:s.
+            self.consume(); 
             return self.fsm_ident();
+
         } else if ch.is_numeric() {
             self.consume();
             return self.fsm_number();
+
+        } else if ch == '"' {
+           self.consume();
+           return self.fsm_string();
+        
+        } else if ch == '\'' {
+           self.consume();
+           return self.fsm_char();
+        
         } else {
             match chs.next() {
                 Some(look_a_head) => {
@@ -281,6 +290,51 @@ impl Lexer {
             }
         } else {
             return self.tokenize(TokenType::FloatNumber);
+        }
+    }
+
+
+    /**
+     * FSM for converting string to token of type String.
+     */
+    fn fsm_string(&mut self) -> Token {
+        if self.hungry() {
+            let mut chs: std::str::Chars<'_> = self.input.chars();
+            let ch: char = chs.next().unwrap();
+
+            if ch == '"' {
+                self.consume();
+                return self.tokenize(TokenType::String);
+            
+            } else {
+                self.consume();
+                return self.fsm_string();
+            }
+        } else {
+           panic!("Expected String end"); 
+        }
+    }
+
+
+    /**
+     * FSM for converting string to token of type Char.
+     */
+    fn fsm_char(&mut self) -> Token {
+        if self.hungry() {
+            let mut chs: std::str::Chars<'_> = self.input.chars();
+            let ch1: char = chs.next().unwrap();
+            let ch2: char = chs.next().unwrap();
+
+            if ch2 == '\'' {
+                self.consume();
+                self.consume();
+                return self.tokenize(TokenType::Char);
+            
+            } else {
+                panic!("Expected char"); 
+            }
+        } else {
+           panic!("Expected char"); 
         }
     }
 }
