@@ -5,11 +5,11 @@ mod parser;
 use std::fs;
 use lexer::{
     Token,
-    TokenHandler,
+    Lexer,
 };
+
 use parser::{
-    create_ast,
-    Expression,
+    Parser,
 };
 
 
@@ -37,19 +37,17 @@ fn main() {
     }".to_string();
     println!("\nWith text:\n{}\n", test);
 
-    let parsed: Expression = create_ast(&mut TokenHandler::new(test));
-    println!("Parsed:\n{:#?}\n", parsed);
-
-   // let mut tokens: Vec<Token> = Vec::new();
-   // let mut token_handler: TokenHandler = TokenHandler::new(contents); 
-   // let mut hungry: bool = true;
-   // while hungry {
-   //     match token_handler.next_token() {
-   //         Ok(token) => tokens.push(token),
-   //         Err(_err) => hungry = false,
-   //     };
-   // }
-   // println!("Tokens:\n{:#?}", tokens);
+    println!("Parsed: \n{:#?}\n", Parser::parse(test));
+    
+//    let mut tokens: Vec<Token> = Vec::new(); let mut lexer: Lexer = Lexer::new(test); 
+//    let mut hungry: bool = true;
+//    while hungry {
+//        match lexer.next_token(false) {
+//            Ok(token) => tokens.push(token),
+//            Err(_err) => hungry = false,
+//        };
+//    }
+//    println!("Tokens:\n{:#?}", tokens);
 
 }
 

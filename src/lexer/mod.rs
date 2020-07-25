@@ -16,52 +16,92 @@ use reserved::{
 /**
  * Handles tokens by storing and creating them. 
  */
-pub struct TokenHandler {
+#[derive(Debug, Clone, PartialEq)]
+pub struct Lexer {
     input: String, 
-    partial_expression: String,
-    partial_expression_offset: usize,
-    partial_expression_line: usize,
     partial_token: String,
     partial_token_offset: usize,
     current_line: usize,
-    last_token: Option<Token>,
+    next_token: Option<Token>,
 }
 
 
 /**
- * Implements TokenHandler functions. 
+ * Implements Lexer functions. 
  */
-impl TokenHandler {
+impl Lexer {
     /**
      * Created token handler.
      */
-    pub fn new(input: String) -> TokenHandler {
-        TokenHandler{
+    pub fn new(input: String) -> Lexer {
+        Lexer{
             input: input,
-            partial_expression: "".to_string(),
-            partial_expression_offset: 1,
-            partial_expression_line: 1,
             partial_token: "".to_string(),
             partial_token_offset: 1,
             current_line: 1,
-            last_token: Option::None,
+            next_token: Option::None,
         }
     }
 
 
     /**
-     * Creates the next token of the input.
+     * Gets the next token and removes it.
      */
     pub fn next_token(&mut self, no_whitespace: bool) ->
+            Result<Token, &'static str> {
+        let token: Result<Token, &'static str> = self.peak(no_whitespace);
+        self.next_token = None;
+                
+        return token;
+    }
+
+
+    /**
+     * Gets the next token.
+     */
+    pub fn peak(&mut self, no_whitespace: bool) ->
+            Result<Token, &'static str> {
+        match & self.next_token {
+            Some(token) => {
+                if no_whitespace {
+                    match token.get_type() { 
+                        TokenType::Space => {
+                            self.next_token = None;
+                            return self.peak(no_whitespace);
+                        },
+                        TokenType::NewLine => {
+                            self.next_token = None;
+                            return self.peak(no_whitespace);
+                        },
+                        _ => {
+                            return Ok(token.clone());
+                        },
+                    };
+                } else {
+                    return Ok(token.clone());
+                }
+            },
+            None => {
+                let token: Result<Token, &'static str> = self.create_token(no_whitespace); 
+                return token;
+            },
+        }; 
+    }
+
+
+    /**
+     * Create next token in stream.
+     */
+    fn create_token(&mut self, no_whitespace: bool) ->
             Result<Token, &'static str> {
         if no_whitespace {
             while self.hungry() {
                 let token: Token = self.fsm_start();
-                match token.get_type() {
+                match & token.get_type() {
                     TokenType::Space => (),
                     TokenType::NewLine => (),
                     _ => {
-                        self.last_token = Some(token.clone());
+                        self.next_token = Some(token.clone());
                         return Ok(token);
                     },
                 };
@@ -69,8 +109,7 @@ impl TokenHandler {
             return Err("Out of string to tokenize");
         } else {
             if self.hungry() {
-                self.last_token = Some(self.fsm_start());
-                return Ok(self.last_token.clone().unwrap());
+                return Ok(self.fsm_start());
             } else {
                 return Err("Out of string to tokenize");
             }
@@ -121,44 +160,7 @@ impl TokenHandler {
             _ => (),
         };
 
-        self.add_partial_expression(& token);
-
         return token;
-    }
-
-
-    /**
-     * Gets the original string of all the latest tokens.
-     */
-    pub fn get_original(&mut self) -> Span<String> {
-        let original: Span<String> = Span::new(
-            self.partial_expression.clone(),
-            self.partial_expression_line,
-            self.partial_expression_offset
-        );
-
-        self.partial_expression = "".to_string();
-        return original;
-    }
-
-
-    /**
-     * Gets the last token.
-     */
-    pub fn get_last_token(&self) -> Option<Token> {
-        return self.last_token.clone();
-    }
-
-
-    /**
-     * Adds to the partial expression or starts one.
-     */
-    fn add_partial_expression(&mut self, token: & Token) -> () {
-        if self.partial_expression == "" {
-            self.partial_expression_offset = token.get_offset();
-            self.partial_expression_line = token.get_line();
-        }
-        self.partial_expression.push_str(& token.get_value());
     }
 
 

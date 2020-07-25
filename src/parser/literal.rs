@@ -1,9 +1,7 @@
 use super::{
+    Parser,
     Token,
     TokenType,
-    TokenHandler,
-    Atom,
-    Span,
 };
 
 
@@ -20,140 +18,92 @@ pub enum Literal {
 }
 
 
-/**
- * Checks if token is literal.
- */
-pub fn is_literal(token: & Token) -> bool {
-    return match token.get_type() { 
-        TokenType::String => true,
-        TokenType::Boolean => true,
-        TokenType::FloatNumber => true,
-        TokenType::Number => true,
-        TokenType::Char => true,
-        _ => false,
-    };
-}
+impl Parser {
+    /**
+     * Parse literal.
+     */
+    pub(super) fn parse_literal(&mut self) -> Literal {
+        if self.is_tokentype(TokenType::Number) {
+            return self.parse_i32();
+
+        } else if self.is_tokentype(TokenType::FloatNumber) {
+            return self.parse_f32();
+
+        } else if self.is_tokentype(TokenType::Boolean) {
+            return self.parse_bool();
+
+        } else if self.is_tokentype(TokenType::Char) {
+            return self.parse_char();
+
+        } else if self.is_tokentype(TokenType::String) {
+            return self.parse_string();
+
+        } else {
+            panic!("Expected Literal");
+        }
+    }
 
 
-/**
- * Parse any Literal.
- */
-pub fn parse_literal(token_handler: &mut TokenHandler,
-                     token: & Token) -> Span<Atom> {
-    return match token.get_type() {
-        TokenType::String => parse_string(token_handler, & token),
-        TokenType::Boolean => parse_boolean(& token),
-        TokenType::FloatNumber => parse_float_number(& token),
-        TokenType::Number => parse_number(& token),
-        TokenType::Char => parse_char(& token),
-        _ => panic!("Syntax error: Expected literal."),
-    };
-}
+    /**
+     * Parse i32.
+     */
+    fn parse_i32(&mut self) -> Literal {
+        let token: Token = self.next_token(true);
+        return Literal::I32(token.get_value().parse::<i32>().unwrap());
+    }
 
 
-/**
- * Parses tokens untill the end sting is found, into a literal String.
- */
-pub fn parse_string(token_handler: &mut TokenHandler, start_string_token: & Token) -> Span<Atom> {
-    match start_string_token.get_type() {
-        TokenType::String => {
-            let mut string: String = "".to_string();
-            while token_handler.hungry() {
-                let token: Token = token_handler.next_token(false).unwrap();
-                match token.get_type() {
-                    TokenType::String => {
-                        return Span::new(
-                            Atom::Literal(Literal::String(string)),
-                            start_string_token.get_line(),
-                            start_string_token.get_offset()
-                        );
-                    },
-                    _ => string.push_str(& token.get_value()),
-                };
-            }
-            panic!("Syntax error: Expected \"");
-        },
-        _ => panic!("Syntax error: Expected \""),
-    };
-}
+    /**
+     * Parse f32.
+     */
+    fn parse_f32(&mut self) -> Literal {
+        let token: Token = self.next_token(true);
+        return Literal::F32(token.get_value().parse::<f32>().unwrap());
+    }
 
 
-/**
- * Parses a token of type Boolean into literal Bool.
- */
-pub fn parse_boolean(token: & Token) -> Span<Atom> {
-    match token.get_type() {
-        TokenType::Boolean => {
-            return match token.get_value().parse::<bool>() {
-                Ok(val) => Span::new(
-                    Atom::Literal(Literal::Bool(val)),
-                    token.get_line(),
-                    token.get_offset()
-                ),
-                Err(_e) => panic!("Syntax error: could not parse bool"),
-            };
-        },
-        _ => panic!("Syntax error: expected boolean"),
-    };
-}
+    /**
+     * Parse bool.
+     */
+    fn parse_bool(&mut self) -> Literal {
+        let token: Token = self.next_token(true);
+        return Literal::Bool(token.get_value().parse::<bool>().unwrap());
+    }
 
 
-/**
- * Parses token of type FloatNumber into literal f32.
- */
-pub fn parse_float_number(token: & Token) -> Span<Atom> {
-    match token.get_type() {
-        TokenType::FloatNumber => {
-            return match token.get_value().parse::<f32>() {
-                Ok(val) => Span::new(
-                    Atom::Literal(Literal::F32(val)),
-                    token.get_line(),
-                    token.get_offset()
-                ),
-                Err(_e) => panic!("Syntax error: could not parse f32"),
-            }; 
-        },
-        _ => panic!("Syntax error: could not parse f32"),
-    };
-}
+    /**
+     * Parse char.
+     */
+    fn parse_char(&mut self) -> Literal {
+        let token: Token = self.next_token(true);
+        return Literal::Char(token.get_value().parse::<char>().unwrap());
+    }
 
 
-/**
- * Parses token of type Number into literal i32.
- */
-pub fn parse_number(token: & Token) -> Span<Atom> {
-    match token.get_type() {
-        TokenType::Number => {
-            return match token.get_value().parse::<i32>() {
-                Ok(val) => Span::new(
-                    Atom::Literal(Literal::I32(val)),
-                    token.get_line(),
-                    token.get_offset()
-                ),
-                Err(_e) => panic!("Syntax error: could not parse i32"),
-            }; 
-        },
-        _ => panic!("Syntax error: could not parse i32"),
-    };
-}
+    /**
+     * Parse string.
+     */
+    fn parse_string(&mut self) -> Literal {
+        let _token: Token = self.next_token(true);
 
+        panic!("Not Implemented yet.");
 
-/**
- * Parses token of type Char into literal char.
- */
-pub fn parse_char(token: & Token) -> Span<Atom> {
-    match token.get_type() {
-        TokenType::Char => {
-            return match token.get_value().parse::<char>() {
-                Ok(val) => Span::new(
-                    Atom::Literal(Literal::Char(val)),
-                    token.get_line(),
-                    token.get_offset()
-                ),
-                Err(_e) => panic!("Syntax error: could not parse Char"),
-            }; 
-        },
-        _ => panic!("Syntax error: could not parse Char"),
-    };
+        //return Literal::String(token.get_value());
+    }
+
+    
+    /**
+     * Checks if token is literal.
+     */
+    pub(super) fn is_literal(&mut self) -> bool {
+        return match self.lexer.peak(true).unwrap().get_type() { 
+            TokenType::String => true,
+            TokenType::Boolean => true,
+            TokenType::FloatNumber => true,
+            TokenType::Number => true,
+            TokenType::Char => true,
+            _ => false,
+        };
+    }
 }
 

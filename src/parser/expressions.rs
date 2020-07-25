@@ -1,9 +1,10 @@
 use super::{
-    Type,
+    Parser,
+    Token,
+    TokenType,
     Literal,
-    Atom,
-    Span,
-    TypeDecleration,
+    UnOp,
+    BinOp,
 };
 
 
@@ -12,101 +13,10 @@ use super::{
  */
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
-    Function(Box<Function>),
-    While(Box<While>),
-    If(Box<If>),
-    Else(Box<Else>),
-    Let(Let),
-    Assigment(Assigment),
-    Return(Return),
+    BinOp(Box<BinOp>),
+    UnOp(Box<UnOp>),
     FunctionCall(Box<FunctionCall>),
-    Math(Vec<Span<Atom>>), // This is not needed?
-    Body(Box<Body>),
-    
-}
-
-
-/**
- * Defines Body in Rubigo.
- */
-#[derive(Debug, Clone, PartialEq)]
-pub struct Body {
-    pub raw_start: Span<String>,
-    pub raw_end: Span<String>,
-    pub body: Vec<Expression>,
-}
-
-
-/**
- * Defines function in Rubigo.
- */
-#[derive(Debug, Clone, PartialEq)]
-pub struct Function {
-    pub original: Span<String>,
-    pub ident: String,
-    pub parameters: Vec<(Span<String>, TypeDecleration)>,
-    pub return_type: Span<Type>,
-    pub body: Body,
-}
-
-
-/** Defines while in Rubigo.  */
-#[derive(Debug, Clone, PartialEq)]
-pub struct While {
-    pub original: Span<String>, 
-    pub condition: Vec<Span<Atom>>,
-    pub body: Body,
-}
-
-
-/**
- * Defines if in Rubigo.
- */
-#[derive(Debug, Clone, PartialEq)]
-pub struct If {
-    pub original: Span<String>,
-    pub condition: Vec<Span<Atom>>,
-    pub if_body: Body,
-    pub else_stmt: Option<Else>,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Else {
-    pub original: Span<String>,
-    pub body: Body,
-}
-
-
-/**
- * Defines let in Rubigo.
- */
-#[derive(Debug, Clone, PartialEq)]
-pub struct Let {
-    pub original: Span<String>,
-    pub ident: Span<String>,
-    pub type_dec: TypeDecleration,
-    pub value: Vec<Span<Atom>>,
-}
-
-
-/**
- * Defines Assigment in Rubigo.
- */
-#[derive(Debug, Clone, PartialEq)]
-pub struct Assigment {
-    pub original: Span<String>,
-    pub ident: Span<String>,
-    pub value: Vec<Span<Atom>>,
-}
-
-
-/**
- * Defines return in Rubigo.
- */
-#[derive(Debug, Clone, PartialEq)]
-pub struct Return {
-    pub original: Span<String>,
-    pub value: Vec<Span<Atom>>,
+    Literal(Literal),
 }
 
 
@@ -115,21 +25,100 @@ pub struct Return {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionCall {
-    pub original: Span<String>,
-    pub ident: String,
-    pub parameters: Vec<Vec<Span<Atom>>>,
+    pub identifier: String,
+    pub parameters: Vec<Expression>,
 }
 
 
 /**
- * Defines parameter in Rubigo.
+ * Defines variable in Rubigo.
  */
 #[derive(Debug, Clone, PartialEq)]
-pub struct Parameter {
-    ident: String,
-    r#type: Type,
-    line: usize,
-    start_col: usize,
-    end_col: usize,
+pub struct Variable {
+    pub identifier: String,
+}
+
+
+impl Parser {
+    /**
+     * Parse expression.
+     */
+    pub(super) fn parse_expression(&mut self) -> Expression {
+        let mut expression: Expression;
+
+        if self.is_tokentype(TokenType::Ident) {
+            expression = self.parse_identifier_expression();
+
+        } else if self.is_un_op() {
+            expression = self.parse_un_op(); 
+
+        } else if self.is_literal() {
+            expression = Expression::Literal(self.parse_literal());
+
+        } else {
+            panic!("Expression not Implemented yet.");
+        }
+        
+        if self.is_bin_op() {
+            return self.parse_bin_op(expression); 
+        } else {
+            return expression;
+        }
+    }
+
+
+    /**
+     * Parse expressions starting with identifier.
+     */
+    fn parse_identifier_expression(&mut self) -> Expression {
+        let identifier: Token = self.next_token(true);
+        if self.is_tokentype(TokenType::ParenthesisStart) {
+            self.empty_tokens();
+            return self.parse_function_call(identifier); 
+        
+        } else {
+            let variable: Expression = Expression::Literal(Literal::String(identifier.get_value()));
+
+            self.empty_tokens();
+            return variable; 
+        }
+    }
+
+
+    /**
+     * Parse function call.
+     * :param identifier: Token of type identifier.
+     */
+    pub(super) fn parse_function_call(&mut self, identifier: Token) -> Expression {
+        let _param_start: Token = self.next_token(true);
+
+        let mut parameters: Vec<Expression> = Vec::new();
+        let mut until: bool = true;
+        while until {
+            if self.is_tokentype(TokenType::ParenthesisEnd) { 
+                let _end: Token = self.next_token(true);
+                until = false;
+
+            } else {
+                parameters.push(self.parse_expression());
+                if self.is_tokentype(TokenType::Comma) {
+                    let _comma: Token = self.next_token(true);
+
+                } else if self.is_tokentype(TokenType::ParenthesisEnd) {
+                    let _end: Token = self.next_token(true); 
+                    until = false;
+
+                } else {
+                    panic!("Error Function call");
+                }
+            }
+        }
+
+        self.empty_tokens();
+        return Expression::FunctionCall(Box::new(FunctionCall {
+            identifier: identifier.get_value(),
+            parameters: parameters,
+        }));
+    }
 }
 
