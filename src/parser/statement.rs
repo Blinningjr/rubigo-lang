@@ -112,7 +112,7 @@ impl Parser {
         } else if self.is_tokentype(TokenType::Let) {
             return self.parse_let();
 
-        } else if self.is_tokentype(TokenType::Ident) {
+        } else if self.is_tokentype(TokenType::Identifier) {
             return self.parse_identifier_statement();
 
         } else if self.is_tokentype(TokenType::Return) {
@@ -132,7 +132,7 @@ impl Parser {
      */
     fn parse_function(&mut self) -> Statement {
         let _fn: Token = self.next_token(true);
-        let fn_identifier: Token = self.parse_type(TokenType::Ident);
+        let fn_identifier: Token = self.parse_type(TokenType::Identifier);
         let _start_p: Token = self.parse_type(TokenType::ParenthesisStart);
        
         let mut parameters: Vec<(String, TypeDecleration)> = Vec::new();
@@ -247,7 +247,7 @@ impl Parser {
      */
     fn parse_let(&mut self) -> Statement {
         let _let: Token = self.next_token(true);
-        let identifier: Token = self.parse_type(TokenType::Ident);
+        let identifier: Token = self.parse_type(TokenType::Identifier);
 
         let _type_dec: Token = self.parse_type(TokenType::TypeDec);
         let type_dec: TypeDecleration = self.parse_type_decleration();
@@ -276,7 +276,7 @@ impl Parser {
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
             let statement: Statement = Statement::Expression(self.parse_function_call(identifier));
-            let _end: Token = self.parse_type(TokenType::EndExpression);
+            let _end: Token = self.parse_type(TokenType::SemiColon);
             return statement;
 
         } else {

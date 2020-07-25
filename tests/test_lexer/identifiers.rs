@@ -16,7 +16,7 @@ fn test_tokenize_alphabetic_ident() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Ident,   // token_type
+            TokenType::Identifier,   // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -34,7 +34,7 @@ fn test_tokenize_alphanumeric_ident() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Ident,   // token_type
+            TokenType::Identifier,   // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset
@@ -52,7 +52,7 @@ fn test_tokenize_underscore_ident() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::Ident,   // token_type
+            TokenType::Identifier,   // token_type
             test1_input,        // value
             1,                  // line
             1,                  // offset

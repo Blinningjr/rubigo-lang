@@ -339,7 +339,7 @@ fn test_tokenize_end_expression() {
     let test1_tokens: Vec<Token> = tokenize_string(test1_input.clone());
     assert_eq!(test1_tokens[0], 
         Token::new(
-            TokenType::EndExpression,   // token_type
+            TokenType::SemiColon,       // token_type
             test1_input,                // value
             1,                          // line
             1,                          // offset

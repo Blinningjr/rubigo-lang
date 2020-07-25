@@ -25,7 +25,7 @@ pub fn check_reserved_idents(ident: &str) -> TokenType {
         "Char" => TokenType::TChar,
         "String" => TokenType::TString,
 
-        _ => TokenType::Ident,
+        _ => TokenType::Identifier,
     }
 }
 
@@ -66,7 +66,7 @@ pub fn check_symbol(ch: char) -> Result<TokenType, &'static str> {
         ' ' => Ok(TokenType::Space),
         '\n' => Ok(TokenType::NewLine),
 
-        ';' => Ok(TokenType::EndExpression),
+        ';' => Ok(TokenType::SemiColon),
         ':' => Ok(TokenType::TypeDec),
         '\'' => Ok(TokenType::Char),
         '"' => Ok(TokenType::String),

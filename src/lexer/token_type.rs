@@ -10,7 +10,7 @@ pub enum TokenType {
     Let,
     Return,
     
-    EndExpression,
+    SemiColon,
 
     Mut,
     Borrow,
@@ -18,7 +18,7 @@ pub enum TokenType {
     NewLine,
     Space,
 
-    Ident,
+    Identifier,
     
     TBool,
     Ti32,

@@ -35,7 +35,7 @@ impl Parser {
         }
 
         match self.lexer.peak(true).unwrap().get_type() {
-            TokenType::Ident => (),
+            TokenType::Identifier => (),
             TokenType::Ti32 => (),
             TokenType::Tf32 => (),
             TokenType::TBool => (),

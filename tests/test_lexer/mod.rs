@@ -6,7 +6,7 @@ mod span;
 #[path = "../../src/lexer/mod.rs"]
 pub mod lexer;
 
-mod idents;
+mod identifiers;
 mod numbers;
 mod reserved;
 mod symbol;

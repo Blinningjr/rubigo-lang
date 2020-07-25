@@ -46,7 +46,7 @@ impl Parser {
     pub(super) fn parse_expression(&mut self) -> Expression {
         let mut expression: Expression;
 
-        if self.is_tokentype(TokenType::Ident) {
+        if self.is_tokentype(TokenType::Identifier) {
             expression = self.parse_identifier_expression();
 
         } else if self.is_un_op() {
