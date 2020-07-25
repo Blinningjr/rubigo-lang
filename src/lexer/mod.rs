@@ -184,6 +184,11 @@ impl Lexer {
                                 self.partial_token_offset = 1;
                                 
                                 return self.fsm_start();
+                            } else if ch == '\t' {
+                                self.discard();
+                                self.partial_token_offset += 3;
+                                
+                                return self.fsm_start();
                             }
 
                             match check_symbol(ch) {
@@ -191,7 +196,7 @@ impl Lexer {
                                     self.consume();
                                     return self.tokenize(token_type);
                                 },
-                                Err(err) => panic!("Lexer err: {}", err),
+                                Err(err) => panic!("Lexer err: {} char '{}'", err, ch),
                             };
                         },
                     };
