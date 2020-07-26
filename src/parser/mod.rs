@@ -58,6 +58,7 @@ impl Parser {
             lexer: Lexer::new(input),
         }; 
         let statement: Statement = parser.parse_statement();
+        //println!("{:#?}", statement);
         parser.error_handler.print_errors(); 
         return statement;
     }
@@ -80,26 +81,32 @@ impl Parser {
         match token {
             Ok(t) => return t,
             Err(_) => {
-                self.error_handler.add(Error::SyntaxError(SyntaxError {
-                    level: ErrorLevel::Critical,
-                    message: "Unexpected end of file.".to_string(),
-                    line: 0,
-                    offset: 0,
-                })); 
+                self.error_handler.add(Error::Error("Unexpected end of file.".to_string())); 
                 panic!();
             },
         };
     }
 
+    fn get_original_start(&mut self) -> usize {
+        return self.lexer.get_original_start();
+    }
 
-    fn parse_type(&mut self, token_type: TokenType) -> Token {
+    fn get_original(&mut self, start: usize) -> String {
+        return self.lexer.get_original(start);
+    }
+
+
+    fn parse_type(&mut self, token_type: TokenType, original_start: usize) -> Token {
         let token: Token = self.peak();
         if token.get_type() == token_type {
             return self.next_token(); 
         } else {
+            let code: String = self.get_original(original_start);
+            
             self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: format!("Expected {:?}.", token_type).to_string(),
+                code: code,
                 line: token.get_line(),
                 offset: token.get_offset(),
             }));

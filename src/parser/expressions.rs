@@ -62,15 +62,22 @@ impl Parser {
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
             let _start: Token = self.next_token();
             expression = self.parse_expression();
-            let _end: Token = self.parse_type(TokenType::ParenthesisEnd);
+
+            let original_start: usize = self.get_original_start() - 1;
+            let _end: Token = self.parse_type(TokenType::ParenthesisEnd, original_start);
 
         } else {
+            let original_start: usize = self.get_original_start() - 1;
+            
             let err_token: Token = self.peak();
+            let code: String = self.get_original(original_start);
+            
             self.error_handler.add(Error::SyntaxError(SyntaxError {
-               level: ErrorLevel::Error,
-               message: format!("Expected Expression.").to_string(),
-               line: err_token.get_line(),
-               offset: err_token.get_offset(),
+                level: ErrorLevel::Error,
+                message: format!("Expected Expression.").to_string(),
+                code: code,
+                line: err_token.get_line(),
+                offset: err_token.get_offset(),
             }));
             return Expression::Dummy;
         }
@@ -103,6 +110,8 @@ impl Parser {
      * :param identifier: Token of type identifier.
      */
     pub(super) fn parse_function_call(&mut self, identifier: Token) -> Expression {
+        let original_start: usize = self.get_original_start();
+
         let _param_start: Token = self.next_token();
 
         let mut parameters: Vec<Expression> = Vec::new();
@@ -123,9 +132,12 @@ impl Parser {
 
                 } else {
                     let err_token: Token = self.peak();
+                    let code: String = self.get_original(original_start);
+                    
                     self.error_handler.add(Error::SyntaxError(SyntaxError {
                         level: ErrorLevel::Error,
                         message: format!("Expected {:?}.", TokenType::ParenthesisEnd).to_string(),
+                        code: code, 
                         line: err_token.get_line(),
                         offset: err_token.get_offset(),
                     }));

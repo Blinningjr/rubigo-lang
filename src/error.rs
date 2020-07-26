@@ -25,7 +25,7 @@ pub enum Error {
 pub struct SyntaxError {
     pub level: ErrorLevel,
     pub message: String,
-//  pub code: Sting, TODO:Implement so the code is displayed in the error.
+    pub code: String,
     pub line: usize,
     pub offset: usize,
 }
@@ -100,8 +100,7 @@ impl ErrorHandler {
      * Print SyntaxError.
      */
     fn print_syntax_error(&mut self, error: SyntaxError) -> () {
-        let mut level: String;
-        match &error.level {
+        let mut level: String; match &error.level {
             ErrorLevel::Critical => level = "Critical Syntax Error".to_string(),
             ErrorLevel::Error => level = "Syntax Error".to_string(),
             ErrorLevel::Warning => level = "Warning".to_string(),
@@ -112,8 +111,16 @@ impl ErrorHandler {
             location =  "".to_string();
         }
 
+        let mut pointer: String = "".to_string();
+        for x in 1..error.offset {
+            pointer.push('_');
+        }
+        pointer.push('▲');
+
         println!("{}{}", level, location);
-        println!("\t{:?}\n", error.message); 
+        println!("{:#}", error.code);
+        println!("{}", pointer);
+        println!("{}\n", error.message); 
     }
 }
 

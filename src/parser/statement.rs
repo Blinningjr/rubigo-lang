@@ -32,6 +32,7 @@ pub enum Statement {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Function {
+    pub original: String,
     pub identifier: String,
     pub parameters: Vec<(String, TypeDecleration)>,
     pub return_type: TypeDecleration,
@@ -44,6 +45,7 @@ pub struct Function {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct While {
+    pub original: String,
     pub condition: Expression,
     pub body: Body,
 }
@@ -54,6 +56,7 @@ pub struct While {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct If {
+    pub original: String,
     pub condition: Expression,
     pub if_body: Body,
     pub else_body: Option<Body>,
@@ -65,6 +68,7 @@ pub struct If {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Let {
+    pub original: String,
     pub identifier: String,
     pub type_dec: TypeDecleration,
     pub value: Expression,
@@ -76,6 +80,7 @@ pub struct Let {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Assignment {
+    pub original: String,
     pub identifier: String,
     pub value: Expression,
 }
@@ -86,6 +91,7 @@ pub struct Assignment {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Return {
+    pub original: String,
     pub value: Expression,
 }
 
@@ -95,6 +101,7 @@ pub struct Return {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Body {
+    pub original: String,
     pub body: Vec<Statement>,
 }
 
@@ -126,10 +133,15 @@ impl Parser {
             return self.parse_body();
 
         } else {
+            let original_start: usize = self.get_original_start() - 1;
+ 
             let err_token: Token = self.next_token();
+            let code: String = self.get_original(original_start);
+            
             self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Statement.".to_string(),
+                code: code,
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
             }));
@@ -142,9 +154,11 @@ impl Parser {
      * Parse function.
      */
     fn parse_function(&mut self) -> Statement {
+        let original_start: usize = self.get_original_start();
+
         let _fn: Token = self.next_token();
-        let fn_identifier: Token = self.parse_type(TokenType::Identifier);
-        let _start_p: Token = self.parse_type(TokenType::ParenthesisStart);
+        let fn_identifier: Token = self.parse_type(TokenType::Identifier, original_start);
+        let _start_p: Token = self.parse_type(TokenType::ParenthesisStart, original_start);
        
         let mut parameters: Vec<(String, TypeDecleration)> = Vec::new();
         let mut until: bool = true;
@@ -153,7 +167,7 @@ impl Parser {
             match & token.get_type() {
                 TokenType::ParenthesisEnd => until = false,
                 _ => {
-                    let _type_dec: Token = self.parse_type(TokenType::TypeDec);
+                    let _type_dec: Token = self.parse_type(TokenType::TypeDec, original_start);
                     let type_dec: TypeDecleration = self.parse_type_decleration();
                     parameters.push((token.get_value(), type_dec));
 
@@ -164,7 +178,7 @@ impl Parser {
             };
         }
 
-        let _arrow: Token = self.parse_type(TokenType::FnType);
+        let _arrow: Token = self.parse_type(TokenType::FnType, original_start);
         let return_type: TypeDecleration = self.parse_type_decleration();
         let body: Body;
         if let Statement::Body(box_body) = self.parse_body() {
@@ -172,18 +186,23 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
+            let code: String = self.get_original(original_start);
+
             self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Body".to_string(),
+                code: code,
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
             }));
             body = Body {
-               body: Vec::new(), 
+                original: "".to_string(),
+                body: Vec::new(), 
             };
         }
 
         return Statement::Function(Box::new(Function {
+            original: self.get_original(original_start),
             identifier: fn_identifier.get_value(),
             parameters: parameters,
             return_type: return_type,
@@ -196,6 +215,8 @@ impl Parser {
      * Parse while.
      */
     fn parse_while(&mut self) -> Statement {
+        let original_start: usize = self.get_original_start();
+        
         let _while: Token = self.next_token();
         let expression: Expression = self.parse_expression();
         
@@ -205,18 +226,23 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
+            let code: String = self.get_original(original_start);
+            
             self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Body.".to_string(),
+                code: code,
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
             }));
             body = Body {
+                original: "".to_string(),
                 body: Vec::new(),
             };
         }
 
         return Statement::While(Box::new(While {
+            original: self.get_original(original_start),
             condition: expression,
             body: body,
         }));
@@ -227,6 +253,8 @@ impl Parser {
      * Parse if.
      */
     fn parse_if(&mut self) -> Statement {
+        let original_start: usize = self.get_original_start();
+        
         let _if: Token = self.next_token();
         let expression: Expression = self.parse_expression(); 
         
@@ -236,13 +264,17 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
+            let code: String = self.get_original(original_start);
+            
             self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Body.".to_string(),
+                code: code,
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
             }));
             if_body = Body {
+                original: "".to_string(),
                 body: Vec::new(),
             };
         }
@@ -260,13 +292,17 @@ impl Parser {
 
                 } else {
                     let err_token: Token = self.peak();
+                    let code: String = self.get_original(original_start);
+                    
                     self.error_handler.add(Error::SyntaxError(SyntaxError {
                         level: ErrorLevel::Error,
                         message: "Expected Body.".to_string(),
+                        code: code,
                         line: err_token.get_line(),
                         offset: err_token.get_offset(),
                     }));
                     e_body = Body {
+                        original: "".to_string(),
                         body: Vec::new(),
                     };
                 }
@@ -275,19 +311,24 @@ impl Parser {
 
             } else {
                 let err_token: Token = self.peak();
+                let code: String = self.get_original(original_start);
+                
                 self.error_handler.add(Error::SyntaxError(SyntaxError {
                     level: ErrorLevel::Error,
                     message: "Expected Body.".to_string(),
+                    code: code,
                     line: err_token.get_line(),
                     offset: err_token.get_offset(),
                 }));
                 else_body = Some(Body {
+                    original: "".to_string(),
                     body: Vec::new(),
                 });
             }
         }
         
         return Statement::If(Box::new(If {
+            original: self.get_original(original_start),
             condition: expression,
             if_body: if_body,
             else_body: else_body,
@@ -299,17 +340,20 @@ impl Parser {
      * Parse let.
      */
     fn parse_let(&mut self) -> Statement {
+        let original_start: usize = self.get_original_start();
+        
         let _let: Token = self.next_token();
-        let identifier: Token = self.parse_type(TokenType::Identifier);
+        let identifier: Token = self.parse_type(TokenType::Identifier, original_start);
 
-        let _type_dec: Token = self.parse_type(TokenType::TypeDec);
+        let _type_dec: Token = self.parse_type(TokenType::TypeDec, original_start);
         let type_dec: TypeDecleration = self.parse_type_decleration();
         
-        let _equal: Token = self.parse_type(TokenType::Equals);
+        let _equal: Token = self.parse_type(TokenType::Equals, original_start);
         let expression: Expression = self.parse_expression();
         let _end: Token = self.next_token();
         
         return Statement::Let(Let {
+            original: self.get_original(original_start),
             identifier: identifier.get_value(),
             type_dec: type_dec,
             value: expression, 
@@ -321,21 +365,26 @@ impl Parser {
      * Parse assignment.
      */
     fn parse_identifier_statement(&mut self) -> Statement {
+        let original_start: usize = self.get_original_start();
+        
         let identifier: Token = self.next_token();
 
         if self.is_tokentype(TokenType::Equals) {
-            return self.parse_assignment(identifier);
+            return self.parse_assignment(identifier, original_start);
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
             let statement: Statement = Statement::Expression(self.parse_function_call(identifier));
-            let _end: Token = self.parse_type(TokenType::SemiColon);
+            let _end: Token = self.parse_type(TokenType::SemiColon, original_start);
             return statement;
 
         } else {
             let err_token: Token = self.peak();
+            let code: String = self.get_original(original_start);
+            
             self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Assignment or FunctionCall statement.".to_string(),
+                code: code,
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
             }));
@@ -347,12 +396,13 @@ impl Parser {
     /**
      * Parse assignment.
      */
-    fn parse_assignment(&mut self, identifier: Token) -> Statement {
+    fn parse_assignment(&mut self, identifier: Token, original_start: usize) -> Statement {
         let _equal: Token = self.next_token();
         let expression: Expression = self.parse_expression();
         let _end: Token = self.next_token();
         
         return Statement::Assignment(Assignment {
+            original: self.get_original(original_start),
             identifier: identifier.get_value(),
             value: expression, 
         }); 
@@ -363,11 +413,14 @@ impl Parser {
      * Parse return.
      */
     fn parse_return(&mut self) -> Statement {
+        let original_start: usize = self.get_original_start();
+        
         let _return: Token = self.next_token();
         let expression: Expression = self.parse_expression();
         let _end: Token = self.next_token();
         
         return Statement::Return(Return {
+            original: self.get_original(original_start),
             value: expression, 
         }); 
     }
@@ -377,9 +430,11 @@ impl Parser {
      * Parse body.
      */
     fn parse_body(&mut self) -> Statement {
+        let original_start: usize = self.get_original_start();
+        
         let _start: Token = self.next_token();
         let mut statements: Vec<Statement> = Vec::new();
-
+         
         loop {
             let token: Token = self.peak();
             match token.get_type() {
@@ -387,6 +442,7 @@ impl Parser {
                     let _end: Token = self.next_token();
 
                     return Statement::Body(Box::new(Body {
+                        original: self.get_original(original_start),
                         body: statements,
                     }));
                 },

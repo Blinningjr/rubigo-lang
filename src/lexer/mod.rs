@@ -19,10 +19,16 @@ use reserved::{
 #[derive(Debug, Clone, PartialEq)]
 pub struct Lexer {
     input: String, 
+    
     partial_token: String,
     partial_token_offset: usize,
+   
     current_line: usize,
+   
     next_token: Option<Token>,
+    
+    original_tracker: Vec<String>,
+    original: String,
 }
 
 
@@ -36,10 +42,16 @@ impl Lexer {
     pub fn new(input: String) -> Lexer {
         Lexer{
             input: input,
+            
             partial_token: "".to_string(),
             partial_token_offset: 1,
+            
             current_line: 1,
+            
             next_token: Option::None,
+           
+            original_tracker: Vec::new(),
+            original: "".to_string(), 
         }
     }
 
@@ -51,7 +63,10 @@ impl Lexer {
             Result<Token, &'static str> {
         let token: Result<Token, &'static str> = self.peak();
         self.next_token = None;
-                
+        
+        self.original_tracker.push(self.original.clone());
+        self.original = "".to_string();
+
         return token;
     }
 
@@ -100,12 +115,42 @@ impl Lexer {
 
 
     /**
+     * Gets the next tokens id.
+     */
+    pub fn get_original_start(& self) -> usize {
+        return self.original_tracker.len(); 
+    }
+
+
+    /**
+     * Gets the original input since the start token number.
+     */
+    pub fn get_original(&mut self, start: usize) -> String {
+        if start < 0 {
+            return "".to_string();
+        }
+        
+        let mut counter: usize = start;
+        let mut original: String = "".to_string();
+        
+        while counter < self.original_tracker.len() { 
+            original.push_str(& self.original_tracker[counter]);
+            counter += 1;
+        } 
+        
+        return original;
+    }
+
+
+    /**
      * Adds the next char in input to partial token and removes it from input.
      * NOTE: Throws exception if input sting is empty
      */
     fn consume(&mut self) -> () {
         let mut chs: std::str::Chars<'_> = self.input.chars();
-        self.partial_token.push(chs.next().unwrap());
+        let ch: char = chs.next().unwrap();
+        self.partial_token.push(ch.clone());
+        self.original.push(ch);
         self.input = chs.collect::<String>();
     }
 
@@ -115,7 +160,7 @@ impl Lexer {
      */
     fn discard(&mut self) {
         let mut chs: std::str::Chars<'_> = self.input.chars();
-        let _ch: char = chs.next().unwrap();
+        self.original.push(chs.next().unwrap());
         self.input = chs.collect::<String>(); 
     }
 

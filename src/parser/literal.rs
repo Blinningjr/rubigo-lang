@@ -43,10 +43,15 @@ impl Parser {
             return self.parse_string();
 
         } else {
+            let original_start: usize = self.get_original_start() - 1;
+
             let err_token: Token = self.peak();
+            let code: String = self.get_original(original_start);
+            
             self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Literal.".to_string(),
+                code: code, 
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
             }));
