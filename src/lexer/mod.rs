@@ -174,7 +174,7 @@ impl Lexer {
                         Err(_err) => {
                             if ch == ' ' {
                                 self.discard();
-                                self.partial_token_offset = 1;
+                                self.partial_token_offset += 1;
                                 
                                 return self.fsm_start();
                             

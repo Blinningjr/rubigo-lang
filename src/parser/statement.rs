@@ -4,6 +4,8 @@ use super::{
     TokenType,
     TypeDecleration,
     Expression,
+    ErrorLevel,
+    Error,
 };
 
 
@@ -20,6 +22,7 @@ pub enum Statement {
     Return(Return),
     Body(Box<Body>),
     Expression(Expression),
+    Dummy,
 }
 
 
@@ -122,7 +125,14 @@ impl Parser {
             return self.parse_body();
 
         } else {
-            panic!("Expected Statement");
+            let err_token: Token = self.next_token();
+            self.error_handler.add(Error {
+                level: ErrorLevel::Error,
+                message: "Expected Statement.".to_string(),
+                line: err_token.get_line(),
+                offset: err_token.get_offset(),
+            });
+            return Statement::Dummy;
         }
     }
 
@@ -160,10 +170,18 @@ impl Parser {
             body = * box_body;
 
         } else {
-            panic!("Expected Body");
+            let err_token: Token = self.peak();
+            self.error_handler.add(Error {
+                level: ErrorLevel::Error,
+                message: "Expected Body".to_string(),
+                line: err_token.get_line(),
+                offset: err_token.get_offset(),
+            });
+            body = Body {
+               body: Vec::new(), 
+            };
         }
 
-        self.empty_tokens();
         return Statement::Function(Box::new(Function {
             identifier: fn_identifier.get_value(),
             parameters: parameters,
@@ -185,10 +203,18 @@ impl Parser {
             body = * box_body;
 
         } else {
-            panic!("Expected Body");
+            let err_token: Token = self.peak();
+            self.error_handler.add(Error {
+                level: ErrorLevel::Error,
+                message: "Expected Body.".to_string(),
+                line: err_token.get_line(),
+                offset: err_token.get_offset(),
+            });
+            body = Body {
+                body: Vec::new(),
+            };
         }
 
-        self.empty_tokens();
         return Statement::While(Box::new(While {
             condition: expression,
             body: body,
@@ -208,7 +234,16 @@ impl Parser {
             if_body = * box_body;
 
         } else {
-            panic!("Expected Body");
+            let err_token: Token = self.peak();
+            self.error_handler.add(Error {
+                level: ErrorLevel::Error,
+                message: "Expected Body.".to_string(),
+                line: err_token.get_line(),
+                offset: err_token.get_offset(),
+            });
+            if_body = Body {
+                body: Vec::new(),
+            };
         }
 
         let mut else_body: Option<Body> = None;
@@ -223,17 +258,34 @@ impl Parser {
                     e_body = * box_body;
 
                 } else {
-                    panic!("Expected Body");
+                    let err_token: Token = self.peak();
+                    self.error_handler.add(Error {
+                        level: ErrorLevel::Error,
+                        message: "Expected Body.".to_string(),
+                        line: err_token.get_line(),
+                        offset: err_token.get_offset(),
+                    });
+                    e_body = Body {
+                        body: Vec::new(),
+                    };
                 }
 
                 else_body = Some(e_body);
 
             } else {
-                panic!("Expected a body.");
+                let err_token: Token = self.peak();
+                self.error_handler.add(Error {
+                    level: ErrorLevel::Error,
+                    message: "Expected Body.".to_string(),
+                    line: err_token.get_line(),
+                    offset: err_token.get_offset(),
+                });
+                else_body = Some(Body {
+                    body: Vec::new(),
+                });
             }
         }
         
-        self.empty_tokens();
         return Statement::If(Box::new(If {
             condition: expression,
             if_body: if_body,
@@ -256,7 +308,6 @@ impl Parser {
         let expression: Expression = self.parse_expression();
         let _end: Token = self.next_token();
         
-        self.empty_tokens();
         return Statement::Let(Let {
             identifier: identifier.get_value(),
             type_dec: type_dec,
@@ -280,7 +331,14 @@ impl Parser {
             return statement;
 
         } else {
-            panic!("Epected Statement");
+            let err_token: Token = self.peak();
+            self.error_handler.add(Error {
+                level: ErrorLevel::Error,
+                message: "Expected Assignment or FunctionCall statement.".to_string(),
+                line: err_token.get_line(),
+                offset: err_token.get_offset(),
+            });
+            return Statement::Dummy;
         }
     }
 
@@ -293,7 +351,6 @@ impl Parser {
         let expression: Expression = self.parse_expression();
         let _end: Token = self.next_token();
         
-        self.empty_tokens();
         return Statement::Assignment(Assignment {
             identifier: identifier.get_value(),
             value: expression, 
@@ -309,7 +366,6 @@ impl Parser {
         let expression: Expression = self.parse_expression();
         let _end: Token = self.next_token();
         
-        self.empty_tokens();
         return Statement::Return(Return {
             value: expression, 
         }); 
@@ -329,7 +385,6 @@ impl Parser {
                 TokenType::BodyEnd => {
                     let _end: Token = self.next_token();
 
-                    self.empty_tokens();
                     return Statement::Body(Box::new(Body {
                         body: statements,
                     }));

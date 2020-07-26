@@ -1,7 +1,10 @@
 use super::{
     Parser,
     TokenType,
+    Token,
     Expression,
+    ErrorLevel,
+    Error,
 };
 
 
@@ -12,6 +15,7 @@ use super::{
 pub enum UnOperator {
    Not,
    Minus,
+   Dummy,
 }
 
 
@@ -43,6 +47,7 @@ pub enum BinOperator {
    LessEqual,
    And,
    Or,
+   Dummy,
 }
 
 
@@ -65,7 +70,6 @@ impl Parser {
         let un_op: UnOperator = self.parse_op_un();
         let expression: Expression = self.parse_expression();
 
-        self.empty_tokens();
         return Expression::UnOp(Box::new(UnOp {
             un_op: un_op,
             expression: expression,
@@ -80,7 +84,6 @@ impl Parser {
         let bin_op: BinOperator = self.parse_op_bin();
         let right_expression: Expression = self.parse_expression();
     
-        self.empty_tokens();
         return Expression::BinOp(Box::new(BinOp {
             bin_op: bin_op,
             left_expression: left_expression,
@@ -93,10 +96,25 @@ impl Parser {
      * parse unary operator.
      */
     fn parse_op_un(&mut self) -> UnOperator {
-        return match self.next_token().get_type() {
-            TokenType::Not => UnOperator::Not,
-            TokenType::Minus => UnOperator::Minus,
-            _ => panic!("Expected unary operator"),
+        match self.peak().get_type() {
+            TokenType::Not => {
+                let _token: Token = self.next_token();
+                return UnOperator::Not;
+            },
+            TokenType::Minus => {
+                let _token: Token = self.next_token();
+                return UnOperator::Minus
+            },
+            _ => {
+                let token: Token = self.peak();
+                self.error_handler.add(Error {
+                    level: ErrorLevel::Error,
+                    message: "Expected unary operator".to_string(),
+                    line: token.get_line(),
+                    offset: token.get_offset(),
+                });
+                return UnOperator::Dummy;
+            }
         };
     }
  
@@ -105,21 +123,69 @@ impl Parser {
      * Parse binary operator.
      */
     fn parse_op_bin(&mut self) -> BinOperator {
-        return match self.next_token().get_type() {
-            TokenType::Plus => BinOperator::Plus,
-            TokenType::Minus => BinOperator::Minus,
-            TokenType::ForwardSlash => BinOperator::Divition,
-            TokenType::Star => BinOperator::Multiplication,
-            TokenType::Modilus => BinOperator::Modilus,
-            TokenType::LessThen => BinOperator::LessThen,
-            TokenType::GreaterThen => BinOperator::GreaterThen,
-            TokenType::NotEqual => BinOperator::NotEqual,
-            TokenType::Equal => BinOperator::Equal,
-            TokenType::GreaterEqual => BinOperator::GreaterEqual,
-            TokenType::LessEqual => BinOperator::LessEqual,
-            TokenType::And => BinOperator::And,
-            TokenType::Or => BinOperator::Or,
-            _ => panic!("Expected bin operator"),
+        match self.peak().get_type() {
+            TokenType::Plus => {
+                let _token: Token = self.next_token();
+                return BinOperator::Plus;
+            },
+            TokenType::Minus => {
+                let _token: Token = self.next_token();
+                return BinOperator::Minus;
+            },
+            TokenType::ForwardSlash => {
+                let _token: Token = self.next_token();
+                return BinOperator::Divition;
+            },
+            TokenType::Star => {
+                let _token: Token = self.next_token();
+                return BinOperator::Multiplication;
+            },
+            TokenType::Modilus => {
+                let _token: Token = self.next_token();
+                return BinOperator::Modilus;
+            },
+            TokenType::LessThen => {
+                let _token: Token = self.next_token();
+                return BinOperator::LessThen;
+            },
+            TokenType::GreaterThen => {
+                let _token: Token = self.next_token();
+                return BinOperator::GreaterThen;
+            },
+            TokenType::NotEqual => {
+                let _token: Token = self.next_token();
+                return BinOperator::NotEqual;
+            },
+            TokenType::Equal => {
+                let _token: Token = self.next_token();
+                return BinOperator::Equal;
+            },
+            TokenType::GreaterEqual => {
+                let _token: Token = self.next_token();
+                return BinOperator::GreaterEqual;
+            },
+            TokenType::LessEqual => {
+                let _token: Token = self.next_token();
+                return BinOperator::LessEqual;
+            },
+            TokenType::And => {
+                let _token: Token = self.next_token();
+                return BinOperator::And;
+            },
+            TokenType::Or => {
+                let _token: Token = self.next_token();
+                return BinOperator::Or;
+            },
+            _ => { 
+                let token: Token = self.peak();
+                self.error_handler.add(Error {
+                    level: ErrorLevel::Error,
+                    message: "Expected binary operator".to_string(),
+                    line: token.get_line(),
+                    offset: token.get_offset(),
+                });
+                return BinOperator::Dummy;     
+            },
         };
     }
 

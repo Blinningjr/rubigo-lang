@@ -5,6 +5,8 @@ use super::{
     Literal,
     UnOp,
     BinOp,
+    ErrorLevel,
+    Error,
 };
 
 
@@ -17,6 +19,7 @@ pub enum Expression {
     UnOp(Box<UnOp>),
     FunctionCall(Box<FunctionCall>),
     Literal(Literal),
+    Dummy,
 }
 
 
@@ -61,7 +64,14 @@ impl Parser {
             let _end: Token = self.parse_type(TokenType::ParenthesisEnd);
 
         } else {
-            panic!("Expression not Implemented yet.");
+            let err_token: Token = self.peak();
+            self.error_handler.add(Error {
+               level: ErrorLevel::Error,
+               message: format!("Expected Expression.").to_string(),
+               line: err_token.get_line(),
+               offset: err_token.get_offset(),
+            });
+            return Expression::Dummy;
         }
         
         if self.is_bin_op() {
@@ -78,13 +88,10 @@ impl Parser {
     fn parse_identifier_expression(&mut self) -> Expression {
         let identifier: Token = self.next_token();
         if self.is_tokentype(TokenType::ParenthesisStart) {
-            self.empty_tokens();
             return self.parse_function_call(identifier); 
         
         } else {
             let variable: Expression = Expression::Literal(Literal::String(identifier.get_value()));
-
-            self.empty_tokens();
             return variable; 
         }
     }
@@ -114,12 +121,18 @@ impl Parser {
                     until = false;
 
                 } else {
-                    panic!("Error Function call");
+                    let err_token: Token = self.peak();
+                    self.error_handler.add(Error {
+                        level: ErrorLevel::Error,
+                        message: format!("Expected {:?}.", TokenType::ParenthesisEnd).to_string(),
+                        line: err_token.get_line(),
+                        offset: err_token.get_offset(),
+                    });
+                    until = false;
                 }
             }
         }
 
-        self.empty_tokens();
         return Expression::FunctionCall(Box::new(FunctionCall {
             identifier: identifier.get_value(),
             parameters: parameters,

@@ -8,6 +8,12 @@ pub mod statement;
 
 pub use super::span::Span;
 
+pub use super::error::{
+    ErrorLevel,
+    Error,
+    ErrorHandler,
+};
+
 use super::lexer::{
     Lexer,
     Token,
@@ -39,52 +45,81 @@ pub use statement::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Parser {
+    error_handler: ErrorHandler,
     lexer: Lexer,
-    tokens: Vec<Token>,
 }
 
 
 impl Parser {
-    pub fn parse(input: String) -> Statement {
+    pub fn parse(input: String, verbose: bool) -> Statement {
         let mut parser: Parser = Parser {
+            error_handler: ErrorHandler::new(verbose),
             lexer: Lexer::new(input),
-            tokens: Vec::new(),
         }; 
-        return parser.parse_statement();
+        let statement: Statement = parser.parse_statement();
+        parser.error_handler.print_errors(); 
+        return statement;
     }
 
 
     fn next_token(&mut self) -> Token {
-        let token: Token = self.lexer.next_token().unwrap();
-        self.tokens.push(token.clone());
-        return token; 
+        let token: Result<Token, &'static str> = self.lexer.next_token();
+        match token {
+            Ok(t) => return t,
+            Err(_) => {
+                self.error_handler.add(Error {
+                    level: ErrorLevel::Critical,
+                    message: "Unexpected end of file.".to_string(),
+                    line: 0,
+                    offset: 0,
+                }); 
+                panic!();
+            },
+        };
     }
 
 
     fn peak(&mut self) -> Token {
-        let token: Token = self.lexer.peak().unwrap();
-        return token; 
+        let token: Result<Token, &'static str> = self.lexer.peak();
+        match token {
+            Ok(t) => return t,
+            Err(_) => {
+                self.error_handler.add(Error {
+                    level: ErrorLevel::Critical,
+                    message: "Unexpected end of file.".to_string(),
+                    line: 0,
+                    offset: 0,
+                }); 
+                panic!();
+            },
+        };
     }
 
 
     fn parse_type(&mut self, token_type: TokenType) -> Token {
-        let token: Token = self.next_token();
+        let token: Token = self.peak();
         if token.get_type() == token_type {
-            return token; 
+            return self.next_token(); 
         } else {
-            panic!("Expected token type {:?} got {:#?}", token_type, token);
+            self.error_handler.add(Error {
+                level: ErrorLevel::Error,
+                message: format!("Expected {:?}.", token_type).to_string(),
+                line: token.get_line(),
+                offset: token.get_offset(),
+            });
+            return self.create_dummy(token_type); 
         }
     }
 
 
-    fn empty_tokens(&mut self) -> () {
-        self.tokens = Vec::new();
-    }
-    
-
     fn is_tokentype(&mut self, token_type: TokenType) -> bool {
         let token: Token = self.peak();
         return token.get_type() == token_type;
+    }
+
+
+    fn create_dummy(&mut self, token_type: TokenType) -> Token {
+       return Token::new(token_type, "Dummy".to_string(), 0, 0);
     }
 }
 

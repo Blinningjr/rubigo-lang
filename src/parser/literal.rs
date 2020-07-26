@@ -2,6 +2,8 @@ use super::{
     Parser,
     Token,
     TokenType,
+    ErrorLevel,
+    Error,
 };
 
 
@@ -15,6 +17,7 @@ pub enum Literal {
     Bool(bool),
     Char(char),
     String(String),
+    Dummy,
 }
 
 
@@ -39,7 +42,14 @@ impl Parser {
             return self.parse_string();
 
         } else {
-            panic!("Expected Literal");
+            let err_token: Token = self.peak();
+            self.error_handler.add(Error {
+                level: ErrorLevel::Error,
+                message: "Expected Literal.".to_string(),
+                line: err_token.get_line(),
+                offset: err_token.get_offset(),
+            });
+            return Literal::Dummy; 
         }
     }
 

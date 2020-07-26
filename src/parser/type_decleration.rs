@@ -2,6 +2,8 @@ use super::{
     Parser,
     TokenType,
     Token,
+    ErrorLevel,
+    Error,
 };
 
 
@@ -41,12 +43,20 @@ impl Parser {
             TokenType::TBool => (),
             TokenType::TChar=> (),
             TokenType::TString => (),
-            _ => panic!("Expected Type \n{:#?}", self.peak()),
+            _ => {
+                let err_token: Token = self.peak();
+                self.error_handler.add(Error {
+                    level: ErrorLevel::Error,
+                    message: "Expected Type.".to_string(),
+                    line: err_token.get_line(),
+                    offset: err_token.get_offset(),
+                });
+
+            },
         };
         
         let token: Token = self.next_token();
 
-        self.empty_tokens();
         return TypeDecleration {
             borrow: borrow,
             mutable: mutable,
