@@ -5,6 +5,7 @@ use super::{
     Expression,
     ErrorLevel,
     Error,
+    SyntaxError,
 };
 
 
@@ -107,12 +108,12 @@ impl Parser {
             },
             _ => {
                 let token: Token = self.peak();
-                self.error_handler.add(Error {
+                self.error_handler.add(Error::SyntaxError(SyntaxError {
                     level: ErrorLevel::Error,
                     message: "Expected unary operator".to_string(),
                     line: token.get_line(),
                     offset: token.get_offset(),
-                });
+                }));
                 return UnOperator::Dummy;
             }
         };
@@ -178,12 +179,12 @@ impl Parser {
             },
             _ => { 
                 let token: Token = self.peak();
-                self.error_handler.add(Error {
+                self.error_handler.add(Error::SyntaxError(SyntaxError {
                     level: ErrorLevel::Error,
                     message: "Expected binary operator".to_string(),
                     line: token.get_line(),
                     offset: token.get_offset(),
-                });
+                }));
                 return BinOperator::Dummy;     
             },
         };

@@ -13,7 +13,16 @@ pub enum ErrorLevel {
  * Defines Error in Rubigo.
  */
 #[derive(Debug, Clone, PartialEq)]
-pub struct Error {
+pub enum Error {
+    Error(String),
+    SyntaxError(SyntaxError),
+}
+
+/**
+ * Defines Error in Rubigo.
+ */
+#[derive(Debug, Clone, PartialEq)]
+pub struct SyntaxError {
     pub level: ErrorLevel,
     pub message: String,
 //  pub code: Sting, TODO:Implement so the code is displayed in the error.
@@ -49,10 +58,15 @@ impl ErrorHandler {
      */
     pub fn add(&mut self, error: Error) -> () {
         self.errors.push(error.clone());
-        
-        if error.level == ErrorLevel::Critical {
-            self.print_errors();
-        }
+
+        match error {
+            Error::SyntaxError(err) => {    
+                if err.level == ErrorLevel::Critical {
+                    self.print_errors();
+                }
+            },
+            _ => (),
+        }  
     }
     
 
@@ -74,10 +88,22 @@ impl ErrorHandler {
      * Print Error.
      */
     pub fn print_error(&mut self, error: Error) -> () {
+        match error {
+            Error::Error(message) => println!("Error \n\t{:?}\n", message),
+            Error::SyntaxError(err) => self.print_syntax_error(err),
+            _ => (),
+        };
+    }
+
+
+    /**
+     * Print SyntaxError.
+     */
+    fn print_syntax_error(&mut self, error: SyntaxError) -> () {
         let mut level: String;
         match &error.level {
-            ErrorLevel::Critical => level = "Critical Error".to_string(),
-            ErrorLevel::Error => level = "Error".to_string(),
+            ErrorLevel::Critical => level = "Critical Syntax Error".to_string(),
+            ErrorLevel::Error => level = "Syntax Error".to_string(),
             ErrorLevel::Warning => level = "Warning".to_string(),
         };
 
@@ -85,8 +111,9 @@ impl ErrorHandler {
         if error.line == 0 && error.offset == 0 {
             location =  "".to_string();
         }
+
         println!("{}{}", level, location);
-        println!("\t{:?}\n", error.message);
+        println!("\t{:?}\n", error.message); 
     }
 }
 

@@ -4,6 +4,7 @@ use super::{
     TokenType,
     ErrorLevel,
     Error,
+    SyntaxError,
 };
 
 
@@ -43,12 +44,12 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Literal.".to_string(),
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
-            });
+            }));
             return Literal::Dummy; 
         }
     }

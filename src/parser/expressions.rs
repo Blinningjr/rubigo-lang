@@ -7,6 +7,7 @@ use super::{
     BinOp,
     ErrorLevel,
     Error,
+    SyntaxError,
 };
 
 
@@ -65,12 +66,12 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                level: ErrorLevel::Error,
                message: format!("Expected Expression.").to_string(),
                line: err_token.get_line(),
                offset: err_token.get_offset(),
-            });
+            }));
             return Expression::Dummy;
         }
         
@@ -122,12 +123,12 @@ impl Parser {
 
                 } else {
                     let err_token: Token = self.peak();
-                    self.error_handler.add(Error {
+                    self.error_handler.add(Error::SyntaxError(SyntaxError {
                         level: ErrorLevel::Error,
                         message: format!("Expected {:?}.", TokenType::ParenthesisEnd).to_string(),
                         line: err_token.get_line(),
                         offset: err_token.get_offset(),
-                    });
+                    }));
                     until = false;
                 }
             }

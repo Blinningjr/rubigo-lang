@@ -6,6 +6,7 @@ use super::{
     Expression,
     ErrorLevel,
     Error,
+    SyntaxError,
 };
 
 
@@ -126,12 +127,12 @@ impl Parser {
 
         } else {
             let err_token: Token = self.next_token();
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Statement.".to_string(),
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
-            });
+            }));
             return Statement::Dummy;
         }
     }
@@ -171,12 +172,12 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Body".to_string(),
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
-            });
+            }));
             body = Body {
                body: Vec::new(), 
             };
@@ -204,12 +205,12 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Body.".to_string(),
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
-            });
+            }));
             body = Body {
                 body: Vec::new(),
             };
@@ -235,12 +236,12 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Body.".to_string(),
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
-            });
+            }));
             if_body = Body {
                 body: Vec::new(),
             };
@@ -259,12 +260,12 @@ impl Parser {
 
                 } else {
                     let err_token: Token = self.peak();
-                    self.error_handler.add(Error {
+                    self.error_handler.add(Error::SyntaxError(SyntaxError {
                         level: ErrorLevel::Error,
                         message: "Expected Body.".to_string(),
                         line: err_token.get_line(),
                         offset: err_token.get_offset(),
-                    });
+                    }));
                     e_body = Body {
                         body: Vec::new(),
                     };
@@ -274,12 +275,12 @@ impl Parser {
 
             } else {
                 let err_token: Token = self.peak();
-                self.error_handler.add(Error {
+                self.error_handler.add(Error::SyntaxError(SyntaxError {
                     level: ErrorLevel::Error,
                     message: "Expected Body.".to_string(),
                     line: err_token.get_line(),
                     offset: err_token.get_offset(),
-                });
+                }));
                 else_body = Some(Body {
                     body: Vec::new(),
                 });
@@ -332,12 +333,12 @@ impl Parser {
 
         } else {
             let err_token: Token = self.peak();
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: "Expected Assignment or FunctionCall statement.".to_string(),
                 line: err_token.get_line(),
                 offset: err_token.get_offset(),
-            });
+            }));
             return Statement::Dummy;
         }
     }

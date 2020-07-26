@@ -11,6 +11,7 @@ pub use super::span::Span;
 pub use super::error::{
     ErrorLevel,
     Error,
+    SyntaxError,
     ErrorHandler,
 };
 
@@ -67,12 +68,7 @@ impl Parser {
         match token {
             Ok(t) => return t,
             Err(_) => {
-                self.error_handler.add(Error {
-                    level: ErrorLevel::Critical,
-                    message: "Unexpected end of file.".to_string(),
-                    line: 0,
-                    offset: 0,
-                }); 
+                self.error_handler.add(Error::Error("Unexpected end of file.".to_string()));
                 panic!();
             },
         };
@@ -84,12 +80,12 @@ impl Parser {
         match token {
             Ok(t) => return t,
             Err(_) => {
-                self.error_handler.add(Error {
+                self.error_handler.add(Error::SyntaxError(SyntaxError {
                     level: ErrorLevel::Critical,
                     message: "Unexpected end of file.".to_string(),
                     line: 0,
                     offset: 0,
-                }); 
+                })); 
                 panic!();
             },
         };
@@ -101,12 +97,12 @@ impl Parser {
         if token.get_type() == token_type {
             return self.next_token(); 
         } else {
-            self.error_handler.add(Error {
+            self.error_handler.add(Error::SyntaxError(SyntaxError {
                 level: ErrorLevel::Error,
                 message: format!("Expected {:?}.", token_type).to_string(),
                 line: token.get_line(),
                 offset: token.get_offset(),
-            });
+            }));
             return self.create_dummy(token_type); 
         }
     }
