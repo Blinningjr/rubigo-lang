@@ -71,14 +71,10 @@ impl Parser {
             
             let err_token: Token = self.peak();
             let code: String = self.get_original(original_start);
-            
-            self.error_handler.add(Error::SyntaxError(SyntaxError {
-                level: ErrorLevel::Error,
-                message: format!("Expected Expression.").to_string(),
-                code: code,
-                line: err_token.get_line(),
-                offset: err_token.get_offset(),
-            }));
+           
+            self.create_error(ErrorLevel::Error, "Expected Expression.".to_string(),
+                              code, err_token.get_line(), err_token.get_offset());
+
             return Expression::Dummy;
         }
         
@@ -133,14 +129,9 @@ impl Parser {
                 } else {
                     let err_token: Token = self.peak();
                     let code: String = self.get_original(original_start);
-                    
-                    self.error_handler.add(Error::SyntaxError(SyntaxError {
-                        level: ErrorLevel::Error,
-                        message: format!("Expected {:?}.", TokenType::ParenthesisEnd).to_string(),
-                        code: code, 
-                        line: err_token.get_line(),
-                        offset: err_token.get_offset(),
-                    }));
+                   
+                    self.create_error(ErrorLevel::Error, "Expected end parenthesis".to_string(),
+                                      code, err_token.get_line(), err_token.get_offset());
                     until = false;
                 }
             }

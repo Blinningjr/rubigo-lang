@@ -111,14 +111,9 @@ impl Parser {
 
                 let token: Token = self.peak();
                 let code: String = self.get_original(original_start);
-                
-                self.error_handler.add(Error::SyntaxError(SyntaxError {
-                    level: ErrorLevel::Error,
-                    message: "Expected unary operator".to_string(),
-                    code: code,
-                    line: token.get_line(),
-                    offset: token.get_offset(),
-                }));
+               
+                self.create_error(ErrorLevel::Error, "Expected unary operator.".to_string(),
+                                  code, token.get_line(), token.get_offset());
                 return UnOperator::Dummy;
             }
         };
@@ -187,14 +182,9 @@ impl Parser {
                 
                 let token: Token = self.peak();
                 let code: String = self.get_original(original_start);
-                
-                self.error_handler.add(Error::SyntaxError(SyntaxError {
-                    level: ErrorLevel::Error,
-                    message: "Expected binary operator".to_string(),
-                    code: code,
-                    line: token.get_line(),
-                    offset: token.get_offset(),
-                }));
+               
+                self.create_error(ErrorLevel::Error, "Expected binary operator".to_string(),
+                                  code, token.get_line(), token.get_offset());
                 return BinOperator::Dummy;     
             },
         };

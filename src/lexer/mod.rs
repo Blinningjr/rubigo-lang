@@ -137,8 +137,42 @@ impl Lexer {
             original.push_str(& self.original_tracker[counter]);
             counter += 1;
         } 
-        
-        return original;
+
+        return self.strip_begining(original);
+    }
+
+    fn strip_begining(&mut self, mut original: String) -> String {
+        let temp: String = original.clone();
+        let mut splitter = temp.splitn(2, '\n'); 
+        match splitter.next() {
+            Some(first) => {
+                match splitter.next() {
+                    Some(secound) => {
+                        original = "".to_string();
+                        let mut chs: std::str::Chars<'_> = first.chars();
+                        let mut collect = false;
+                        for ch in chs {
+                            if collect {
+                                original.push(ch);
+                            }
+                            else if ch != ' ' {
+                                original.push(ch);
+                                collect = true;
+                            }
+                        }
+                        let mut spacer: &str = "";
+                        if original.len() != 0 {
+                           spacer = "\n"; 
+                        }
+                        original = format!("{}{}{}", original, spacer, secound);
+                    },
+                    _ => (),
+                };
+            
+            },
+            _ => (),
+        };
+        return original; 
     }
 
 

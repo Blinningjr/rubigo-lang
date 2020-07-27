@@ -58,7 +58,7 @@ impl Parser {
             lexer: Lexer::new(input),
         }; 
         let statement: Statement = parser.parse_statement();
-        //println!("{:#?}", statement);
+        println!("{:#?}", statement);
         parser.error_handler.print_errors(); 
         return statement;
     }
@@ -82,6 +82,7 @@ impl Parser {
             Ok(t) => return t,
             Err(_) => {
                 self.error_handler.add(Error::Error("Unexpected end of file.".to_string())); 
+                self.error_handler.print_errors();
                 panic!();
             },
         };
@@ -102,14 +103,10 @@ impl Parser {
             return self.next_token(); 
         } else {
             let code: String = self.get_original(original_start);
+            self.create_error(ErrorLevel::Error,
+                              format!("Expected {:?}.", token_type).to_string(),
+                              code, token.get_line(), token.get_offset());
             
-            self.error_handler.add(Error::SyntaxError(SyntaxError {
-                level: ErrorLevel::Error,
-                message: format!("Expected {:?}.", token_type).to_string(),
-                code: code,
-                line: token.get_line(),
-                offset: token.get_offset(),
-            }));
             return self.create_dummy(token_type); 
         }
     }
@@ -123,6 +120,17 @@ impl Parser {
 
     fn create_dummy(&mut self, token_type: TokenType) -> Token {
        return Token::new(token_type, "Dummy".to_string(), 0, 0);
+    }
+
+
+    fn create_error(&mut self, error_level: ErrorLevel,  message: String, code: String, line: usize, offset: usize) -> () {
+        self.error_handler.add(Error::SyntaxError(SyntaxError {
+            level: error_level,
+            message: message,
+            code: code,
+            line: line,
+            offset: offset,
+        }));
     }
 }
 
