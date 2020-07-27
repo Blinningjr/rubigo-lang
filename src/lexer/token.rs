@@ -60,5 +60,13 @@ impl Token {
     pub fn get_offset(&self) -> usize {
         return self.offset;
     }
+
+
+    /**
+     * Returns the end position of the token.
+     */
+    pub fn get_end_offset(&self) -> usize {
+        return self.offset + self.value.len();
+    }
 }
 

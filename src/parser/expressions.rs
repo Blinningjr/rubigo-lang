@@ -127,11 +127,11 @@ impl Parser {
                     until = false;
 
                 } else {
-                    let err_token: Token = self.peak();
                     let code: String = self.get_original(original_start);
+                    let err_token: Token = self.last_token.clone().unwrap();
                    
                     self.create_error(ErrorLevel::Error, "Expected end parenthesis".to_string(),
-                                      code, err_token.get_line(), err_token.get_offset());
+                                      code, err_token.get_line(), err_token.get_end_offset());
                     until = false;
                 }
             }

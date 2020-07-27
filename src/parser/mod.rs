@@ -48,6 +48,7 @@ pub use statement::{
 pub struct Parser {
     error_handler: ErrorHandler,
     lexer: Lexer,
+    last_token: Option<Token>,
 }
 
 
@@ -56,6 +57,7 @@ impl Parser {
         let mut parser: Parser = Parser {
             error_handler: ErrorHandler::new(verbose),
             lexer: Lexer::new(input),
+            last_token: None,
         }; 
         let statement: Statement = parser.parse_statement();
         println!("{:#?}", statement);
@@ -67,7 +69,10 @@ impl Parser {
     fn next_token(&mut self) -> Token {
         let token: Result<Token, &'static str> = self.lexer.next_token();
         match token {
-            Ok(t) => return t,
+            Ok(t) => {
+                self.last_token = Some(t.clone());
+                return t;
+            },
             Err(_) => {
                 self.error_handler.add(Error::Error("Unexpected end of file.".to_string()));
                 panic!();
@@ -103,9 +108,10 @@ impl Parser {
             return self.next_token(); 
         } else {
             let code: String = self.get_original(original_start);
+            let err_token: &Token = self.last_token.as_ref().unwrap();
             self.create_error(ErrorLevel::Error,
                               format!("Expected {:?}.", token_type).to_string(),
-                              code, token.get_line(), token.get_offset());
+                              code, err_token.get_line(), err_token.get_end_offset());
             
             return self.create_dummy(token_type); 
         }
