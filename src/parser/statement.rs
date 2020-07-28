@@ -133,13 +133,10 @@ impl Parser {
             return self.parse_body();
 
         } else {
-            let original_start: usize = self.get_original_start() - 1;
- 
-            let err_token: Token = self.peak();
-            let code: String = self.get_original(original_start);
-           
-            self.create_error(ErrorLevel::Error, "Expected Statement.".to_string(),
-                              code, err_token.get_line(), err_token.get_end_offset());
+            self.create_error(ErrorLevel::Error, "Expected a Statement".to_string());
+            
+            let token: Token = self.next_token();
+            
             return Statement::Dummy;
         }
     }
@@ -180,11 +177,7 @@ impl Parser {
             body = * box_body;
 
         } else {
-            let code: String = self.get_original(original_start);
-            let err_token: Token = self.last_token.clone().unwrap();
-
-            self.create_error(ErrorLevel::Error, "Expected Body.".to_string(),
-                              code, err_token.get_line(), err_token.get_end_offset());
+            self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             body = Body {
                 original: "".to_string(),
                 body: Vec::new(), 
@@ -215,11 +208,7 @@ impl Parser {
             body = * box_body;
 
         } else {
-            let code: String = self.get_original(original_start);
-            let err_token: Token = self.last_token.clone().unwrap();
-           
-            self.create_error(ErrorLevel::Error, "Expected Body.".to_string(),
-                              code, err_token.get_line(), err_token.get_end_offset());
+            self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             body = Body {
                 original: "".to_string(),
                 body: Vec::new(),
@@ -248,11 +237,7 @@ impl Parser {
             if_body = * box_body;
 
         } else {
-            let code: String = self.get_original(original_start);
-            let err_token: Token = self.last_token.clone().unwrap();
-            
-            self.create_error(ErrorLevel::Error, "Expected Body.".to_string(),
-                              code, err_token.get_line(), err_token.get_end_offset());
+            self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             if_body = Body {
                 original: "".to_string(),
                 body: Vec::new(),
@@ -271,11 +256,7 @@ impl Parser {
                     e_body = * box_body;
 
                 } else {
-                    let code: String = self.get_original(original_start);
-                    let err_token: Token = self.last_token.clone().unwrap();
-                    
-                    self.create_error(ErrorLevel::Error, "Expected Body.".to_string(),
-                                      code, err_token.get_line(), err_token.get_end_offset());
+                    self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
                     e_body = Body {
                         original: "".to_string(),
                         body: Vec::new(),
@@ -285,11 +266,7 @@ impl Parser {
                 else_body = Some(e_body);
 
             } else {
-                let code: String = self.get_original(original_start);
-                let err_token: Token = self.last_token.clone().unwrap();
-                
-                self.create_error(ErrorLevel::Error, "Expected Body.".to_string(),
-                                  code, err_token.get_line(), err_token.get_end_offset());
+                self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
                 else_body = Some(Body {
                     original: "".to_string(),
                     body: Vec::new(),
@@ -348,11 +325,8 @@ impl Parser {
             return statement;
 
         } else {
-            let code: String = self.get_original(original_start);
-           
             self.create_error(ErrorLevel::Error,
-                              "Expected Assignment or FunctionCall statement".to_string(),
-                              code, identifier.get_line(), identifier.get_end_offset());
+                              "Expected '=' or '('".to_string());
             return Statement::Dummy;
         }
     }

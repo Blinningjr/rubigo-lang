@@ -47,11 +47,7 @@ impl Parser {
             TokenType::TChar=> (),
             TokenType::TString => (),
             _ => {
-                let err_token: Token = self.peak();
-                let code: String = self.get_original(original_start);
-                
-                self.create_error(ErrorLevel::Error, "Expected Type.".to_string(),
-                                  code, err_token.get_line(), err_token.get_offset());
+                self.create_error(ErrorLevel::Error, "Expected a Type".to_string());
             },
         };
         

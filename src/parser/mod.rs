@@ -93,9 +93,11 @@ impl Parser {
         };
     }
 
+
     fn get_original_start(&mut self) -> usize {
         return self.lexer.get_original_start();
     }
+
 
     fn get_original(&mut self, start: usize) -> String {
         return self.lexer.get_original(start);
@@ -107,11 +109,10 @@ impl Parser {
         if token.get_type() == token_type {
             return self.next_token(); 
         } else {
-            let code: String = self.get_original(original_start);
             let err_token: &Token = self.last_token.as_ref().unwrap();
+            
             self.create_error(ErrorLevel::Error,
-                              format!("Expected {:?}.", token_type).to_string(),
-                              code, err_token.get_line(), err_token.get_end_offset());
+                              format!("Expected '{}'", token_type.revert()).to_string());
             
             return self.create_dummy(token_type); 
         }
@@ -129,14 +130,22 @@ impl Parser {
     }
 
 
-    fn create_error(&mut self, error_level: ErrorLevel,  message: String, code: String, line: usize, offset: usize) -> () {
+    fn create_error(&mut self, error_level: ErrorLevel,  message: String) -> () {
+        let code: String = self.get_line();
+        let token: &Token = self.last_token.as_ref().unwrap(); 
+        
         self.error_handler.add(Error::SyntaxError(SyntaxError {
             level: error_level,
             message: message,
             code: code,
-            line: line,
-            offset: offset,
+            line: token.get_line(),
+            offset: token.get_end_offset(),
         }));
+    }
+
+
+    fn get_line(& self) -> String {
+        return self.lexer.get_line();
     }
 }
 

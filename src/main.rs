@@ -34,8 +34,9 @@ fn main() {
         let test: char = \" asd asd  \"
         if a == apa(123) {
             return 10;
-        } else {
+         else {
             return apa(123);
+            dasd;
         }
         while true {
             let a: f32 = 1.2;

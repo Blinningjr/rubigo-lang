@@ -43,13 +43,7 @@ impl Parser {
             return self.parse_string();
 
         } else {
-            let original_start: usize = self.get_original_start() - 1;
-
-            let err_token: Token = self.peak();
-            let code: String = self.get_original(original_start);
-           
-            self.create_error(ErrorLevel::Error, "Expected Literal".to_string(),
-                              code, err_token.get_line(), err_token.get_offset());
+            self.create_error(ErrorLevel::Error, "Expected a Literal".to_string());
             return Literal::Dummy; 
         }
     }

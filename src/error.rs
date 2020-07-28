@@ -111,16 +111,18 @@ impl ErrorHandler {
             location =  "".to_string();
         }
 
+        let line_num: String = format!("{} |", error.line);
+
         let mut pointer: String = "".to_string();
-        for x in 1..error.offset {
-            pointer.push('_');
+
+        for x in 1..(error.offset+line_num.len()) {
+            pointer.push('.');
         }
         pointer.push('▲');
 
         println!("{}{}", level, location);
-        println!("{:#}", error.code);
-        println!("{}", pointer);
-        println!("{}\n", error.message); 
+        println!("{}{:#}", line_num, error.code);
+        println!("{} {}\n", pointer, error.message);
     }
 }
 

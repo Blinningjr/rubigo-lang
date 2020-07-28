@@ -29,6 +29,7 @@ pub struct Lexer {
     
     original_tracker: Vec<String>,
     original: String,
+    current_input_line: String,
 }
 
 
@@ -52,6 +53,7 @@ impl Lexer {
            
             original_tracker: Vec::new(),
             original: "".to_string(), 
+            current_input_line: "".to_string(),
         }
     }
 
@@ -63,7 +65,12 @@ impl Lexer {
             Result<Token, &'static str> {
         let token: Result<Token, &'static str> = self.peak();
         self.next_token = None;
-        
+       
+        self.current_input_line = format!("{}{}", self.current_input_line, self.original);
+        let mut split = self.current_input_line.split("\n");
+        let vec: Vec<&str> = split.collect();
+        self.current_input_line = vec[vec.len() - 1].to_string();
+
         self.original_tracker.push(self.original.clone());
         self.original = "".to_string();
 
@@ -111,6 +118,14 @@ impl Lexer {
      */
     pub fn hungry(& self) -> bool {
         self.input.chars().count() != 0
+    }
+
+   
+    /**
+     * Gets the current parsed text line.
+     */
+    pub fn get_line(& self) -> String {
+        return self.current_input_line.clone();
     }
 
 
@@ -183,8 +198,10 @@ impl Lexer {
     fn consume(&mut self) -> () {
         let mut chs: std::str::Chars<'_> = self.input.chars();
         let ch: char = chs.next().unwrap();
+        
         self.partial_token.push(ch.clone());
-        self.original.push(ch);
+        self.original.push(ch.clone());
+
         self.input = chs.collect::<String>();
     }
 
@@ -194,7 +211,9 @@ impl Lexer {
      */
     fn discard(&mut self) {
         let mut chs: std::str::Chars<'_> = self.input.chars();
-        self.original.push(chs.next().unwrap());
+        let ch: char = chs.next().unwrap(); 
+        
+        self.original.push(ch.clone());
         self.input = chs.collect::<String>(); 
     }
 

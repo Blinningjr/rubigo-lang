@@ -107,13 +107,7 @@ impl Parser {
                 return UnOperator::Minus
             },
             _ => {
-                let original_start: usize = self.get_original_start();
-
-                let token: Token = self.peak();
-                let code: String = self.get_original(original_start);
-               
-                self.create_error(ErrorLevel::Error, "Expected unary operator.".to_string(),
-                                  code, token.get_line(), token.get_offset());
+                self.create_error(ErrorLevel::Error, "Expected a unary operator.".to_string());
                 return UnOperator::Dummy;
             }
         };
@@ -178,13 +172,7 @@ impl Parser {
                 return BinOperator::Or;
             },
             _ => { 
-                let original_start: usize = self.get_original_start() - 1;
-                
-                let token: Token = self.peak();
-                let code: String = self.get_original(original_start);
-               
-                self.create_error(ErrorLevel::Error, "Expected binary operator".to_string(),
-                                  code, token.get_line(), token.get_offset());
+                self.create_error(ErrorLevel::Error, "Expected a binary operator".to_string());
                 return BinOperator::Dummy;     
             },
         };

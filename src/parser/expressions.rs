@@ -67,13 +67,7 @@ impl Parser {
             let _end: Token = self.parse_type(TokenType::ParenthesisEnd, original_start);
 
         } else {
-            let original_start: usize = self.get_original_start() - 1;
-            
-            let err_token: Token = self.peak();
-            let code: String = self.get_original(original_start);
-           
-            self.create_error(ErrorLevel::Error, "Expected Expression.".to_string(),
-                              code, err_token.get_line(), err_token.get_offset());
+            self.create_error(ErrorLevel::Error, "Expected a Expression".to_string());
 
             return Expression::Dummy;
         }
@@ -127,11 +121,7 @@ impl Parser {
                     until = false;
 
                 } else {
-                    let code: String = self.get_original(original_start);
-                    let err_token: Token = self.last_token.clone().unwrap();
-                   
-                    self.create_error(ErrorLevel::Error, "Expected end parenthesis".to_string(),
-                                      code, err_token.get_line(), err_token.get_end_offset());
+                    self.create_error(ErrorLevel::Error, "Expected ')'".to_string());
                     until = false;
                 }
             }
