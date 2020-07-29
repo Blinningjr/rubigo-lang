@@ -4,8 +4,6 @@ use super::{
     Token,
     Expression,
     ErrorLevel,
-    Error,
-    SyntaxError,
 };
 
 

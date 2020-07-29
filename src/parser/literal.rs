@@ -3,8 +3,6 @@ use super::{
     Token,
     TokenType,
     ErrorLevel,
-    Error,
-    SyntaxError,
 };
 
 

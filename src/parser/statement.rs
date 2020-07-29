@@ -5,8 +5,6 @@ use super::{
     TypeDecleration,
     Expression,
     ErrorLevel,
-    Error,
-    SyntaxError,
 };
 
 
@@ -135,7 +133,7 @@ impl Parser {
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Statement".to_string());
             
-            let token: Token = self.next_token();
+            let _token: Token = self.next_token();
             
             return Statement::Dummy;
         }
@@ -149,8 +147,8 @@ impl Parser {
         let original_start: usize = self.get_original_start();
 
         let _fn: Token = self.next_token();
-        let fn_identifier: Token = self.parse_type(TokenType::Identifier, original_start);
-        let _start_p: Token = self.parse_type(TokenType::ParenthesisStart, original_start);
+        let fn_identifier: Token = self.parse_type(TokenType::Identifier);
+        let _start_p: Token = self.parse_type(TokenType::ParenthesisStart);
        
         let mut parameters: Vec<(String, TypeDecleration)> = Vec::new();
         let mut until: bool = true;
@@ -159,7 +157,7 @@ impl Parser {
             match & token.get_type() {
                 TokenType::ParenthesisEnd => until = false,
                 _ => {
-                    let _type_dec: Token = self.parse_type(TokenType::TypeDec, original_start);
+                    let _type_dec: Token = self.parse_type(TokenType::TypeDec);
                     let type_dec: TypeDecleration = self.parse_type_decleration();
                     parameters.push((token.get_value(), type_dec));
 
@@ -170,7 +168,7 @@ impl Parser {
             };
         }
 
-        let _arrow: Token = self.parse_type(TokenType::FnType, original_start);
+        let _arrow: Token = self.parse_type(TokenType::FnType);
         let return_type: TypeDecleration = self.parse_type_decleration();
         let body: Body;
         if let Statement::Body(box_body) = self.parse_body() {
@@ -290,14 +288,14 @@ impl Parser {
         let original_start: usize = self.get_original_start();
         
         let _let: Token = self.next_token();
-        let identifier: Token = self.parse_type(TokenType::Identifier, original_start);
+        let identifier: Token = self.parse_type(TokenType::Identifier);
 
-        let _type_dec: Token = self.parse_type(TokenType::TypeDec, original_start);
+        let _type_dec: Token = self.parse_type(TokenType::TypeDec);
         let type_dec: TypeDecleration = self.parse_type_decleration();
         
-        let _equal: Token = self.parse_type(TokenType::Equals, original_start);
+        let _equal: Token = self.parse_type(TokenType::Equals);
         let expression: Expression = self.parse_expression();
-        let _end: Token = self.parse_type(TokenType::SemiColon, original_start);
+        let _end: Token = self.parse_type(TokenType::SemiColon);
         
         return Statement::Let(Let {
             original: self.get_original(original_start),
@@ -321,7 +319,7 @@ impl Parser {
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
             let statement: Statement = Statement::Expression(self.parse_function_call(identifier));
-            let _end: Token = self.parse_type(TokenType::SemiColon, original_start);
+            let _end: Token = self.parse_type(TokenType::SemiColon);
             return statement;
 
         } else {
@@ -338,7 +336,7 @@ impl Parser {
     fn parse_assignment(&mut self, identifier: Token, original_start: usize) -> Statement {
         let _equal: Token = self.next_token();
         let expression: Expression = self.parse_expression();
-        let _end: Token = self.parse_type(TokenType::SemiColon, original_start);
+        let _end: Token = self.parse_type(TokenType::SemiColon);
         
         return Statement::Assignment(Assignment {
             original: self.get_original(original_start),
@@ -356,7 +354,7 @@ impl Parser {
         
         let _return: Token = self.next_token();
         let expression: Expression = self.parse_expression();
-        let _end: Token = self.parse_type(TokenType::SemiColon, original_start);
+        let _end: Token = self.parse_type(TokenType::SemiColon);
         
         return Statement::Return(Return {
             original: self.get_original(original_start),
@@ -371,7 +369,7 @@ impl Parser {
     fn parse_body(&mut self) -> Statement {
         let original_start: usize = self.get_original_start();
         
-        let _start: Token = self.parse_type(TokenType::BodyStart, original_start);
+        let _start: Token = self.parse_type(TokenType::BodyStart);
         let mut statements: Vec<Statement> = Vec::new();
          
         loop {

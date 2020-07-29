@@ -5,17 +5,6 @@ mod parser;
 
 use std::fs;
 
-//use error::{
-//    ErrorLevel,
-//    Error,
-//    ErrorHandler,
-//};
-
-use lexer::{
-    Token,
-    Lexer,
-};
-
 use parser::{
     Parser,
 };

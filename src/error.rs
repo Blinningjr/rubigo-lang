@@ -91,7 +91,6 @@ impl ErrorHandler {
         match error {
             Error::Error(message) => println!("Error \n\t{:?}\n", message),
             Error::SyntaxError(err) => self.print_syntax_error(err),
-            _ => (),
         };
     }
 
@@ -100,7 +99,7 @@ impl ErrorHandler {
      * Print SyntaxError.
      */
     fn print_syntax_error(&mut self, error: SyntaxError) -> () {
-        let mut level: String; match &error.level {
+        let level: String; match &error.level {
             ErrorLevel::Critical => level = "Critical Syntax Error".to_string(),
             ErrorLevel::Error => level = "Syntax Error".to_string(),
             ErrorLevel::Warning => level = "Warning".to_string(),
@@ -115,7 +114,7 @@ impl ErrorHandler {
 
         let mut pointer: String = "".to_string();
 
-        for x in 1..(error.offset+line_num.len()) {
+        for _i in 1..(error.offset+line_num.len()) {
             pointer.push('.');
         }
         pointer.push('▲');

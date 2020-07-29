@@ -67,7 +67,7 @@ impl Lexer {
         self.next_token = None;
        
         self.current_input_line = format!("{}{}", self.current_input_line, self.original);
-        let mut split = self.current_input_line.split("\n");
+        let split = self.current_input_line.split("\n");
         let vec: Vec<&str> = split.collect();
         self.current_input_line = vec[vec.len() - 1].to_string();
 
@@ -141,10 +141,6 @@ impl Lexer {
      * Gets the original input since the start token number.
      */
     pub fn get_original(&mut self, start: usize) -> String {
-        if start < 0 {
-            return "".to_string();
-        }
-        
         let mut counter: usize = start;
         let mut original: String = "".to_string();
         
@@ -164,7 +160,7 @@ impl Lexer {
                 match splitter.next() {
                     Some(secound) => {
                         original = "".to_string();
-                        let mut chs: std::str::Chars<'_> = first.chars();
+                        let chs: std::str::Chars<'_> = first.chars();
                         let mut collect = false;
                         for ch in chs {
                             if collect {
@@ -425,7 +421,7 @@ impl Lexer {
     fn fsm_char(&mut self) -> Token {
         if self.hungry() {
             let mut chs: std::str::Chars<'_> = self.input.chars();
-            let ch1: char = chs.next().unwrap();
+            let _ch1: char = chs.next().unwrap();
             let ch2: char = chs.next().unwrap();
 
             if ch2 == '\'' {

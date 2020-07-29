@@ -104,17 +104,15 @@ impl Parser {
     }
 
 
-    fn parse_type(&mut self, token_type: TokenType, original_start: usize) -> Token {
+    fn parse_type(&mut self, token_type: TokenType) -> Token {
         let token: Token = self.peak();
         if token.get_type() == token_type {
             return self.next_token(); 
         } else {
-            let err_token: &Token = self.last_token.as_ref().unwrap();
-            
             self.create_error(ErrorLevel::Error,
                               format!("Expected '{}'", token_type.revert()).to_string());
             
-            return self.create_dummy(token_type); 
+            return self.create_dummy_token(token_type); 
         }
     }
 
@@ -125,7 +123,7 @@ impl Parser {
     }
 
 
-    fn create_dummy(&mut self, token_type: TokenType) -> Token {
+    fn create_dummy_token(&mut self, token_type: TokenType) -> Token {
        return Token::new(token_type, "Dummy".to_string(), 0, 0);
     }
 
@@ -146,6 +144,16 @@ impl Parser {
 
     fn get_line(& self) -> String {
         return self.lexer.get_line();
+    }
+
+
+    fn create_span<T: Clone>(value: T, token: Token) -> Span<T> {
+        return Span::new(value, token.get_line(), token.get_offset());
+    }
+
+
+    fn create_dummy_span<T: Clone>(value: T) -> Span<T> {
+        return Span::new(value, 0, 0);
     }
 }
 

@@ -6,8 +6,6 @@ use super::{
     UnOp,
     BinOp,
     ErrorLevel,
-    Error,
-    SyntaxError,
 };
 
 
@@ -48,7 +46,7 @@ impl Parser {
      * Parse expression.
      */
     pub(super) fn parse_expression(&mut self) -> Expression {
-        let mut expression: Expression;
+        let expression: Expression;
 
         if self.is_tokentype(TokenType::Identifier) {
             expression = self.parse_identifier_expression();
@@ -63,8 +61,7 @@ impl Parser {
             let _start: Token = self.next_token();
             expression = self.parse_expression();
 
-            let original_start: usize = self.get_original_start() - 1;
-            let _end: Token = self.parse_type(TokenType::ParenthesisEnd, original_start);
+            let _end: Token = self.parse_type(TokenType::ParenthesisEnd);
 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Expression".to_string());
@@ -100,8 +97,6 @@ impl Parser {
      * :param identifier: Token of type identifier.
      */
     pub(super) fn parse_function_call(&mut self, identifier: Token) -> Expression {
-        let original_start: usize = self.get_original_start();
-
         let _param_start: Token = self.next_token();
 
         let mut parameters: Vec<Expression> = Vec::new();

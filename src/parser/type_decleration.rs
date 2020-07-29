@@ -3,8 +3,6 @@ use super::{
     TokenType,
     Token,
     ErrorLevel,
-    Error,
-    SyntaxError,
 };
 
 
@@ -24,8 +22,6 @@ impl Parser {
      * Parse Type Decleration.
      */
     pub(super) fn parse_type_decleration(&mut self) -> TypeDecleration {
-        let original_start: usize = self.get_original_start() - 1;
-
         let mut borrow: bool = false;
         let mut mutable: bool = false;
 
