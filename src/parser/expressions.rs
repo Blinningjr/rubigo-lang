@@ -6,6 +6,7 @@ use super::{
     UnOp,
     BinOp,
     ErrorLevel,
+    Span,
 };
 
 
@@ -17,6 +18,7 @@ pub enum Expression {
     BinOp(Box<BinOp>),
     UnOp(Box<UnOp>),
     FunctionCall(Box<FunctionCall>),
+    Variable(Variable),
     Literal(Literal),
     Dummy,
 }
@@ -27,7 +29,7 @@ pub enum Expression {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionCall {
-    pub identifier: String,
+    pub identifier: Span<String>,
     pub parameters: Vec<Expression>,
 }
 
@@ -37,7 +39,7 @@ pub struct FunctionCall {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Variable {
-    pub identifier: String,
+    pub identifier: Span<String>,
 }
 
 
@@ -86,8 +88,9 @@ impl Parser {
             return self.parse_function_call(identifier); 
         
         } else {
-            let variable: Expression = Expression::Literal(Literal::String(identifier.get_value()));
-            return variable; 
+            return Expression::Variable(Variable {
+                identifier: self.create_span(identifier.get_value(), & identifier),
+            });
         }
     }
 
@@ -123,7 +126,7 @@ impl Parser {
         }
 
         return Expression::FunctionCall(Box::new(FunctionCall {
-            identifier: identifier.get_value(),
+            identifier: self.create_span(identifier.get_value(), & identifier),
             parameters: parameters,
         }));
     }

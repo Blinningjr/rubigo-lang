@@ -3,6 +3,7 @@ use super::{
     TokenType,
     Token,
     ErrorLevel,
+    Span,
 };
 
 
@@ -13,7 +14,7 @@ use super::{
 pub struct TypeDecleration {
     pub borrow: bool,
     pub mutable: bool,
-    pub r#type: String,
+    pub r#type: Span<String>,
 }
 
 
@@ -52,7 +53,7 @@ impl Parser {
         return TypeDecleration {
             borrow: borrow,
             mutable: mutable,
-            r#type: token.get_value(),
+            r#type: self.create_span(token.get_value(), & token),
         }; 
     }
 }

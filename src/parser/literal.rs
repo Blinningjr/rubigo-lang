@@ -3,6 +3,7 @@ use super::{
     Token,
     TokenType,
     ErrorLevel,
+    Span,
 };
 
 
@@ -11,11 +12,11 @@ use super::{
  */
 #[derive(Debug, Clone, PartialEq)]
 pub enum Literal {
-    I32(i32),
-    F32(f32),
-    Bool(bool),
-    Char(char),
-    String(String),
+    I32(Span<i32>),
+    F32(Span<f32>),
+    Bool(Span<bool>),
+    Char(Span<char>),
+    String(Span<String>),
     Dummy,
 }
 
@@ -52,7 +53,7 @@ impl Parser {
      */
     fn parse_i32(&mut self) -> Literal {
         let token: Token = self.next_token();
-        return Literal::I32(token.get_value().parse::<i32>().unwrap());
+        return Literal::I32(self.create_span(token.get_value().parse::<i32>().unwrap(), & token));
     }
 
 
@@ -61,7 +62,7 @@ impl Parser {
      */
     fn parse_f32(&mut self) -> Literal {
         let token: Token = self.next_token();
-        return Literal::F32(token.get_value().parse::<f32>().unwrap());
+        return Literal::F32(self.create_span(token.get_value().parse::<f32>().unwrap(), & token));
     }
 
 
@@ -70,7 +71,7 @@ impl Parser {
      */
     fn parse_bool(&mut self) -> Literal {
         let token: Token = self.next_token();
-        return Literal::Bool(token.get_value().parse::<bool>().unwrap());
+        return Literal::Bool(self.create_span(token.get_value().parse::<bool>().unwrap(), & token));
     }
 
 
@@ -79,7 +80,7 @@ impl Parser {
      */
     fn parse_char(&mut self) -> Literal {
         let token: Token = self.next_token();
-        return Literal::Char(token.get_value().parse::<char>().unwrap());
+        return Literal::Char(self.create_span(token.get_value().parse::<char>().unwrap(), & token));
     }
 
 
@@ -88,7 +89,7 @@ impl Parser {
      */
     fn parse_string(&mut self) -> Literal {
         let token: Token = self.next_token();
-        return Literal::String(token.get_value());
+        return Literal::String(self.create_span(token.get_value(), & token));
     }
 
     

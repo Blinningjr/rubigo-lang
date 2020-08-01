@@ -4,6 +4,7 @@ use super::{
     Token,
     Expression,
     ErrorLevel,
+    Span,
 };
 
 
@@ -23,7 +24,7 @@ pub enum UnOperator {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnOp {
-    pub un_op: UnOperator,
+    pub un_op: Span<UnOperator>,
     pub expression: Expression,
 }
 
@@ -55,7 +56,7 @@ pub enum BinOperator {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct BinOp {
-    pub bin_op: BinOperator,
+    pub bin_op: Span<BinOperator>,
     pub left_expression: Expression,
     pub right_expression: Expression,
 }
@@ -66,7 +67,7 @@ impl Parser {
      * Parse unary operation.
      */
     pub(super) fn parse_un_op(&mut self) -> Expression {
-        let un_op: UnOperator = self.parse_op_un();
+        let un_op: Span<UnOperator> = self.parse_op_un();
         let expression: Expression = self.parse_expression();
 
         return Expression::UnOp(Box::new(UnOp {
@@ -80,7 +81,7 @@ impl Parser {
      * Parse binary operation.
      */
     pub(super) fn parse_bin_op(&mut self, left_expression: Expression) -> Expression {
-        let bin_op: BinOperator = self.parse_op_bin();
+        let bin_op: Span<BinOperator> = self.parse_op_bin();
         let right_expression: Expression = self.parse_expression();
     
         return Expression::BinOp(Box::new(BinOp {
@@ -94,19 +95,19 @@ impl Parser {
     /**
      * parse unary operator.
      */
-    fn parse_op_un(&mut self) -> UnOperator {
+    fn parse_op_un(&mut self) -> Span<UnOperator> {
         match self.peak().get_type() {
             TokenType::Not => {
-                let _token: Token = self.next_token();
-                return UnOperator::Not;
+                let token: Token = self.next_token();
+                return self.create_span(UnOperator::Not, & token);
             },
             TokenType::Minus => {
-                let _token: Token = self.next_token();
-                return UnOperator::Minus
+                let token: Token = self.next_token();
+                return self.create_span(UnOperator::Minus, & token);
             },
             _ => {
                 self.create_error(ErrorLevel::Error, "Expected a unary operator.".to_string());
-                return UnOperator::Dummy;
+                return Span::new(UnOperator::Dummy, 0, 0);
             }
         };
     }
@@ -115,63 +116,63 @@ impl Parser {
     /**
      * Parse binary operator.
      */
-    fn parse_op_bin(&mut self) -> BinOperator {
+    fn parse_op_bin(&mut self) -> Span<BinOperator> {
         match self.peak().get_type() {
             TokenType::Plus => {
-                let _token: Token = self.next_token();
-                return BinOperator::Plus;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::Plus, & token);
             },
             TokenType::Minus => {
-                let _token: Token = self.next_token();
-                return BinOperator::Minus;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::Minus, & token);
             },
             TokenType::ForwardSlash => {
-                let _token: Token = self.next_token();
-                return BinOperator::Divition;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::Divition, & token);
             },
             TokenType::Star => {
-                let _token: Token = self.next_token();
-                return BinOperator::Multiplication;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::Multiplication, & token);
             },
             TokenType::Modilus => {
-                let _token: Token = self.next_token();
-                return BinOperator::Modilus;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::Modilus, & token);
             },
             TokenType::LessThen => {
-                let _token: Token = self.next_token();
-                return BinOperator::LessThen;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::LessThen, & token);
             },
             TokenType::GreaterThen => {
-                let _token: Token = self.next_token();
-                return BinOperator::GreaterThen;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::GreaterThen, & token);
             },
             TokenType::NotEqual => {
-                let _token: Token = self.next_token();
-                return BinOperator::NotEqual;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::NotEqual, & token);
             },
             TokenType::Equal => {
-                let _token: Token = self.next_token();
-                return BinOperator::Equal;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::Equal, & token);
             },
             TokenType::GreaterEqual => {
-                let _token: Token = self.next_token();
-                return BinOperator::GreaterEqual;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::GreaterEqual, & token);
             },
             TokenType::LessEqual => {
-                let _token: Token = self.next_token();
-                return BinOperator::LessEqual;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::LessEqual, & token);
             },
             TokenType::And => {
-                let _token: Token = self.next_token();
-                return BinOperator::And;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::And, & token);
             },
             TokenType::Or => {
-                let _token: Token = self.next_token();
-                return BinOperator::Or;
+                let token: Token = self.next_token();
+                return self.create_span(BinOperator::Or, & token);
             },
             _ => { 
                 self.create_error(ErrorLevel::Error, "Expected a binary operator".to_string());
-                return BinOperator::Dummy;     
+                return Span::new(BinOperator::Dummy, 0, 0);     
             },
         };
     }
