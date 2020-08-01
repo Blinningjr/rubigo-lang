@@ -27,8 +27,10 @@ pub struct Lexer {
    
     next_token: Option<Token>,
     
-    original_tracker: Vec<String>,
+    original_tracker: Vec<Span<String>>,
     original: String,
+    original_line: usize,
+
     current_input_line: String,
 }
 
@@ -52,7 +54,9 @@ impl Lexer {
             next_token: Option::None,
            
             original_tracker: Vec::new(),
-            original: "".to_string(), 
+            original: "".to_string(),
+            original_line: 1,
+
             current_input_line: "".to_string(),
         }
     }
@@ -71,8 +75,9 @@ impl Lexer {
         let vec: Vec<&str> = split.collect();
         self.current_input_line = vec[vec.len() - 1].to_string();
 
-        self.original_tracker.push(self.original.clone());
+        self.original_tracker.push(Span::new(self.original.clone(), self.original_line, 1));
         self.original = "".to_string();
+        self.original_line = self.current_line;
 
         return token;
     }
@@ -140,19 +145,24 @@ impl Lexer {
     /**
      * Gets the original input since the start token number.
      */
-    pub fn get_original(&mut self, start: usize) -> String {
+    pub fn get_original(&mut self, start: usize) -> Span<String> {
         let mut counter: usize = start;
         let mut original: String = "".to_string();
         
+        let mut line: usize = 1;
+
+        if counter < self.original_tracker.len() {
+            line = self.original_tracker[counter].get_line();
+        }
         while counter < self.original_tracker.len() { 
-            original.push_str(& self.original_tracker[counter]);
+            original.push_str(& self.original_tracker[counter].get_fragment());
             counter += 1;
         } 
 
-        return self.strip_begining(original);
+        return self.strip_begining(original, line);
     }
 
-    fn strip_begining(&mut self, mut original: String) -> String {
+    fn strip_begining(&mut self, mut original: String, mut line: usize) -> Span<String> {
         let temp: String = original.clone();
         let mut splitter = temp.splitn(2, '\n'); 
         match splitter.next() {
@@ -161,29 +171,29 @@ impl Lexer {
                     Some(secound) => {
                         original = "".to_string();
                         let chs: std::str::Chars<'_> = first.chars();
-                        let mut collect = false;
+                        let mut not_collect = true;
                         for ch in chs {
-                            if collect {
-                                original.push(ch);
-                            }
-                            else if ch != ' ' {
-                                original.push(ch);
-                                collect = true;
+                            original.push(ch);
+                            
+                            if ch != ' ' {
+                                not_collect = false;
                             }
                         }
                         let mut spacer: &str = "";
-                        if original.len() != 0 {
-                           spacer = "\n"; 
+                        if not_collect {
+                            original = "".to_string();
+                        } else {
+                            line += 1;
+                            spacer = "\n"; 
                         }
                         original = format!("{}{}{}", original, spacer, secound);
                     },
                     _ => (),
-                };
-            
+                }; 
             },
             _ => (),
         };
-        return original; 
+        return Span::new(original, line, 1); 
     }
 
 

@@ -99,7 +99,7 @@ impl Parser {
     }
 
 
-    fn get_original(&mut self, start: usize) -> String {
+    fn get_original(&mut self, start: usize) -> Span<String> {
         return self.lexer.get_original(start);
     }
 
@@ -147,7 +147,7 @@ impl Parser {
     }
 
 
-    fn create_span<T: Clone>(value: T, token: Token) -> Span<T> {
+    fn create_span<T: Clone>(& self, value: T, token: & Token) -> Span<T> {
         return Span::new(value, token.get_line(), token.get_offset());
     }
 

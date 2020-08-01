@@ -25,7 +25,7 @@ fn main() {
             return 10;
          else {
             return apa(123);
-            dasd;
+            asdasd
         }
         while true {
             let a: f32 = 1.2;

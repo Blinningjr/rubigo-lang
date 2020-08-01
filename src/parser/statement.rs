@@ -5,6 +5,7 @@ use super::{
     TypeDecleration,
     Expression,
     ErrorLevel,
+    Span,
 };
 
 
@@ -30,9 +31,9 @@ pub enum Statement {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Function {
-    pub original: String,
-    pub identifier: String,
-    pub parameters: Vec<(String, TypeDecleration)>,
+    pub original: Span<String>,
+    pub identifier: Span<String>,
+    pub parameters: Vec<(Span<String>, TypeDecleration)>,
     pub return_type: TypeDecleration,
     pub body: Body,
 }
@@ -43,7 +44,7 @@ pub struct Function {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct While {
-    pub original: String,
+    pub original: Span<String>,
     pub condition: Expression,
     pub body: Body,
 }
@@ -54,7 +55,7 @@ pub struct While {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct If {
-    pub original: String,
+    pub original: Span<String>,
     pub condition: Expression,
     pub if_body: Body,
     pub else_body: Option<Body>,
@@ -66,8 +67,8 @@ pub struct If {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Let {
-    pub original: String,
-    pub identifier: String,
+    pub original: Span<String>,
+    pub identifier: Span<String>,
     pub type_dec: TypeDecleration,
     pub value: Expression,
 }
@@ -78,8 +79,8 @@ pub struct Let {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Assignment {
-    pub original: String,
-    pub identifier: String,
+    pub original: Span<String>,
+    pub identifier: Span<String>,
     pub value: Expression,
 }
 
@@ -89,7 +90,7 @@ pub struct Assignment {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Return {
-    pub original: String,
+    pub original: Span<String>,
     pub value: Expression,
 }
 
@@ -99,7 +100,7 @@ pub struct Return {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Body {
-    pub original: String,
+    pub original: Span<String>,
     pub body: Vec<Statement>,
 }
 
@@ -150,7 +151,7 @@ impl Parser {
         let fn_identifier: Token = self.parse_type(TokenType::Identifier);
         let _start_p: Token = self.parse_type(TokenType::ParenthesisStart);
        
-        let mut parameters: Vec<(String, TypeDecleration)> = Vec::new();
+        let mut parameters: Vec<(Span<String>, TypeDecleration)> = Vec::new();
         let mut until: bool = true;
         while until {
             let token: Token = self.next_token();
@@ -159,7 +160,7 @@ impl Parser {
                 _ => {
                     let _type_dec: Token = self.parse_type(TokenType::TypeDec);
                     let type_dec: TypeDecleration = self.parse_type_decleration();
-                    parameters.push((token.get_value(), type_dec));
+                    parameters.push((self.create_span(token.get_value(), & token), type_dec));
 
                     if self.is_tokentype(TokenType::Comma) {
                         let _comma: Token = self.next_token();
@@ -177,14 +178,14 @@ impl Parser {
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             body = Body {
-                original: "".to_string(),
+                original: Span::new("".to_string(), 0, 0),
                 body: Vec::new(), 
             };
         }
 
         return Statement::Function(Box::new(Function {
             original: self.get_original(original_start),
-            identifier: fn_identifier.get_value(),
+            identifier: self.create_span(fn_identifier.get_value(), & fn_identifier),
             parameters: parameters,
             return_type: return_type,
             body: body,
@@ -208,7 +209,7 @@ impl Parser {
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             body = Body {
-                original: "".to_string(),
+                original: Span::new("".to_string(), 0, 0),
                 body: Vec::new(),
             };
         }
@@ -237,7 +238,7 @@ impl Parser {
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             if_body = Body {
-                original: "".to_string(),
+                original: Span::new("".to_string(), 0, 0),
                 body: Vec::new(),
             };
         }
@@ -256,7 +257,7 @@ impl Parser {
                 } else {
                     self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
                     e_body = Body {
-                        original: "".to_string(),
+                        original: Span::new("".to_string(), 0, 0),
                         body: Vec::new(),
                     };
                 }
@@ -266,7 +267,7 @@ impl Parser {
             } else {
                 self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
                 else_body = Some(Body {
-                    original: "".to_string(),
+                    original: Span::new("".to_string(), 0, 0),
                     body: Vec::new(),
                 });
             }
@@ -299,7 +300,7 @@ impl Parser {
         
         return Statement::Let(Let {
             original: self.get_original(original_start),
-            identifier: identifier.get_value(),
+            identifier: self.create_span(identifier.get_value(), & identifier),
             type_dec: type_dec,
             value: expression, 
         }); 
@@ -340,7 +341,7 @@ impl Parser {
         
         return Statement::Assignment(Assignment {
             original: self.get_original(original_start),
-            identifier: identifier.get_value(),
+            identifier: self.create_span(identifier.get_value(), & identifier),
             value: expression, 
         }); 
     }
