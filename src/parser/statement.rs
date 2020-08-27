@@ -308,7 +308,7 @@ impl Parser {
 
 
     /**
-     * Parse assignment.
+     * Parse statement staring with identifier.
      */
     fn parse_identifier_statement(&mut self) -> Statement {
         let original_start: usize = self.get_original_start();
