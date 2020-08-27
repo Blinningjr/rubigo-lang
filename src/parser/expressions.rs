@@ -29,6 +29,7 @@ pub enum Expression {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionCall {
+    pub original: Span<String>,
     pub identifier: Span<String>,
     pub parameters: Vec<Expression>,
 }
@@ -83,9 +84,10 @@ impl Parser {
      * Parse expressions starting with identifier.
      */
     fn parse_identifier_expression(&mut self) -> Expression {
+        let  original_start: usize = self.get_original_start();
         let identifier: Token = self.next_token();
         if self.is_tokentype(TokenType::ParenthesisStart) {
-            return self.parse_function_call(identifier); 
+            return self.parse_function_call(identifier, original_start); 
         
         } else {
             return Expression::Variable(Variable {
@@ -99,7 +101,8 @@ impl Parser {
      * Parse function call.
      * :param identifier: Token of type identifier.
      */
-    pub(super) fn parse_function_call(&mut self, identifier: Token) -> Expression {
+    pub(super) fn parse_function_call(&mut self, identifier: Token,
+                                      original_start: usize) -> Expression {
         let _param_start: Token = self.next_token();
 
         let mut parameters: Vec<Expression> = Vec::new();
@@ -126,6 +129,7 @@ impl Parser {
         }
 
         return Expression::FunctionCall(Box::new(FunctionCall {
+            original: self.get_original(original_start),
             identifier: self.create_span(identifier.get_value(), & identifier),
             parameters: parameters,
         }));

@@ -319,8 +319,10 @@ impl Parser {
             return self.parse_assignment(identifier, original_start);
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
-            let statement: Statement = Statement::Expression(self.parse_function_call(identifier));
+            let statement: Statement = Statement::Expression(
+                self.parse_function_call(identifier, original_start));
             let _end: Token = self.parse_type(TokenType::SemiColon);
+            
             return statement;
 
         } else {

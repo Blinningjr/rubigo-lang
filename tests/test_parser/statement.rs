@@ -64,15 +64,15 @@ fn test_parse_assignment() {
 
 
 /**
- * Test parse funciton call statement.
+ * Test parse function call statement.
  */
 #[test]
-fn test_parse_funciton_call() {
+fn test_parse_function_call() {
     let input: String = "test(10);".to_string();
     let statement: Statement = parse_string(input.clone());
     assert_eq!(statement, 
         Statement::Expression(Expression::FunctionCall(Box::new(FunctionCall {
-//            original: Span::new(input.clone(), 1, 1),
+            original: Span::new("test(10)".to_string(), 1, 1),
             identifier: Span::new("test".to_string(), 1, 1),
             parameters: vec!(Expression::Literal(Literal::I32(Span::new(10, 1, 6)))), 
         })))
