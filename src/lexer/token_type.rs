@@ -3,6 +3,8 @@
  */
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenType {
+    EOF,
+
     Fn,
     While,
     If,
@@ -65,6 +67,7 @@ pub enum TokenType {
 impl TokenType {
     pub fn revert(& self) -> String {
         return match self {
+            TokenType::EOF => "EOF".to_string(),
 
             TokenType::Fn => "fn".to_string(),
             TokenType::While => "while".to_string(),

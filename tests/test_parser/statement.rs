@@ -85,6 +85,31 @@ fn test_parse_funciton_call() {
  */
 #[test]
 fn test_parse_if() {
+    let input: String = "if true {\ntest = 10;\n}".to_string();
+    let statement: Statement = parse_string(input.clone());
+    assert_eq!(statement, 
+        Statement::If(Box::new(If {
+            original: Span::new(input.clone(), 1, 1),
+            condition: Expression::Literal(Literal::Bool(Span::new(true, 1, 4))),
+            if_body: Body {
+                original: Span::new(" {\ntest = 10;\n}".to_string(), 1, 8),
+                body: vec!(Statement::Assignment(Assignment {
+                    original: Span::new("test = 10;".to_string(), 2, 1),
+                    identifier: Span::new("test".to_string(), 2, 1),
+                    value: Expression::Literal(Literal::I32(Span::new(10, 2, 8))), 
+                })),
+            },
+            else_body: Option::None, 
+        }))
+    );
+}
+
+
+/**
+ * Test parse if else statement.
+ */
+#[test]
+fn test_parse_if_else() {
     let input: String = "if true {\ntest = 10;\n} else {}".to_string();
     let statement: Statement = parse_string(input.clone());
     assert_eq!(statement, 

@@ -82,6 +82,7 @@ impl Parser {
             },
             Err(_) => {
                 self.error_handler.add(Error::Error("Unexpected end of file.".to_string()));
+                self.error_handler.print_errors();
                 panic!();
             },
         };
@@ -93,9 +94,11 @@ impl Parser {
         match token {
             Ok(t) => return t,
             Err(_) => {
-                self.error_handler.add(Error::Error("Unexpected end of file.".to_string())); 
-                self.error_handler.print_errors();
-                panic!();
+                return Token::new(
+                    TokenType::EOF,
+                    "".to_string(),
+                    0,
+                    0);
             },
         };
     }
