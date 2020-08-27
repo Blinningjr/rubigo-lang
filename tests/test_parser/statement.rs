@@ -163,7 +163,7 @@ fn test_parse_function() {
         Statement::Function(Box::new(Function {
             original: Span::new(input.clone(), 1, 1),
             identifier: Span::new("test".to_string(), 1, 4),
-            parameters: vec!((Span::new("t: i32".to_string(), 1, 9),
+            parameters: vec!((Span::new("t".to_string(), 1, 9),
                 TypeDecleration{
                     borrow: false,
                     mutable: false,
@@ -176,7 +176,7 @@ fn test_parse_function() {
                 r#type: Span::new("i32".to_string(), 1, 20),
             },
             body: Body {
-                original: Span::new(" {\ntest = 10;\n}".to_string(), 1, 11),
+                original: Span::new(" {\ntest = 10;\n}".to_string(), 1, 23),
                 body: vec!(Statement::Assignment(Assignment {
                     original: Span::new("test = 10;".to_string(), 2, 1),
                     identifier: Span::new("test".to_string(), 2, 1),
