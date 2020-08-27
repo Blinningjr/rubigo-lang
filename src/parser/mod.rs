@@ -60,15 +60,7 @@ impl Parser {
             last_token: None,
         }; 
         let statement: Statement = parser.parse_statement();
-        println!("{:#?}", statement);
         parser.error_handler.print_errors();
-        println!("{:#?}", parser.get_original(0));
-        println!("{:#?}", parser.get_original(1));
-        println!("{:#?}", parser.get_original(2));
-        println!("{:#?}", parser.get_original(3));
-        println!("{:#?}", parser.get_original(4));
-        println!("{:#?}", parser.get_original(5));
-        parser.lexer.print_stack();
         return statement;
     }
 

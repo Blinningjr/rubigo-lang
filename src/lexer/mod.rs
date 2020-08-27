@@ -40,10 +40,6 @@ pub struct Lexer {
  * Implements Lexer functions. 
  */
 impl Lexer {
-
-    pub fn print_stack(& self) -> () {
-        println!("{:#?}", self.original_tracker);    
-    }
     /**
      * Created token handler.
      */
