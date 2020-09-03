@@ -16,6 +16,7 @@ pub enum ErrorLevel {
 pub enum Error {
     Error(String),
     SyntaxError(SyntaxError),
+    TypeError(String),
 }
 
 /**
@@ -91,6 +92,7 @@ impl ErrorHandler {
         match error {
             Error::Error(message) => println!("Error \n\t{:?}\n", message),
             Error::SyntaxError(err) => self.print_syntax_error(err),
+            Error::TypeError(message) => println!("TypeError \n\t{:?}\n", message),
         };
     }
 

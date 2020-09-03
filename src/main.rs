@@ -2,11 +2,17 @@ mod error;
 mod span;
 mod lexer;
 mod parser;
+mod type_checker;
 
 use std::fs;
 
 use parser::{
     Parser,
+    Statement,
+};
+
+use type_checker::{
+    TypeChecker,
 };
 
 
@@ -17,8 +23,13 @@ fn main() {
     let contents = fs::read_to_string(filename)
         .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
+    
 
-    let test: String = "fn testfn(apa: i32, te: i32) -> i32 {
+    let test: String = "
+        let test: i32 = 10;
+    ".to_string();
+
+    let test_fail: String = "fn testfn(apa: i32, te: i32) -> i32 {
         let test: &mut i32 = 2 * (123 - 122);
         let test: char = \" asd asd  \"
         if a == apa(123) {
@@ -33,9 +44,15 @@ fn main() {
         } 
         return 10;
     }".to_string();
+
+
+
     println!("\nWith text:\n{}\n", test);
 
-    println!("Parsed: \n{:#?}\n", Parser::parse(test, true));
+    let statement: Statement = Parser::parse(test, true); 
+    println!("Parsed: \n{:#?}\n", statement);
+
+    println!("Type Checked: \n{:#?}\n", TypeChecker::type_check(statement)); 
     
 //    let mut tokens: Vec<Token> = Vec::new();
 //    let mut lexer: Lexer = Lexer::new(test); 
