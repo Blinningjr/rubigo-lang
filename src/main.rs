@@ -25,11 +25,14 @@ fn main() {
     //println!("With text:\n{}", contents);
     
 
-    let test: String = "
-        let test: i32 = 10;
+    let test: String = "    fn testfn(apa: i32) -> i32 {
+        let test: i32 = -false;
+        test = 20.2 + 10;
+        test = 10 == true;
+    }
     ".to_string();
 
-    let test_fail: String = "fn testfn(apa: i32, te: i32) -> i32 {
+    let test_parser_fail: String = "fn testfn(apa: i32, te: i32) -> i32 {
         let test: &mut i32 = 2 * (123 - 122);
         let test: char = \" asd asd  \"
         if a == apa(123) {
