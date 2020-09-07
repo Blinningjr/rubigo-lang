@@ -64,8 +64,8 @@ impl TypeChecker {
         self.error_handler.add(error);
     }
 
-    fn add_function(&mut self, identifier: Span<String>, r#type: Span<String>) -> () {
-        if !self.get_environment().add_function(identifier.clone(), r#type) {
+    fn add_function(&mut self, identifier: Span<String>, env_id: usize) -> () {
+        if !self.get_environment().add_function(identifier.clone(), env_id) {
             self.create_error(format!("Function {:#?} is already decleard", identifier.get_fragment()).to_string());
         }
     }
@@ -73,13 +73,23 @@ impl TypeChecker {
     fn lookup_function(&mut self, identifier: Span<String>) -> String {
         let mut env_id: usize = self.current_env_id;
         while env_id != 0 {
-            match self.environments[env_id].lookup_function(identifier.get_fragment()) {
-                Ok(r#type) => return r#type,
+            match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
+                Ok(id) => {
+                    return match &self.environments[id].function {
+                        Some(func) => func.return_type.r#type.get_fragment(),
+                        None => "()".to_string(),
+                    };
+                },
                 Err(_) => env_id = self.environments[env_id].previus_env_id,
             };   
         }
-        return match self.environments[env_id].lookup_function(identifier.get_fragment()) {
-            Ok(r#type) => r#type,
+        match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
+            Ok(id) => {
+                return match &self.environments[id].function {
+                    Some(func) => func.return_type.r#type.get_fragment(),
+                    None => "()".to_string(),
+                };
+            },
             Err(msg) => {
                 self.create_error(msg);
                 return "".to_string();
@@ -108,6 +118,9 @@ impl TypeChecker {
         let previus_env_id: usize = self.current_env_id;
         let current_env_id: usize = self.environments.len();
         self.environments.push(FunctionEnv::new(current_env_id, previus_env_id));
+
+        self.get_environment().add_function(function.identifier.clone(), current_env_id);
+
         self.current_env_id = current_env_id;
         self.get_environment().function = Option::Some(function);
     }

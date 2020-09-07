@@ -25,15 +25,15 @@ impl FunctionEnv {
         };
     }
 
-    pub fn add_function(&mut self, identifier: Span<String>, r#type: Span<String>) -> bool {
-        return self.environment.add_function(identifier, r#type);
+    pub fn add_function(&mut self, identifier: Span<String>, env_id: usize) -> bool {
+        return self.environment.add_function(identifier, env_id);
     }
 
-    pub fn lookup_function(&mut self, identifier: String) -> Result<String, String> {
+    pub fn lookup_function_id(&mut self, identifier: String) -> Result<usize, String> {
         match & self.function {
             Some(func) => {
                 if func.identifier.get_fragment() == identifier {
-                    return Ok(func.return_type.r#type.get_fragment());
+                    return Ok(self.environment_id);
                 }
             },
             None => (),
