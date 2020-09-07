@@ -8,20 +8,16 @@ pub use super::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionEnv {
-    pub environment_id: usize,
-    pub previus_env_id: usize,
-    pub function: Option<Function>,
+    pub function: Function,
     pub environment: Environment, 
 }
 
 
 impl FunctionEnv {
-    pub fn new(environment_id: usize, previus_env_id: usize) -> FunctionEnv{
+    pub fn new(environment_id: usize, previus_env_id: Option<usize>, function: Function) -> FunctionEnv{
         return FunctionEnv{
-            environment_id: environment_id,
-            previus_env_id: previus_env_id,
-            function: None,
-            environment: Environment::new(),
+            function: function,
+            environment: Environment::new(environment_id, previus_env_id),
         };
     }
 
@@ -30,14 +26,9 @@ impl FunctionEnv {
     }
 
     pub fn lookup_function_id(&mut self, identifier: String) -> Result<usize, String> {
-        match & self.function {
-            Some(func) => {
-                if func.identifier.get_fragment() == identifier {
-                    return Ok(self.environment_id);
-                }
-            },
-            None => (),
-        };
+        if self.function.identifier.get_fragment() == identifier {
+            return Ok(self.environment.environment_id);
+        }
         return self.environment.lookup_function(identifier);
     }
 

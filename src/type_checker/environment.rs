@@ -6,14 +6,18 @@ pub use super::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Environment {
+    pub environment_id: usize,
+    pub previus_env_id: Option<usize>,
     pub functions: Vec<(Span<String>, usize)>, 
     pub variables: Vec<(Span<String>, String)>, 
 }
 
 
 impl Environment {
-    pub fn new() -> Environment {
+    pub fn new(environment_id: usize, previus_env_id: Option<usize>) -> Environment {
         return Environment{
+            environment_id: environment_id,
+            previus_env_id: previus_env_id,
             functions: vec!(),
             variables: vec!(),
         };

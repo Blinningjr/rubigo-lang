@@ -38,8 +38,9 @@ pub use function_env::FunctionEnv;
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeChecker {
     error_handler: ErrorHandler,
-    environments: Vec<FunctionEnv>, 
-    current_env_id: usize,
+    environments: Vec<FunctionEnv>,
+    environment: Environment,
+    current_env_id: Option<usize>,
 }
 
 
@@ -47,8 +48,9 @@ impl TypeChecker {
     pub fn type_check(ast: Statement) -> bool {
         let mut type_checker: TypeChecker = TypeChecker{
             error_handler: ErrorHandler::new(true),
-            environments: vec!(FunctionEnv::new(0, 0)),
-            current_env_id: 0,
+            environments: vec!(),
+            environment: Environment::new(0, None),
+            current_env_id: None,
         };
 
         type_checker.check_statement(ast);
@@ -71,30 +73,30 @@ impl TypeChecker {
     }
 
     fn lookup_function(&mut self, identifier: Span<String>) -> Function {
-        let mut env_id: usize = self.current_env_id;
-        while env_id != 0 {
-            match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
-                Ok(id) => {
-                    return match &self.environments[id].function {
-                        Some(func) => func.clone(),
-                        None => Function::create_dummy(),
-                    };
+        let mut env_id_r: Option<usize> = self.current_env_id;
+        loop {
+            match env_id_r {
+                Some(env_id) => {
+                    match self.environments[env_id - 1].lookup_function_id(identifier.get_fragment()) {
+                        Ok(id) => {
+                            return self.environments[id].function.clone();
+                        },
+                        Err(_) => env_id_r = self.environments[env_id].environment.previus_env_id,
+                    };   
                 },
-                Err(_) => env_id = self.environments[env_id].previus_env_id,
-            };   
+                None => break,
+            };
         }
-        match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
+        match self.environment.lookup_function(identifier.get_fragment()) {
             Ok(id) => {
-                return match &self.environments[id].function {
-                    Some(func) => func.clone(),
-                    None => Function::create_dummy(),
-                };
+                return self.environments[id].function.clone();
             },
-            Err(msg) => {
-                self.create_error(msg);
+            Err(_) => {
+                self.create_error("function not decleared".to_string());
                 return Function::create_dummy();
             },
         };   
+
     }
      
     fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> () {
@@ -110,19 +112,29 @@ impl TypeChecker {
         };   
     }
 
-    fn get_environment(&mut self) -> &mut FunctionEnv {
-        return &mut self.environments[self.current_env_id];
+    fn get_environment(&mut self) -> &mut Environment {
+        return match self.current_env_id {
+            Some(env_id) => &mut self.environments[env_id].environment,
+            None => &mut self.environment,
+        };
     }
 
     fn new_function_env(&mut self, function: Function) -> () {
-        let previus_env_id: usize = self.current_env_id;
+        let previus_env_id: Option<usize> = self.current_env_id;
         let current_env_id: usize = self.environments.len();
-        self.environments.push(FunctionEnv::new(current_env_id, previus_env_id));
-
+        self.environments.push(FunctionEnv::new(current_env_id, previus_env_id, function.clone()));
         self.get_environment().add_function(function.identifier.clone(), current_env_id);
+        self.current_env_id = Option::Some(current_env_id);
+    }
 
-        self.current_env_id = current_env_id;
-        self.get_environment().function = Option::Some(function);
+    fn get_function(&mut self) -> Function {
+        match self.current_env_id {
+            Some(id) => return self.environments[id].function.clone(),
+            None => {
+                self.create_error("Can't return outside function environment".to_string());
+                return Function::create_dummy();
+            },
+        };
     }
 }
 

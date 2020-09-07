@@ -83,18 +83,9 @@ impl TypeChecker {
 
     fn check_return(&mut self, return_statement: Return) -> () {
         let expression_type: String = self.get_expression_type(return_statement.value);
-        match &self.get_environment().function {
-            Some(val) => {
-                if expression_type != val.return_type.r#type.get_fragment() {
-                    self.create_error("type error: in return statement.".to_string());
-                }
-            },
-            None => {
-                if expression_type != "()" {
-                    self.create_error("type error: in return statement.".to_string());
-                }
-            },
-        };
+        if expression_type != self.get_function().return_type.r#type.get_fragment() {
+            self.create_error("type error: in return statement.".to_string());
+        }
         // TODO: Check if it returns correctly in all branches.
         // TODO: Add warrning for code affter return.
     }
