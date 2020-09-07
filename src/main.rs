@@ -28,9 +28,9 @@ fn main() {
     let test: String = "    fn testfn(apa: i32) -> i32 {
         return false;
         fn testfn2() -> i32 {
-            return testfn();
+            return testfn(false);
         }
-        return testfn2();
+        return testfn2(1);
     }
     ".to_string();
 

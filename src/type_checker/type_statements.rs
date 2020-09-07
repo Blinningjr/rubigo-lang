@@ -95,7 +95,8 @@ impl TypeChecker {
                 }
             },
         };
-        // TODO: Check that it mathes the function return type.
+        // TODO: Check if it returns correctly in all branches.
+        // TODO: Add warrning for code affter return.
     }
 
     fn check_body(&mut self, body: Body) -> () {

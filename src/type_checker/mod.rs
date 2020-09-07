@@ -70,14 +70,14 @@ impl TypeChecker {
         }
     }
 
-    fn lookup_function(&mut self, identifier: Span<String>) -> String {
+    fn lookup_function(&mut self, identifier: Span<String>) -> Function {
         let mut env_id: usize = self.current_env_id;
         while env_id != 0 {
             match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
                 Ok(id) => {
                     return match &self.environments[id].function {
-                        Some(func) => func.return_type.r#type.get_fragment(),
-                        None => "()".to_string(),
+                        Some(func) => func.clone(),
+                        None => Function::create_dummy(),
                     };
                 },
                 Err(_) => env_id = self.environments[env_id].previus_env_id,
@@ -86,13 +86,13 @@ impl TypeChecker {
         match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
             Ok(id) => {
                 return match &self.environments[id].function {
-                    Some(func) => func.return_type.r#type.get_fragment(),
-                    None => "()".to_string(),
+                    Some(func) => func.clone(),
+                    None => Function::create_dummy(),
                 };
             },
             Err(msg) => {
                 self.create_error(msg);
-                return "".to_string();
+                return Function::create_dummy();
             },
         };   
     }

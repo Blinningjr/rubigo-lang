@@ -38,6 +38,25 @@ pub struct Function {
     pub body: Body,
 }
 
+impl Function{
+    pub fn create_dummy() -> Function {
+        return Function{
+            original: Span::new("DUMMY".to_string(), 0, 0),
+            identifier: Span::new("DUMMY".to_string(), 0, 0),
+            parameters: vec!(),
+            return_type: TypeDecleration{
+                borrow: false,
+                mutable: false,
+                r#type: Span::new("ANY".to_string(), 0, 0),
+            },
+            body: Body{
+                original: Span::new("DUMMY".to_string(), 0, 0),
+                body: vec!(), 
+            },
+        };
+    }
+}
+
 
 /**
  * Defines while in Rubigo. 
