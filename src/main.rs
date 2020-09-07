@@ -26,9 +26,11 @@ fn main() {
     
 
     let test: String = "    fn testfn(apa: i32) -> i32 {
-        let test: i32 = -false;
-        test = 20.2 + 10;
-        test = 10 == true;
+        return false;
+        fn testfn2() -> bool {
+            return 10;
+        }
+        return false;
     }
     ".to_string();
 

@@ -35,10 +35,9 @@ impl TypeChecker {
     }
 
     fn check_function(&mut self, function: Function) -> () {
-        // TODO: Also store the parameters types and the return type?
-        self.add_function(function.identifier.get_fragment(),
-                          function.return_type.r#type.get_fragment());
+        self.new_function_env(function.clone());
         self.check_body(function.body);
+        self.current_env_id = self.get_environment().previus_env_id;
     }
 
     fn check_while(&mut self, while_statement: While) -> () {
@@ -65,7 +64,7 @@ impl TypeChecker {
 
     fn check_let(&mut self, let_statement: Let) -> () {
         let variable_type: String = let_statement.type_dec.r#type.get_fragment();
-        self.add_variable(let_statement.identifier.get_fragment(), variable_type.clone());
+        self.add_variable(let_statement.identifier, let_statement.type_dec.r#type);
         
         let expression_type: String = self.get_expression_type(let_statement.value);
         if variable_type != expression_type {
@@ -84,6 +83,18 @@ impl TypeChecker {
 
     fn check_return(&mut self, return_statement: Return) -> () {
         let expression_type: String = self.get_expression_type(return_statement.value);
+        match &self.get_environment().function {
+            Some(val) => {
+                if expression_type != val.return_type.r#type.get_fragment() {
+                    self.create_error("type error: in return statement.".to_string());
+                }
+            },
+            None => {
+                if expression_type != "()" {
+                    self.create_error("type error: in return statement.".to_string());
+                }
+            },
+        };
         // TODO: Check that it mathes the function return type.
     }
 
