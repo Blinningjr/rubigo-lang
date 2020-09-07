@@ -71,9 +71,19 @@ impl TypeChecker {
     }
 
     fn lookup_function(&mut self, identifier: Span<String>) -> String {
-        return match self.get_environment().lookup_function(identifier.get_fragment()) {
+        let mut env_id: usize = self.current_env_id;
+        while env_id != 0 {
+            match self.environments[env_id].lookup_function(identifier.get_fragment()) {
+                Ok(r#type) => return r#type,
+                Err(_) => env_id = self.environments[env_id].previus_env_id,
+            };   
+        }
+        return match self.environments[env_id].lookup_function(identifier.get_fragment()) {
             Ok(r#type) => r#type,
-            Err(msg) => panic!(msg),
+            Err(msg) => {
+                self.create_error(msg);
+                return "".to_string();
+            },
         };   
     }
      

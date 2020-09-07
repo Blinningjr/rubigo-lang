@@ -28,7 +28,7 @@ fn main() {
     let test: String = "    fn testfn(apa: i32) -> i32 {
         return false;
         fn testfn2() -> bool {
-            return 10;
+            return testfn();
         }
         return false;
     }

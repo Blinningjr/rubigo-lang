@@ -30,6 +30,14 @@ impl FunctionEnv {
     }
 
     pub fn lookup_function(&mut self, identifier: String) -> Result<String, String> {
+        match & self.function {
+            Some(func) => {
+                if func.identifier.get_fragment() == identifier {
+                    return Ok(func.return_type.r#type.get_fragment());
+                }
+            },
+            None => (),
+        };
         return self.environment.lookup_function(identifier);
     }
 
