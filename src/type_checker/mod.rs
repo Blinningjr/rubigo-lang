@@ -77,11 +77,11 @@ impl TypeChecker {
         loop {
             match env_id_r {
                 Some(env_id) => {
-                    match self.environments[env_id - 1].lookup_function_id(identifier.get_fragment()) {
+                    match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
                         Ok(id) => {
                             return self.environments[id].function.clone();
                         },
-                        Err(_) => env_id_r = self.environments[env_id].environment.previus_env_id,
+                        Err(_) => env_id_r = self.environments[env_id].previus_id,
                     };   
                 },
                 None => break,
@@ -114,7 +114,7 @@ impl TypeChecker {
 
     fn get_environment(&mut self) -> &mut Environment {
         return match self.current_env_id {
-            Some(env_id) => &mut self.environments[env_id].environment,
+            Some(env_id) => &mut self.environments[env_id].environments[0],
             None => &mut self.environment,
         };
     }

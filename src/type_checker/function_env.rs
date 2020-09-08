@@ -8,36 +8,43 @@ pub use super::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionEnv {
+    pub id: usize,
+    pub previus_id: Option<usize>,
+
     pub function: Function,
-    pub environment: Environment, 
+    pub environments: Vec<Environment>, 
 }
 
 
 impl FunctionEnv {
-    pub fn new(environment_id: usize, previus_env_id: Option<usize>, function: Function) -> FunctionEnv{
+    pub fn new(id: usize, previus_id: Option<usize>, function: Function) -> FunctionEnv{
+        // TODO: Add the function parameters as variables in the first environment.
         return FunctionEnv{
+            id: id,
+            previus_id: previus_id,
+
             function: function,
-            environment: Environment::new(environment_id, previus_env_id),
+            environments: vec!(Environment::new(0, None)),
         };
     }
 
     pub fn add_function(&mut self, identifier: Span<String>, env_id: usize) -> bool {
-        return self.environment.add_function(identifier, env_id);
+        return self.environments[0].add_function(identifier, env_id);
     }
 
     pub fn lookup_function_id(&mut self, identifier: String) -> Result<usize, String> {
         if self.function.identifier.get_fragment() == identifier {
-            return Ok(self.environment.environment_id);
+            return Ok(self.id);
         }
-        return self.environment.lookup_function(identifier);
+        return self.environments[0].lookup_function(identifier);
     }
 
     pub fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> bool {
-        return self.environment.add_variable(identifier, r#type);
+        return self.environments[0].add_variable(identifier, r#type);
     }
 
     pub fn lookup_variable(&mut self, identifier: String) -> Result<String, String> {
-        return self.environment.lookup_variable(identifier); 
+        return self.environments[0].lookup_variable(identifier); 
     }
 }
 

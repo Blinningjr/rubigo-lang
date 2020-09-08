@@ -35,9 +35,10 @@ impl TypeChecker {
     }
 
     fn check_function(&mut self, function: Function) -> () {
+        let current_id = self.current_env_id;
         self.new_function_env(function.clone());
         self.check_body(function.body);
-        self.current_env_id = self.get_environment().previus_env_id;
+        self.current_env_id = current_id;
     }
 
     fn check_while(&mut self, while_statement: While) -> () {
