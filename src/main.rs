@@ -31,9 +31,9 @@ fn main() {
             if true {
                 let a: i32 = 10;
                 a = 20;
+                return testfn(false);
             }
             a = 2;
-            return testfn(false);
         }
         return testfn2(1);
     }

@@ -63,6 +63,8 @@ impl TypeChecker {
         };
 
         type_checker.check_statement(ast);
+
+        //println!("{:#?}", type_checker);
         
         type_checker.error_handler.print_errors();
 
@@ -140,7 +142,7 @@ impl TypeChecker {
 
     fn get_environment(&mut self) -> &mut Environment {
         return match self.current_env_id {
-            Some(env_id) => &mut self.environments[env_id].environments[0],
+            Some(env_id) => &mut self.environments[env_id].environments[self.current_body_id],
             None => &mut self.environment,
         };
     }

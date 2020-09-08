@@ -98,18 +98,10 @@ impl FunctionEnv {
             return true;
         } 
 
-        let (if_children, non_if_children): (Vec<usize>, Vec<usize>) = self.separate_if_env(self.find_childrens_ids(env_id));
+        let (_if_children, non_if_children): (Vec<usize>, Vec<usize>) = self.separate_if_env(self.find_childrens_ids(env_id));
         
-        if (if_children.len() + non_if_children.len()) == 0 {
+        if non_if_children.len() == 0 {
             return false;
-
-        } else if non_if_children.len() == 0 {
-            for id in if_children {
-                if !self.check_if_all_returns(id) {
-                    return false;
-                }
-            } 
-            return true;
         } else {
             for id in non_if_children {
                 if self.check_if_all_returns(id) {
@@ -126,7 +118,7 @@ impl FunctionEnv {
             match env.previus_id {
                 Some(id) => {
                     if id == parent_id {
-                        childrens_ids.push(id); 
+                        childrens_ids.push(env.id); 
                     }
                 },
                 None => (),
