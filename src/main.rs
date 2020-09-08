@@ -28,6 +28,11 @@ fn main() {
     let test: String = "    fn testfn(apa: i32) -> i32 {
         return false;
         fn testfn2() -> i32 {
+            if true {
+                let a: i32 = 10;
+                a = 20;
+            }
+            a = 2;
             return testfn(false);
         }
         return testfn2(1);

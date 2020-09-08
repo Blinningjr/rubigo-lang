@@ -36,9 +36,13 @@ impl TypeChecker {
 
     fn check_function(&mut self, function: Function) -> () {
         let current_id = self.current_env_id;
+        let current_body_id = self.current_body_id;
+
         self.new_function_env(function.clone());
         self.check_body(function.body);
+
         self.current_env_id = current_id;
+        self.current_body_id = current_body_id;
     }
 
     fn check_while(&mut self, while_statement: While) -> () {
@@ -92,9 +96,12 @@ impl TypeChecker {
     }
 
     fn check_body(&mut self, body: Body) -> () {
+        let current_body_id: usize = self.current_body_id;
+        self.create_body();
         for statement in body.body.iter() {
             self.check_statement(statement.clone());
         } 
+        self.current_body_id = current_body_id;
     }
 
     fn check_expression(&mut self, expression: Expression) -> () {

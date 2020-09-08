@@ -40,7 +40,9 @@ pub struct TypeChecker {
     error_handler: ErrorHandler,
     environments: Vec<FunctionEnv>,
     environment: Environment,
+
     current_env_id: Option<usize>,
+    current_body_id: usize,
 }
 
 
@@ -50,7 +52,9 @@ impl TypeChecker {
             error_handler: ErrorHandler::new(true),
             environments: vec!(),
             environment: Environment::new(0, None),
+            
             current_env_id: None,
+            current_body_id: 0,
         };
 
         type_checker.check_statement(ast);
@@ -77,7 +81,7 @@ impl TypeChecker {
         loop {
             match env_id_r {
                 Some(env_id) => {
-                    match self.environments[env_id].lookup_function_id(identifier.get_fragment()) {
+                    match self.environments[env_id].lookup_function_id(identifier.get_fragment(), self.current_body_id) {
                         Ok(id) => {
                             return self.environments[id].function.clone();
                         },
@@ -100,16 +104,33 @@ impl TypeChecker {
     }
      
     fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> () {
-        if !self.get_environment().add_variable(identifier.clone(), r#type) {
-            self.create_error(format!("Variable {:#?} is already decleard", identifier.get_fragment()).to_string());
-        }
+        match self.current_env_id {
+            Some(id) => self.environments[id].add_variable(identifier, r#type, self.current_body_id),
+            None => self.environment.add_variable(identifier, r#type),
+        };
     }
 
     fn lookup_variable(&mut self, identifier: Span<String>) -> String {
-        return match self.get_environment().lookup_variable(identifier.get_fragment()) {
-            Ok(r#type) => r#type,
-            Err(msg) => panic!(msg),
-        };   
+        match self.current_env_id {
+            Some(id) => {
+                match self.environments[id].lookup_variable(identifier.get_fragment(), self.current_body_id) {
+                    Ok(val) => return val,
+                    Err(msg) => {
+                        self.create_error(msg);
+                        return "".to_string();
+                    },
+                };
+            },
+            None => {
+                match self.environment.lookup_variable(identifier.get_fragment()) {
+                    Ok(val) => return val,
+                    Err(msg) => {
+                        self.create_error(msg);
+                        return "".to_string();
+                    },
+                }
+            },
+        };
     }
 
     fn get_environment(&mut self) -> &mut Environment {
@@ -122,6 +143,8 @@ impl TypeChecker {
     fn new_function_env(&mut self, function: Function) -> () {
         let previus_env_id: Option<usize> = self.current_env_id;
         let current_env_id: usize = self.environments.len();
+        
+        self.current_body_id = 0;
         self.environments.push(FunctionEnv::new(current_env_id, previus_env_id, function.clone()));
         self.get_environment().add_function(function.identifier.clone(), current_env_id);
         self.current_env_id = Option::Some(current_env_id);
@@ -134,6 +157,13 @@ impl TypeChecker {
                 self.create_error("Can't return outside function environment".to_string());
                 return Function::create_dummy();
             },
+        };
+    }
+
+    fn create_body(&mut self) -> () {
+        match self.current_env_id {
+            Some(id) => self.current_body_id = self.environments[id].create_env(self.current_body_id),
+            None => panic!("Can't create body in module"),
         };
     }
 }
