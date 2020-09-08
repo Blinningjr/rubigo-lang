@@ -6,6 +6,10 @@ pub use super::{
     statement::Function,
 };
 
+pub use super::r#type::{
+    Type,
+};
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionEnv {
     pub id: usize,
@@ -57,7 +61,7 @@ impl FunctionEnv {
         return self.environments[body_id].add_variable(identifier, r#type);
     }
 
-    pub fn lookup_variable(&mut self, identifier: String, start_id: usize) -> Result<String, String> {
+    pub fn lookup_variable(&mut self, identifier: String, start_id: usize) -> Result<Type, String> {
         let mut env_id_r: Option<usize> = Some(start_id); 
         loop {
             match env_id_r {

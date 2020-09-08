@@ -6,9 +6,14 @@ mod type_statements;
 mod type_expressions;
 mod type_literals;
 mod type_operations;
+pub mod r#type;
 
 
 pub use super::span::Span;
+
+pub use r#type::{
+    Type,
+};
 
 pub use super::error::{
     ErrorLevel,
@@ -110,14 +115,14 @@ impl TypeChecker {
         };
     }
 
-    fn lookup_variable(&mut self, identifier: Span<String>) -> String {
+    fn lookup_variable(&mut self, identifier: Span<String>) -> Type {
         match self.current_env_id {
             Some(id) => {
                 match self.environments[id].lookup_variable(identifier.get_fragment(), self.current_body_id) {
                     Ok(val) => return val,
                     Err(msg) => {
                         self.create_error(msg);
-                        return "".to_string();
+                        return Type::Any;
                     },
                 };
             },
@@ -126,7 +131,7 @@ impl TypeChecker {
                     Ok(val) => return val,
                     Err(msg) => {
                         self.create_error(msg);
-                        return "".to_string();
+                        return Type::Any;
                     },
                 }
             },

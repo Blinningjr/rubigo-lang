@@ -8,6 +8,11 @@ pub use super::{
     TypeDecleration,
 };
 
+pub use super::r#type::{
+    Type,
+    compare_types,
+};
+
 pub use super::statement::{
     Function,
     While,
@@ -28,7 +33,7 @@ impl TypeChecker {
             Statement::Let(r#let) => self.check_let(r#let),
             Statement::Assignment(assignment) => self.check_assignment(assignment),
             Statement::Return(r#return) => self.check_return(r#return),
-            Statement::Body(body) => self.check_body(*body),
+            Statement::Body(body) => self.check_body(*body, true),
             Statement::Expression(expression) => self.check_expression(expression),
             _ => panic!("Not implemented!"),
         };
@@ -39,65 +44,70 @@ impl TypeChecker {
         let current_body_id = self.current_body_id;
 
         self.new_function_env(function.clone());
-        self.check_body(function.body);
+        self.check_body(function.body, false);
 
         self.current_env_id = current_id;
         self.current_body_id = current_body_id;
     }
 
     fn check_while(&mut self, while_statement: While) -> () {
-        let condition_type: String = self.get_expression_type(while_statement.condition);
-        if condition_type != "bool" {
+        let condition_type: Type = self.get_expression_type(while_statement.condition);
+        if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
             self.create_error("type error: in while statement.".to_string());
         }
 
-        self.check_body(while_statement.body);
+        self.check_body(while_statement.body, true);
     }
 
     fn check_if(&mut self, if_statement: If) -> () {
-        let condition_type: String = self.get_expression_type(if_statement.condition);
-        if condition_type != "bool" {
+        let condition_type: Type = self.get_expression_type(if_statement.condition);
+        if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
             self.create_error("type error: in if statement.".to_string());
         }
 
-        self.check_body(if_statement.if_body);
+        self.check_body(if_statement.if_body, true);
         match if_statement.else_body {
-            Some(body) => self.check_body(body),
+            Some(body) => self.check_body(body, true),
             None => (),
         };
     }
 
     fn check_let(&mut self, let_statement: Let) -> () {
-        let variable_type: String = let_statement.type_dec.r#type.get_fragment();
+        let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment());
         self.add_variable(let_statement.identifier, let_statement.type_dec.r#type);
         
-        let expression_type: String = self.get_expression_type(let_statement.value);
-        if variable_type != expression_type {
+        let expression_type: Type = self.get_expression_type(let_statement.value); 
+        if !compare_types(&variable_type, &expression_type) {
             self.create_error("type error: in let statement.".to_string());
         }
     }
     
     fn check_assignment(&mut self, assignment: Assignment) -> () {
-        let variable_type: String = self.lookup_variable(assignment.identifier);
+        let variable_type: Type = self.lookup_variable(assignment.identifier);
         
-        let expression_type: String = self.get_expression_type(assignment.value);
-        if variable_type != expression_type {
+        let expression_type: Type = self.get_expression_type(assignment.value);
+        if !compare_types(&variable_type, &expression_type) {
             self.create_error("type error: in assignment statement.".to_string());
         }
     }
 
     fn check_return(&mut self, return_statement: Return) -> () {
-        let expression_type: String = self.get_expression_type(return_statement.value);
-        if expression_type != self.get_function().return_type.r#type.get_fragment() {
+        let expression_type: Type = self.get_expression_type(return_statement.value);
+        let return_type: Type = Type::Custom(self.get_function().return_type.r#type.get_fragment());
+
+        if !compare_types(&expression_type, &return_type) {
             self.create_error("type error: in return statement.".to_string());
         }
         // TODO: Check if it returns correctly in all branches.
         // TODO: Add warrning for code affter return.
     }
 
-    fn check_body(&mut self, body: Body) -> () {
+    fn check_body(&mut self, body: Body, create_env: bool) -> () {
         let current_body_id: usize = self.current_body_id;
-        self.create_body();
+        if create_env {
+            self.create_body();
+        }
+
         for statement in body.body.iter() {
             self.check_statement(statement.clone());
         } 
@@ -105,8 +115,8 @@ impl TypeChecker {
     }
 
     fn check_expression(&mut self, expression: Expression) -> () {
-        let expression_type: String = self.get_expression_type(expression);
-        if expression_type == "" {
+        let expression_type: Type = self.get_expression_type(expression);
+        if !compare_types(&expression_type, &Type::Custom("".to_string())) {
             // TODO: Create a warrning.
         }
     }

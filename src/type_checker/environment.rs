@@ -2,6 +2,11 @@
 
 pub use super::{
     Span,
+    r#type,
+};
+
+pub use r#type::{
+    Type,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -9,7 +14,7 @@ pub struct Environment {
     pub id: usize,
     pub previus_id: Option<usize>,
     pub functions: Vec<(Span<String>, usize)>, 
-    pub variables: Vec<(Span<String>, String)>, 
+    pub variables: Vec<(Span<String>, Type)>, 
 }
 
 
@@ -38,11 +43,11 @@ impl Environment {
     }
 
     pub fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> bool {
-        self.variables.push((identifier, r#type.get_fragment()));
+        self.variables.push((identifier, Type::Custom(r#type.get_fragment())));
         return true;
     }
 
-    pub fn lookup_variable(&mut self, identifier: String) -> Result<String, String> {
+    pub fn lookup_variable(&mut self, identifier: String) -> Result<Type, String> {
         for (ident, r#type) in self.variables.iter() {
             if ident.get_fragment() == identifier {
                 return Ok(r#type.clone());
