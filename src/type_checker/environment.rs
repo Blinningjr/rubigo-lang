@@ -15,6 +15,9 @@ pub struct Environment {
     pub previus_id: Option<usize>,
     pub functions: Vec<(Span<String>, usize)>, 
     pub variables: Vec<(Span<String>, Type)>, 
+
+    pub returns_value: bool,
+    pub if_body: bool,
 }
 
 
@@ -25,6 +28,9 @@ impl Environment {
             previus_id: previus_id,
             functions: vec!(),
             variables: vec!(),
+
+            returns_value: false,
+            if_body: false,
         };
     }
 

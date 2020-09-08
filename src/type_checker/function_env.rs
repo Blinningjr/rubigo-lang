@@ -83,5 +83,72 @@ impl FunctionEnv {
         self.environments.push(Environment::new(new_id, Some(current_id)));
         return new_id;
     }
+
+    pub fn check_if_all_bodies_return(&mut self) -> bool {
+        // TODO: Have a type for no type.
+        if self.function.return_type.r#type.get_fragment() == "" {
+           return true; 
+        } else {
+            return self.check_if_all_returns(0);
+        }
+    }
+
+    pub fn check_if_all_returns(& self, env_id: usize) -> bool {
+        if self.environments[env_id].returns_value {
+            return true;
+        } 
+
+        let (if_children, non_if_children): (Vec<usize>, Vec<usize>) = self.separate_if_env(self.find_childrens_ids(env_id));
+        
+        if (if_children.len() + non_if_children.len()) == 0 {
+            return false;
+
+        } else if non_if_children.len() == 0 {
+            for id in if_children {
+                if !self.check_if_all_returns(id) {
+                    return false;
+                }
+            } 
+            return true;
+        } else {
+            for id in non_if_children {
+                if self.check_if_all_returns(id) {
+                    return true;
+                }
+            } 
+            return false; 
+        }
+    }
+
+    fn find_childrens_ids(& self, parent_id: usize) -> Vec<usize> {
+        let mut childrens_ids: Vec<usize> = vec!();
+        for env in self.environments.iter() {
+            match env.previus_id {
+                Some(id) => {
+                    if id == parent_id {
+                        childrens_ids.push(id); 
+                    }
+                },
+                None => (),
+            };
+        }
+        return childrens_ids;
+    }
+
+    /*
+     * Returns (if_envs, non_if_envs)
+     */
+    fn separate_if_env(& self, envs: Vec<usize>) -> (Vec<usize>, Vec<usize>) {
+        let mut if_children: Vec<usize> = vec!();
+        let mut non_if_children: Vec<usize> = vec!();
+        for id in envs {
+            if self.environments[id].if_body {
+                if_children.push(id);
+            } else {
+                non_if_children.push(id);
+            }
+        }
+        return (if_children, non_if_children);
+    }
 }
 

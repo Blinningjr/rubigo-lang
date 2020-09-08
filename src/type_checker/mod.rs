@@ -171,5 +171,16 @@ impl TypeChecker {
             None => panic!("Can't create body in module"),
         };
     }
+
+    fn check_if_all_bodies_return(&mut self) -> () {
+        match self.current_env_id {
+            Some(id) => {
+                if !self.environments[id].check_if_all_bodies_return() {
+                    self.create_error("Function dosen't return value in every branch".to_string());
+                }
+            },
+            None => panic!("Fatal error in type checker!!!"),
+        }; 
+    }
 }
 

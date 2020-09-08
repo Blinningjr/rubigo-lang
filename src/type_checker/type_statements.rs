@@ -26,6 +26,8 @@ pub use super::statement::{
 
 impl TypeChecker {
     pub(super) fn check_statement(&mut self, statement: Statement) -> () {
+        self.check_if_unreachable_code();
+        
         match statement {
             Statement::Function(function) => self.check_function(*function),
             Statement::While(r#while) => self.check_while(*r#while),
@@ -45,6 +47,8 @@ impl TypeChecker {
 
         self.new_function_env(function.clone());
         self.check_body(function.body, false);
+
+        self.check_if_all_bodies_return();
 
         self.current_env_id = current_id;
         self.current_body_id = current_body_id;
@@ -66,6 +70,15 @@ impl TypeChecker {
         }
 
         self.check_body(if_statement.if_body, true);
+
+        match self.current_env_id {
+            Some(id) => {
+                let env_id: usize = self.environments[id].environments.len() - 1;
+                self.environments[id].environments[env_id].if_body = true;
+            },
+            None => panic!("Fatal error in type checker!!!"),
+        };
+
         match if_statement.else_body {
             Some(body) => self.check_body(body, true),
             None => (),
@@ -92,14 +105,14 @@ impl TypeChecker {
     }
 
     fn check_return(&mut self, return_statement: Return) -> () {
+        self.get_environment().returns_value = true;
+        
         let expression_type: Type = self.get_expression_type(return_statement.value);
         let return_type: Type = Type::Custom(self.get_function().return_type.r#type.get_fragment());
 
         if !compare_types(&expression_type, &return_type) {
             self.create_error("type error: in return statement.".to_string());
         }
-        // TODO: Check if it returns correctly in all branches.
-        // TODO: Add warrning for code affter return.
     }
 
     fn check_body(&mut self, body: Body, create_env: bool) -> () {
@@ -118,6 +131,12 @@ impl TypeChecker {
         let expression_type: Type = self.get_expression_type(expression);
         if !compare_types(&expression_type, &Type::Custom("".to_string())) {
             // TODO: Create a warrning.
+        }
+    }
+
+    fn check_if_unreachable_code(&mut self) -> () {
+        if self.get_environment().returns_value {
+            self.create_error("Warrning: Unreachable code".to_string());
         }
     }
 
