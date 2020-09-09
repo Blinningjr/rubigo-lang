@@ -6,6 +6,7 @@ pub use super::{
     Statement,
     expressions::Expression,
     TypeDecleration,
+    Span,
 };
 
 pub use super::r#type::{
@@ -55,18 +56,22 @@ impl TypeChecker {
     }
 
     fn check_while(&mut self, while_statement: While) -> () {
-        let condition_type: Type = self.get_expression_type(while_statement.condition);
+        let original: Span<String> = while_statement.original;
+        let condition_type: Type = self.get_expression_type(while_statement.condition.clone(), original.clone());
         if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
-            self.create_error("type error: in while statement.".to_string());
+            let (line, offset): (usize, usize) = self.get_expression_location(while_statement.condition);
+            self.create_type_error("type error in while statement.".to_string(), original, line, offset);
         }
 
         self.check_body(while_statement.body, true);
     }
 
     fn check_if(&mut self, if_statement: If) -> () {
-        let condition_type: Type = self.get_expression_type(if_statement.condition);
+        let original: Span<String> = if_statement.original;
+        let condition_type: Type = self.get_expression_type(if_statement.condition.clone(), original.clone());
         if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
-            self.create_error("type error: in if statement.".to_string());
+            let (line, offset): (usize, usize) = self.get_expression_location(if_statement.condition);
+            self.create_type_error("type error in if statement.".to_string(), original, line, offset);
         }
 
         self.check_body(if_statement.if_body, true);
@@ -86,32 +91,41 @@ impl TypeChecker {
     }
 
     fn check_let(&mut self, let_statement: Let) -> () {
+        let original: Span<String> = let_statement.original;
+        
         let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment());
         self.add_variable(let_statement.identifier, let_statement.type_dec.r#type);
         
-        let expression_type: Type = self.get_expression_type(let_statement.value); 
+        let expression_type: Type = self.get_expression_type(let_statement.value.clone(), original.clone()); 
         if !compare_types(&variable_type, &expression_type) {
-            self.create_error("type error: in let statement.".to_string());
+            let (line, offset): (usize, usize) = self.get_expression_location(let_statement.value);
+            self.create_type_error("type error in let statement.".to_string(), original, line, offset);
         }
     }
     
     fn check_assignment(&mut self, assignment: Assignment) -> () {
+        let original: Span<String> = assignment.original;
+        
         let variable_type: Type = self.lookup_variable(assignment.identifier);
         
-        let expression_type: Type = self.get_expression_type(assignment.value);
+        let expression_type: Type = self.get_expression_type(assignment.value.clone(), original.clone());
         if !compare_types(&variable_type, &expression_type) {
-            self.create_error("type error: in assignment statement.".to_string());
+            let (line, offset): (usize, usize) = self.get_expression_location(assignment.value);
+            self.create_type_error("type error: in assignment statement.".to_string(), original, line, offset);
         }
     }
 
     fn check_return(&mut self, return_statement: Return) -> () {
         self.get_environment().returns_value = true;
         
-        let expression_type: Type = self.get_expression_type(return_statement.value);
+        let original: Span<String> = return_statement.original;
+        
+        let expression_type: Type = self.get_expression_type(return_statement.value.clone(), original.clone());
         let return_type: Type = Type::Custom(self.get_function().return_type.r#type.get_fragment());
 
         if !compare_types(&expression_type, &return_type) {
-            self.create_error("type error: in return statement.".to_string());
+            let (line, offset): (usize, usize) = self.get_expression_location(return_statement.value);
+            self.create_type_error("type error: in return statement.".to_string(), original, line, offset);
         }
     }
 
@@ -128,10 +142,17 @@ impl TypeChecker {
     }
 
     fn check_expression(&mut self, expression: Expression) -> () {
-        let expression_type: Type = self.get_expression_type(expression);
-        if !compare_types(&expression_type, &Type::Custom("".to_string())) {
-            // TODO: Create a warrning.
-        }
+        match &expression {
+            Expression::FunctionCall(expr) => {
+                let original: Span<String> = expr.original.clone();
+                
+                let expression_type: Type = self.get_expression_type(expression, original);
+                if !compare_types(&expression_type, &Type::Custom("".to_string())) {
+                    // TODO: Create a warrning.
+                }
+            },
+            _ => panic!("Fatal Error!!!"),
+        };
     }
 
     fn check_if_unreachable_code(&mut self) -> () {

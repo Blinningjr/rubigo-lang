@@ -4,6 +4,7 @@
 pub use super::{
     TypeChecker,
     Literal,
+    Span,
 };
 
 pub use super::r#type::{
@@ -24,25 +25,28 @@ pub use super::expressions::{
 pub use super::operations::{
     BinOp,
     UnOp,
+    UnOperator,
 };
 
 
 impl TypeChecker {
-    pub(super) fn get_expression_type(&mut self, expression: Expression) -> Type {
+    pub(super) fn get_expression_type(&mut self, expression: Expression, original: Span<String>) -> Type {
         return match expression {
-            Expression::BinOp(binop) => self.get_binop_type(*binop),
-            Expression::UnOp(unop) => self.get_unop_type(*unop),
-            Expression::FunctionCall(function_call) => self.get_function_call_type(*function_call),
+            Expression::BinOp(binop) => self.get_binop_type(*binop, original),
+            Expression::UnOp(unop) => self.get_unop_type(*unop, original),
+            Expression::FunctionCall(function_call) => self.get_function_call_type(*function_call, original),
             Expression::Variable(variable) => self.get_variable_type(variable),
             Expression::Literal(literal) => self.get_literal_type(literal),
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
         };
     }
 
-    fn get_function_call_type(&mut self, function_call: FunctionCall) -> Type {
+    fn get_function_call_type(&mut self, function_call: FunctionCall, original: Span<String>) -> Type {
         let mut inputs_type: Vec<Type> = vec!();
+        let mut inputs_location: Vec<(usize, usize)> = vec!();
         for expr in function_call.parameters.iter() {
-            inputs_type.push(self.get_expression_type(expr.clone()));
+            inputs_type.push(self.get_expression_type(expr.clone(), original.clone()));
+            inputs_location.push(self.get_expression_location(expr.clone()));
         }
 
         let function: Function = self.lookup_function(function_call.identifier);
@@ -52,11 +56,11 @@ impl TypeChecker {
         }
 
         if inputs_type.len() != parameters_type.len() {
-            self.create_error("type error: not the same amount of parameters".to_string());
+            self.create_error("type error not the same amount of parameters".to_string());
         } else {
             for i in 0..inputs_type.len() {
                 if !compare_types(&inputs_type[i], &parameters_type[i]) {
-                    self.create_error(format!("type error: parameter {} wrong type", i));
+                    self.create_type_error(format!("type error parameter {} wrong type", i), original.clone(), inputs_location[i].0, inputs_location[i].1);
                 } 
             }
         }
@@ -66,6 +70,38 @@ impl TypeChecker {
 
     fn get_variable_type(&mut self, variable: Variable) -> Type {
         return self.lookup_variable(variable.identifier);
+    }
+
+
+    pub(super) fn get_expression_location(& self, expression: Expression) -> (usize, usize) {
+        match expression {
+            Expression::BinOp(bin_op) => {
+                return self.get_expression_location(bin_op.left_expression);
+            },
+            Expression::UnOp(un_op) => {
+                let op: Span<UnOperator> = un_op.un_op;
+                return (op.get_line(), op.get_offset());
+            },
+            Expression::FunctionCall(func_call) => {
+                let ident: Span<String> = func_call.identifier; 
+                return (ident.get_line(), ident.get_offset());
+            },
+            Expression::Variable(var) => {
+                let ident: Span<String> = var.identifier; 
+                return (ident.get_line(), ident.get_offset());
+            },
+            Expression::Literal(literal) => {
+                return match literal {
+                    Literal::I32(span) => (span.get_line(), span.get_offset()),
+                    Literal::F32(span) => (span.get_line(), span.get_offset()),
+                    Literal::Bool(span) => (span.get_line(), span.get_offset()),
+                    Literal::Char(span) => (span.get_line(), span.get_offset()),
+                    Literal::String(span) => (span.get_line(), span.get_offset()),
+                    Literal::Dummy => panic!("Fatal Error!!!"),
+                };
+            },
+            Expression::Dummy => panic!("Fatal Error!!!"),
+        };
     }
 }
 

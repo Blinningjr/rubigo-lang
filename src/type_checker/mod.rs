@@ -19,6 +19,7 @@ pub use super::error::{
     ErrorLevel,
     Error,
     ErrorHandler,
+    TypeError,
 };
 
 pub use super::parser::{
@@ -72,7 +73,19 @@ impl TypeChecker {
     }
 
     fn create_error(&mut self, message: String) -> () {
-        let error: Error = Error::TypeError(message.clone());
+        let error: Error = Error::Error(message.clone());
+
+        self.error_handler.add(error);
+    }
+
+    fn create_type_error(&mut self, message: String, code: Span<String>, line: usize, offset: usize) -> () {
+        let error: Error = Error::TypeError(TypeError {
+            level: ErrorLevel::Error,
+            message: message.clone(),
+            code: code,
+            line: line,
+            offset: offset,
+        });
 
         self.error_handler.add(error);
     }

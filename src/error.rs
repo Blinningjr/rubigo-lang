@@ -1,3 +1,5 @@
+use super::span::Span;
+
 /**
  * Defines error levels in Rubigo.
  */
@@ -16,7 +18,7 @@ pub enum ErrorLevel {
 pub enum Error {
     Error(String),
     SyntaxError(SyntaxError),
-    TypeError(String),
+    TypeError(TypeError),
 }
 
 /**
@@ -31,6 +33,17 @@ pub struct SyntaxError {
     pub offset: usize,
 }
 
+/**
+ * Defubes Type Error in Rubgio.
+ */
+#[derive(Debug, Clone, PartialEq)]
+pub struct TypeError {
+    pub level: ErrorLevel,
+    pub message: String,
+    pub code: Span<String>,
+    pub line: usize,
+    pub offset: usize,
+}
 
 /**
  * Defines error handler in Rubigo.
@@ -92,7 +105,7 @@ impl ErrorHandler {
         match error {
             Error::Error(message) => println!("Error \n\t{:?}\n", message),
             Error::SyntaxError(err) => self.print_syntax_error(err),
-            Error::TypeError(message) => println!("TypeError \n\t{:?}\n", message),
+            Error::TypeError(err) => self.print_type_error(err),
         };
     }
 
@@ -124,6 +137,26 @@ impl ErrorHandler {
         println!("{}{}", level, location);
         println!("{}{:#}", line_num, error.code);
         println!("{} {}\n", pointer, error.message);
+    }
+
+
+    /**
+     * Print TypeError.
+     */
+    fn print_type_error(&mut self, error: TypeError) -> () {
+        let level: String; match &error.level {
+            ErrorLevel::Critical => level = "Critical Type Error".to_string(),
+            ErrorLevel::Error => level = "Type Error".to_string(),
+            ErrorLevel::Warning => level = "Warning".to_string(),
+        };
+        
+        let mut location: String = format!(" at {:?}:{:?}", error.line, error.offset).to_string();
+        if error.line == 0 && error.offset == 0 {
+            location =  "".to_string();
+        }
+
+        println!("{}{}\n\t{}", level, location, error.message); 
+        println!("Line {}, Code :\n{:#?}\n", error.code.get_line(), error.code.get_fragment());
     }
 }
 

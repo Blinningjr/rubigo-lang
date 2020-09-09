@@ -4,6 +4,7 @@
 pub use super::{
     TypeChecker,
     operations,
+    Span,
 };
 
 pub use super::operations::{
@@ -22,15 +23,18 @@ pub use super::r#type::{
 
 impl TypeChecker {
 
-    pub(super) fn get_binop_type(&mut self, binop: BinOp) -> Type {
-        let left_expression_type: Type = self.get_expression_type(binop.left_expression);
-        let right_expression_type: Type = self.get_expression_type(binop.right_expression); 
+    pub(super) fn get_binop_type(&mut self, binop: BinOp, original: Span<String>) -> Type {
+        let left_expression_type: Type = self.get_expression_type(binop.left_expression.clone(), original.clone());
+        let right_expression_type: Type = self.get_expression_type(binop.right_expression, original.clone()); 
         let binop_type: (Type, Type) = self.binop_type(binop.bin_op.get_fragment());
 
         if !compare_types(&left_expression_type, &right_expression_type) {
-            self.create_error("type error binop".to_string());
+            let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression);
+            self.create_type_error("type error binop".to_string(), original, line, offset);
+
         } else if !compare_types(&binop_type.1, &left_expression_type.clone()) {
-            self.create_error("type error binop".to_string());  
+            let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression);
+            self.create_type_error("type error binop".to_string(), original, line, offset);  
         }
 
         if binop_type.0 != Type::Any || binop_type.0 != Type::Number {
@@ -63,12 +67,13 @@ impl TypeChecker {
         };
     } 
 
-    pub(super) fn get_unop_type(&mut self, unop: UnOp) -> Type {
-        let expression_type: Type = self.get_expression_type(unop.expression);
+    pub(super) fn get_unop_type(&mut self, unop: UnOp, original: Span<String>) -> Type {
+        let expression_type: Type = self.get_expression_type(unop.expression.clone(), original.clone());
         let unop_type: Type = self.unop_type(unop.un_op.get_fragment());
 
         if !compare_types(&unop_type, &expression_type) {
-            self.create_error("type error unop".to_string()); 
+            let (line, offset): (usize, usize) = self.get_expression_location(unop.expression);
+            self.create_type_error("type error unop".to_string(), original, line, offset); 
         }
         return expression_type;
     }
