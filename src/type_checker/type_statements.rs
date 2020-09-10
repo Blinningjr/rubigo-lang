@@ -111,7 +111,7 @@ impl TypeChecker {
         let original: Span<String> = assignment.original;
         self.check_if_unreachable_code(original.clone());
         
-        let variable_type: Type = self.lookup_variable(assignment.identifier);
+        let variable_type: Type = self.lookup_variable(assignment.identifier, original.clone());
         
         let expression_type: Type = self.get_expression_type(assignment.value.clone(), original.clone());
         if !compare_types(&variable_type, &expression_type) {
@@ -152,11 +152,7 @@ impl TypeChecker {
             Expression::FunctionCall(expr) => {
                 let original: Span<String> = expr.original.clone();
                 self.check_if_unreachable_code(original.clone());
-                
-                let expression_type: Type = self.get_expression_type(expression, original);
-                if !compare_types(&expression_type, &Type::Custom("".to_string())) {
-                    // TODO: Create a warrning.
-                }
+                self.get_expression_type(expression, original);
             },
             _ => panic!("Fatal Error!!!"),
         };

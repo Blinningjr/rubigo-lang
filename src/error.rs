@@ -156,7 +156,7 @@ impl ErrorHandler {
         }
 
         println!("{}{}\n\t{}", level, location, error.message); 
-        println!("Line {}, Code :\n{:#?}\n", error.code.get_line(), error.code.get_fragment());
+        println!("Line {}, Code :\n{:#}\n", error.code.get_line(), error.code.get_fragment());
     }
 }
 

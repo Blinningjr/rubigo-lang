@@ -24,11 +24,10 @@ fn main() {
         .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
     
-
     let test: String = "    fn testfn(apa: i32) -> i32 {
         return false;
-        fn testfn2() -> i32 {
-            if true {
+        fn testfn() -> i32 {
+            if 1 {
                 let a: i32 = 10;
                 a = 20;
                 return testfn(false);

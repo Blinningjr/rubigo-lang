@@ -52,7 +52,7 @@ impl FunctionEnv {
                         Err(_) => env_id_r = self.environments[env_id].previus_id,
                     };   
                 },
-                None => return Err("function not decleared".to_string()),
+                None => return Err(format!("Unknown funciton {:#?}", identifier)),
             };
         }
     }
@@ -73,7 +73,7 @@ impl FunctionEnv {
                         Err(_) => env_id_r = self.environments[env_id].previus_id,
                     };   
                 },
-                None => return Err("variable not decleared".to_string()),
+                None => return Err(format!("UnKnown variable {:#?}", identifier)),
             };
         }
     }

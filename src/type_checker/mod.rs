@@ -91,20 +91,30 @@ impl TypeChecker {
     }
 
 
-    fn add_function(&mut self, identifier: Span<String>, env_id: usize) -> () {
-        if !self.get_environment().add_function(identifier.clone(), env_id) {
-            self.create_error(format!("Function {:#?} is already decleard", identifier.get_fragment()).to_string());
-        }
+    fn add_function(&mut self, identifier: Span<String>, env_id: usize, original: Span<String>) -> () {
+
+        match self.search_function(identifier.clone()) {
+            Ok(_) => {
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Function {:#?} is already decleard", identifier.get_fragment()).to_string(),
+                                       original,
+                                       identifier.get_line(),
+                                       identifier.get_offset());
+            },
+            Err(_) => {
+                self.get_environment().add_function(identifier.clone(), env_id);
+            },
+        };
     }
 
-    fn lookup_function(&mut self, identifier: Span<String>) -> Function {
+    fn search_function(&mut self, identifier: Span<String>) -> Result<Function, String> {
         let mut env_id_r: Option<usize> = self.current_env_id;
         loop {
             match env_id_r {
                 Some(env_id) => {
                     match self.environments[env_id].lookup_function_id(identifier.get_fragment(), self.current_body_id) {
                         Ok(id) => {
-                            return self.environments[id].function.clone();
+                            return Ok(self.environments[id].function.clone());
                         },
                         Err(_) => env_id_r = self.environments[env_id].previus_id,
                     };   
@@ -114,14 +124,20 @@ impl TypeChecker {
         }
         match self.environment.lookup_function(identifier.get_fragment()) {
             Ok(id) => {
-                return self.environments[id].function.clone();
+                return Ok(self.environments[id].function.clone());
             },
-            Err(_) => {
-                self.create_error("function not decleared".to_string());
+            Err(msg) => return Err(msg),
+        };   
+    }
+
+    fn lookup_function(&mut self, identifier: Span<String>, original: Span<String>) -> Function {
+        match self.search_function(identifier.clone()) {
+            Ok(function) => return function,
+            Err(msg) => {
+                self.create_type_error(ErrorLevel::Error, msg, original, identifier.get_line(), identifier.get_offset());
                 return Function::create_dummy();
             },
-        };   
-
+        };
     }
      
     fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> () {
@@ -131,13 +147,13 @@ impl TypeChecker {
         };
     }
 
-    fn lookup_variable(&mut self, identifier: Span<String>) -> Type {
+    fn lookup_variable(&mut self, identifier: Span<String>, original: Span<String>) -> Type {
         match self.current_env_id {
             Some(id) => {
                 match self.environments[id].lookup_variable(identifier.get_fragment(), self.current_body_id) {
                     Ok(val) => return val,
                     Err(msg) => {
-                        self.create_error(msg);
+                        self.create_type_error(ErrorLevel::Error, msg, original, identifier.get_line(), identifier.get_offset());
                         return Type::Any;
                     },
                 };
@@ -146,7 +162,7 @@ impl TypeChecker {
                 match self.environment.lookup_variable(identifier.get_fragment()) {
                     Ok(val) => return val,
                     Err(msg) => {
-                        self.create_error(msg);
+                        self.create_type_error(ErrorLevel::Error, msg, original, identifier.get_line(), identifier.get_offset());
                         return Type::Any;
                     },
                 }
@@ -167,7 +183,7 @@ impl TypeChecker {
         
         self.current_body_id = 0;
         self.environments.push(FunctionEnv::new(current_env_id, previus_env_id, function.clone()));
-        self.get_environment().add_function(function.identifier.clone(), current_env_id);
+        self.add_function(function.identifier.clone(), current_env_id, function.original);
         self.current_env_id = Option::Some(current_env_id);
     }
 
@@ -192,7 +208,12 @@ impl TypeChecker {
         match self.current_env_id {
             Some(id) => {
                 if !self.environments[id].check_if_all_bodies_return() {
-                    self.create_error("Function dosen't return value in every branch".to_string());
+                    let function: Function = self.get_function();
+                    self.create_type_error(ErrorLevel::Error, 
+                                           format!("Function {:#?} dosen't return value in every branch", function.identifier.get_fragment()),
+                                           function.original,
+                                           function.identifier.get_line(),
+                                           function.identifier.get_offset());
                 }
             },
             None => panic!("Fatal error in type checker!!!"),

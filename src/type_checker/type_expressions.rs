@@ -36,7 +36,7 @@ impl TypeChecker {
             Expression::BinOp(binop) => self.get_binop_type(*binop, original),
             Expression::UnOp(unop) => self.get_unop_type(*unop, original),
             Expression::FunctionCall(function_call) => self.get_function_call_type(*function_call, original),
-            Expression::Variable(variable) => self.get_variable_type(variable),
+            Expression::Variable(variable) => self.get_variable_type(variable, original),
             Expression::Literal(literal) => self.get_literal_type(literal),
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
         };
@@ -50,14 +50,18 @@ impl TypeChecker {
             inputs_location.push(self.get_expression_location(expr.clone()));
         }
 
-        let function: Function = self.lookup_function(function_call.identifier);
+        let function: Function = self.lookup_function(function_call.identifier.clone(), original.clone());
         let mut parameters_type: Vec<Type> = vec!();
         for (_, type_dec) in function.parameters {
             parameters_type.push(Type::Custom(type_dec.r#type.get_fragment())); 
         }
 
         if inputs_type.len() != parameters_type.len() {
-            self.create_error("type error not the same amount of parameters".to_string());
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Function {:#?} requiers {} parameters, recived {}", function.identifier.get_fragment(), parameters_type.len(), inputs_type.len()),
+                                   original,
+                                   function_call.identifier.get_line(),
+                                   function_call.identifier.get_offset());
         } else {
             for i in 0..inputs_type.len() {
                 if !compare_types(&inputs_type[i], &parameters_type[i]) {
@@ -69,8 +73,8 @@ impl TypeChecker {
         return Type::Custom(function.return_type.r#type.get_fragment());
     }
 
-    fn get_variable_type(&mut self, variable: Variable) -> Type {
-        return self.lookup_variable(variable.identifier);
+    fn get_variable_type(&mut self, variable: Variable, original: Span<String>) -> Type {
+        return self.lookup_variable(variable.identifier, original);
     }
 
 
