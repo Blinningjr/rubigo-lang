@@ -66,6 +66,10 @@ impl ErrorHandler {
         };
     }
 
+    pub fn get_num_errors(& self) -> usize {
+        return self.errors.len();
+    }
+
 
     /**
      * Add Error..

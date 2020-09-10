@@ -43,7 +43,7 @@ pub use function_env::FunctionEnv;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeChecker {
-    error_handler: ErrorHandler,
+    pub error_handler: ErrorHandler,
     environments: Vec<FunctionEnv>,
     environment: Environment,
 
@@ -53,7 +53,7 @@ pub struct TypeChecker {
 
 
 impl TypeChecker {
-    pub fn type_check(ast: Statement) -> bool {
+    pub fn type_check(ast: Statement, print_errors: bool) -> TypeChecker {
         let mut type_checker: TypeChecker = TypeChecker{
             error_handler: ErrorHandler::new(true),
             environments: vec!(),
@@ -66,10 +66,11 @@ impl TypeChecker {
         type_checker.check_statement(ast);
 
         //println!("{:#?}", type_checker);
-        
-        type_checker.error_handler.print_errors();
+        if print_errors { 
+            type_checker.error_handler.print_errors();
+        }
 
-        return false; 
+        return type_checker; 
     }
 
     fn create_error(&mut self, message: String) -> () {
@@ -171,9 +172,10 @@ impl TypeChecker {
         let previus_env_id: Option<usize> = self.current_env_id;
         let current_env_id: usize = self.environments.len();
         
+        self.add_function(function.identifier.clone(), current_env_id, function.original.clone());
+        
         self.current_body_id = 0;
-        self.environments.push(FunctionEnv::new(current_env_id, previus_env_id, function.clone()));
-        self.add_function(function.identifier.clone(), current_env_id, function.original);
+        self.environments.push(FunctionEnv::new(current_env_id, previus_env_id, function));
         self.current_env_id = Option::Some(current_env_id);
     }
 

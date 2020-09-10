@@ -20,10 +20,10 @@ fn main() {
     let filename = "example-code/example.rbg";
     println!("In file {}", filename);
 
-    let contents = fs::read_to_string(filename)
+    let _contents = fs::read_to_string(filename)
         .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
-    
+   
     let test: String = "    fn testfn(apa: i32) -> i32 {
         return false;
         fn testfn() -> i32 {
@@ -38,7 +38,7 @@ fn main() {
     }
     ".to_string();
 
-    let test_parser_fail: String = "fn testfn(apa: i32, te: i32) -> i32 {
+    let _test_parser_fail: String = "fn testfn(apa: i32, te: i32) -> i32 {
         let test: &mut i32 = 2 * (123 - 122);
         let test: char = \" asd asd  \"
         if a == apa(123) {
@@ -61,7 +61,8 @@ fn main() {
     let statement: Statement = Parser::parse(test, true); 
     //println!("Parsed: \n{:#?}\n", statement);
 
-    println!("Type Checked: \n{:#?}\n", TypeChecker::type_check(statement)); 
+    let _type_checker: TypeChecker = TypeChecker::type_check(statement, true);
+    //println!("Type Checked: \n{:#?}\n", type_checker); 
     
 //    let mut tokens: Vec<Token> = Vec::new();
 //    let mut lexer: Lexer = Lexer::new(test); 

@@ -43,6 +43,14 @@ impl Parser {
             TokenType::TBool => (),
             TokenType::TChar=> (),
             TokenType::TString => (),
+            TokenType::ParenthesisStart => {
+                let (value, token): (String, Token) = self.parse_empty();
+                return TypeDecleration {
+                    borrow: borrow,
+                    mutable: mutable,
+                    r#type: self.create_span(value, & token),
+                }; 
+            },
             _ => {
                 self.create_error(ErrorLevel::Error, "Expected a Type".to_string());
             },
@@ -55,6 +63,18 @@ impl Parser {
             mutable: mutable,
             r#type: self.create_span(token.get_value(), & token),
         }; 
+    }
+
+
+    fn parse_empty(&mut self) -> (String, Token) {
+        let start: Token = self.next_token();
+        match self.peak().get_type() {
+            TokenType::ParenthesisEnd => {
+                let _end: Token = self.next_token();
+                return ("".to_string(), start.clone());
+            },
+            _ => panic!("Fatal error!!!"),
+        }
     }
 }
 
