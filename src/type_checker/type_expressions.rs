@@ -50,7 +50,14 @@ impl TypeChecker {
             inputs_location.push(self.get_expression_location(expr.clone()));
         }
 
-        let function: Function = self.lookup_function(function_call.identifier.clone(), original.clone());
+        let function: Function;
+        match self.lookup_function(function_call.identifier.clone()) {
+            Ok(func) => function = func,
+            Err(msg) => {
+               self.create_type_error(ErrorLevel::Error, msg, original, function_call.identifier.get_line(), function_call.identifier.get_offset());
+               return Type::Any;
+            },
+        };
         let mut parameters_type: Vec<Type> = vec!();
         for (_, type_dec) in function.parameters {
             parameters_type.push(Type::Custom(type_dec.r#type.get_fragment())); 

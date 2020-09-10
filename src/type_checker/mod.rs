@@ -93,7 +93,7 @@ impl TypeChecker {
 
     fn add_function(&mut self, identifier: Span<String>, env_id: usize, original: Span<String>) -> () {
 
-        match self.search_function(identifier.clone()) {
+        match self.lookup_function(identifier.clone()) {
             Ok(_) => {
                 self.create_type_error(ErrorLevel::Error,
                                        format!("Function {:#?} is already decleard", identifier.get_fragment()).to_string(),
@@ -107,7 +107,7 @@ impl TypeChecker {
         };
     }
 
-    fn search_function(&mut self, identifier: Span<String>) -> Result<Function, String> {
+    fn lookup_function(&mut self, identifier: Span<String>) -> Result<Function, String> {
         let mut env_id_r: Option<usize> = self.current_env_id;
         loop {
             match env_id_r {
@@ -130,16 +130,6 @@ impl TypeChecker {
         };   
     }
 
-    fn lookup_function(&mut self, identifier: Span<String>, original: Span<String>) -> Function {
-        match self.search_function(identifier.clone()) {
-            Ok(function) => return function,
-            Err(msg) => {
-                self.create_type_error(ErrorLevel::Error, msg, original, identifier.get_line(), identifier.get_offset());
-                return Function::create_dummy();
-            },
-        };
-    }
-     
     fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> () {
         match self.current_env_id {
             Some(id) => self.environments[id].add_variable(identifier, r#type, self.current_body_id),
