@@ -17,6 +17,7 @@ pub mod type_checker;
 
 mod type_errors;
 mod statement;
+mod operation;
 
 pub use error::ErrorHandler;
 pub use parser::Parser;

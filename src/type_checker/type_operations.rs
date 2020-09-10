@@ -38,12 +38,7 @@ impl TypeChecker {
             self.create_type_error(ErrorLevel::Error, "type error binop".to_string(), original, line, offset);  
         }
 
-        if binop_type.0 != Type::Any || binop_type.0 != Type::Number {
-            return binop_type.0;
-
-        } else {
-            return left_expression_type;
-        }
+        return binop_type.0;
     }
 
     /*
@@ -56,12 +51,12 @@ impl TypeChecker {
             BinOperator::Divition => (Type::Number, Type::Number),
             BinOperator::Multiplication => (Type::Number, Type::Number),
             BinOperator::Modilus => (Type::Number, Type::Number),
-            BinOperator::LessThen => (Type::Number, Type::Number),
-            BinOperator::GreaterThen => (Type::Number, Type::Number),
-            BinOperator::NotEqual => (Type::Any, Type::Any),
-            BinOperator::Equal => (Type::Any, Type::Any),
-            BinOperator::GreaterEqual => (Type::Number, Type::Number),
-            BinOperator::LessEqual => (Type::Number, Type::Number),
+            BinOperator::LessThen => (Type::Custom("bool".to_string()), Type::Number),
+            BinOperator::GreaterThen => (Type::Custom("bool".to_string()), Type::Number),
+            BinOperator::NotEqual => (Type::Custom("bool".to_string()), Type::Any),
+            BinOperator::Equal => (Type::Custom("bool".to_string()), Type::Any),
+            BinOperator::GreaterEqual => (Type::Custom("bool".to_string()), Type::Number),
+            BinOperator::LessEqual => (Type::Custom("bool".to_string()), Type::Number),
             BinOperator::And => (Type::Custom("bool".to_string()), Type::Custom("bool".to_string())),
             BinOperator::Or => (Type::Custom("bool".to_string()), Type::Custom("bool".to_string())),
             BinOperator::Dummy => panic!("Parser failed! Dummy BinOperator in type checker"),
@@ -76,7 +71,7 @@ impl TypeChecker {
             let (line, offset): (usize, usize) = self.get_expression_location(unop.expression);
             self.create_type_error(ErrorLevel::Error, "type error unop".to_string(), original, line, offset); 
         }
-        return expression_type;
+        return unop_type;
     }
 
     fn unop_type(&mut self, unop: UnOperator) -> Type {
