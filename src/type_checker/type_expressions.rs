@@ -5,6 +5,7 @@ pub use super::{
     TypeChecker,
     Literal,
     Span,
+    ErrorLevel,
 };
 
 pub use super::r#type::{
@@ -60,7 +61,7 @@ impl TypeChecker {
         } else {
             for i in 0..inputs_type.len() {
                 if !compare_types(&inputs_type[i], &parameters_type[i]) {
-                    self.create_type_error(format!("type error parameter {} wrong type", i), original.clone(), inputs_location[i].0, inputs_location[i].1);
+                    self.create_type_error(ErrorLevel::Error, format!("type error parameter {} wrong type", i), original.clone(), inputs_location[i].0, inputs_location[i].1);
                 } 
             }
         }

@@ -60,7 +60,7 @@ fn main() {
     println!("\nWith text:\n{}\n", test);
 
     let statement: Statement = Parser::parse(test, true); 
-    println!("Parsed: \n{:#?}\n", statement);
+    //println!("Parsed: \n{:#?}\n", statement);
 
     println!("Type Checked: \n{:#?}\n", TypeChecker::type_check(statement)); 
     

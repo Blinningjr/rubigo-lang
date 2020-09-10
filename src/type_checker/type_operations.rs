@@ -5,6 +5,7 @@ pub use super::{
     TypeChecker,
     operations,
     Span,
+    ErrorLevel,
 };
 
 pub use super::operations::{
@@ -30,11 +31,11 @@ impl TypeChecker {
 
         if !compare_types(&left_expression_type, &right_expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression);
-            self.create_type_error("type error binop".to_string(), original, line, offset);
+            self.create_type_error(ErrorLevel::Error, "type error binop".to_string(), original, line, offset);
 
         } else if !compare_types(&binop_type.1, &left_expression_type.clone()) {
             let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression);
-            self.create_type_error("type error binop".to_string(), original, line, offset);  
+            self.create_type_error(ErrorLevel::Error, "type error binop".to_string(), original, line, offset);  
         }
 
         if binop_type.0 != Type::Any || binop_type.0 != Type::Number {
@@ -73,7 +74,7 @@ impl TypeChecker {
 
         if !compare_types(&unop_type, &expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(unop.expression);
-            self.create_type_error("type error unop".to_string(), original, line, offset); 
+            self.create_type_error(ErrorLevel::Error, "type error unop".to_string(), original, line, offset); 
         }
         return expression_type;
     }

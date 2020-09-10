@@ -78,9 +78,9 @@ impl TypeChecker {
         self.error_handler.add(error);
     }
 
-    fn create_type_error(&mut self, message: String, code: Span<String>, line: usize, offset: usize) -> () {
+    fn create_type_error(&mut self, level: ErrorLevel, message: String, code: Span<String>, line: usize, offset: usize) -> () {
         let error: Error = Error::TypeError(TypeError {
-            level: ErrorLevel::Error,
+            level: level,
             message: message.clone(),
             code: code,
             line: line,
@@ -89,6 +89,7 @@ impl TypeChecker {
 
         self.error_handler.add(error);
     }
+
 
     fn add_function(&mut self, identifier: Span<String>, env_id: usize) -> () {
         if !self.get_environment().add_function(identifier.clone(), env_id) {
