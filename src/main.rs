@@ -3,6 +3,7 @@ mod span;
 mod lexer;
 mod parser;
 mod type_checker;
+mod interpreter;
 
 use std::fs;
 
@@ -13,6 +14,10 @@ use parser::{
 
 use type_checker::{
     TypeChecker,
+};
+
+use interpreter::{
+    Interpreter,
 };
 
 
