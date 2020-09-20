@@ -42,16 +42,16 @@ impl TypeChecker {
     }
 
     fn check_function(&mut self, function: Function) -> () {
-        let current_id = self.current_env_id;
-        let current_body_id = self.current_body_id;
+        let current_id = self.modual.current_env_id;
+        let current_body_id = self.modual.current_body_id;
 
         self.new_function_env(function.clone());
         self.check_body(function.body, false);
 
         self.check_if_all_bodies_return();
 
-        self.current_env_id = current_id;
-        self.current_body_id = current_body_id;
+        self.modual.current_env_id = current_id;
+        self.modual.current_body_id = current_body_id;
     }
 
     fn check_while(&mut self, while_statement: While) -> () {
@@ -79,10 +79,10 @@ impl TypeChecker {
 
         self.check_body(if_statement.if_body, true);
 
-        match self.current_env_id {
+        match self.modual.current_env_id {
             Some(id) => {
-                let env_id: usize = self.environments[id].environments.len() - 1;
-                self.environments[id].environments[env_id].if_body = true;
+                let env_id: usize = self.modual.environments[id].environments.len() - 1;
+                self.modual.environments[id].environments[env_id].if_body = true;
             },
             None => panic!("Fatal error in type checker!!!"),
         };
@@ -136,7 +136,7 @@ impl TypeChecker {
     }
 
     fn check_body(&mut self, body: Body, create_env: bool) -> () {
-        let current_body_id: usize = self.current_body_id;
+        let current_body_id: usize = self.modual.current_body_id;
         if create_env {
             self.create_body();
         }
@@ -144,7 +144,7 @@ impl TypeChecker {
         for statement in body.body.iter() {
             self.check_statement(statement.clone());
         } 
-        self.current_body_id = current_body_id;
+        self.modual.current_body_id = current_body_id;
     }
 
     fn check_expression(&mut self, expression: Expression) -> () {
