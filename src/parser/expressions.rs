@@ -29,6 +29,7 @@ pub enum Expression {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionCall {
+    pub id: usize,
     pub original: Span<String>,
     pub identifier: Span<String>,
     pub parameters: Vec<Expression>,
@@ -129,6 +130,7 @@ impl Parser {
         }
 
         return Expression::FunctionCall(Box::new(FunctionCall {
+            id: self.body_id,
             original: self.get_original(original_start),
             identifier: self.create_span(identifier.get_value(), & identifier),
             parameters: parameters,

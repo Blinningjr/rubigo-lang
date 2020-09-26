@@ -19,7 +19,7 @@ impl InterpEnv {
         };
     }
 
-    pub fn get_variable(&mut self, name: String) -> Result<Literal, String> {
+    pub fn get_variable(& self, name: String) -> Result<Literal, String> {
         for var in self.variables.iter() {
             if var.0.get_fragment() == name {
                 return Ok(var.1.clone());

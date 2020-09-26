@@ -3,6 +3,7 @@
 pub use super::{
     Interpreter,
     Span,
+    Function,
 };
 
 use crate::parser::literal::Literal;
@@ -12,6 +13,7 @@ pub use super::expressions::{
     FunctionCall,
     Variable,
 };
+
 
 impl Interpreter {
     pub(super) fn interpret_expression(&mut self, expression: Expression) -> Literal {
@@ -26,13 +28,18 @@ impl Interpreter {
     }
 
     pub(super) fn interpret_function_call(&mut self, function_call: FunctionCall) -> Literal {
-        return Literal::I32(Span::new(1, 0, 0))
-        // TODO
+        let function: Function = self.get_function(function_call.identifier.get_fragment(), function_call.id);
+        
+        let mut values: Vec<Literal> = vec!();
+        for expr in function_call.parameters {
+            values.push(self.interpret_expression(expr));
+        }
+
+        return self.interpret_function(function, values);
     }
 
     fn interpret_variable(&mut self, variable: Variable) -> Literal {
-        return Literal::I32(Span::new(1, 0, 0))
-        // TODO
+        return self.get_variable(variable.identifier.get_fragment());
     }
 }
 

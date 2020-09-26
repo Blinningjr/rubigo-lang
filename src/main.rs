@@ -29,8 +29,21 @@ fn main() {
 //        .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
  
+    let test: String = "    fn main() -> i32 {
+        fn quad(num: i32) -> i32 {
+            fn duble(num: i32) -> i32 {
+                return 3 + 3;
+            }
+            let duble: i32 = duble(3);
+            return duble(duble);
+        }
+        return quad(3);
+    }
+    
+    
+    ".to_string();
 
-    let test: String = "    fn testfn(apa: i32) -> i32 {
+    let _test_type_checker_fail: String = "    fn testfn(apa: i32) -> i32 {
         return false;
         fn testfn() -> i32 {
             if 1 {
@@ -67,8 +80,10 @@ fn main() {
     let statement: Statement = Parser::parse(test, true); 
     //println!("Parsed: \n{:#?}\n", statement);
 
-    let _type_checker: TypeChecker = TypeChecker::type_check(statement, true);
+    let type_checker: TypeChecker = TypeChecker::type_check(statement, true);
     //println!("Type Checked: \n{:#?}\n", type_checker); 
+
+    Interpreter::interpret(type_checker.modual);
     
 //    let mut tokens: Vec<Token> = Vec::new();
 //    let mut lexer: Lexer = Lexer::new(test); 

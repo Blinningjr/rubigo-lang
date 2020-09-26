@@ -17,6 +17,7 @@ pub use super::error::{
 
 pub use super::parser::{
     statement,
+    statement::Function,
     Statement,
     expressions,
     operations,
@@ -44,7 +45,7 @@ pub struct Interpreter {
 
 
 impl Interpreter {
-    pub fn interpret(modual: Modual) -> String {
+    pub fn interpret(modual: Modual) -> () {
         let mut interpreter: Interpreter = Interpreter{
             error_handler: ErrorHandler::new(true),
             
@@ -53,17 +54,55 @@ impl Interpreter {
             env: InterpEnv::new(),
             func_envs: vec!(),
         };
-
-        return "".to_string();//interpreter.interpret_statement(ast).to_string();
+        let ast: Statement = interpreter.modual.ast.clone();
+        interpreter.interpret_statement(ast);
     }
 
-    fn create_func_env(&mut self) {
-        //TODO
+    fn create_func_env(&mut self, func_id: usize) -> () {
+        self.func_envs.push(InterpFuncEnv::new(func_id));
+        self.create_env();
     } 
     
-    fn drop_func_env(&mut self) {
-        //TODO
+    fn drop_func_env(&mut self) -> () {
+        self.func_envs.pop();
     } 
+    
+    fn create_env(&mut self) -> () {
+        match self.func_envs.len() {
+            0 => panic!("fatal interpreter error"), 
+            n => self.func_envs[n-1].create_env(),
+        };
+    } 
+    
+    fn drop_env(&mut self) -> () {
+        match self.func_envs.len() {
+            0 => panic!("fatal interpreter error"), 
+            n => self.func_envs[n-1].drop_env(),
+        };
+    } 
+
+    fn get_function(&mut self, name: String, body_id: usize) -> Function {
+        let mut func_id: usize;
+        match self.func_envs.len() {
+            0 => {
+                match self.modual.environment.lookup_function(name) {
+                    Ok(id) => return self.modual.environments[id].function.clone(),
+                    Err(msg) => panic!(msg),
+                };
+            },
+            n => func_id = self.func_envs[n-1].func_id,
+        };
+        let result: Result<usize, String> = self.modual.environments[func_id].lookup_function_id(name.clone(), body_id); 
+        match result {
+            Ok(id) => return self.modual.environments[id].function.clone(),
+            Err(_) => {
+                match self.modual.environment.lookup_function(name) {
+                    Ok(id) => return self.modual.environments[id].function.clone(),
+                    Err(msg) => panic!(msg),
+                };
+            },
+        };
+    }
     
     fn get_variable(&mut self, name: String) -> Literal {    
         let result: Result<Literal, String> = match self.func_envs.len() {
@@ -90,18 +129,22 @@ impl Interpreter {
         };
 
         if !result {
+            panic!("Fatal interpreter error")
             //TODO Create error,
         }
     }
     
     fn assign_variable(&mut self, name: Span<String>, value: Literal) -> () {
         let result: bool = match self.func_envs.len() {
-            0 => self.env.assign_variable(name, value),
-            n => self.func_envs[n-1].assign_variable(name, value),
+            0 => false,
+            n => self.func_envs[n-1].assign_variable(name.clone(), value.clone()),
         };
 
         if !result {
-            //TODO Create error,
+            if self.env.assign_variable(name, value) {
+                panic!("Fatal interpreter error")
+                //TODO Create error,
+            }
         }
     }
 }

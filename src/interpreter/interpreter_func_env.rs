@@ -9,23 +9,29 @@ pub use super::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct InterpFuncEnv {
-    pub envs: Vec<InterpEnv>, 
     pub func_id: usize,
-
+    pub envs: Vec<InterpEnv>, 
 }
 
 impl InterpFuncEnv {
     pub fn new(func_id: usize) -> InterpFuncEnv {
         return InterpFuncEnv {
-            envs: vec!(),
             func_id: func_id,
-
+            envs: vec!(),
         };
     }
     
+    pub fn create_env(&mut self) -> () {
+        self.envs.push(InterpEnv::new());
+    } 
+    
+    pub fn drop_env(&mut self) -> () {
+        self.envs.pop();
+    } 
+    
     pub fn get_variable(&mut self, name: String) -> Result<Literal, String> {
-        for i in self.envs.len()..0 {
-            let result: Result<Literal, String> = self.envs[i].get_variable(name.clone());
+        for env in self.envs.iter().rev() {
+            let result: Result<Literal, String> = env.get_variable(name.clone());
             match result {
                 Ok(val) => return Ok(val),
                 Err(_) => (),
@@ -42,10 +48,13 @@ impl InterpFuncEnv {
     }
     
     pub fn assign_variable(&mut self, name: Span<String>, value: Literal) -> bool {
-        match self.envs.len() {
-            0 => panic!("Fatal Interpreter error"),
-            n => return self.envs[n-1].assign_variable(name, value),
-        };
+        for i in self.envs.len()..0 {
+            let result: bool = self.envs[i].assign_variable(name.clone(), value.clone());
+            if result {
+                return result
+            }
+        }
+        return false;
     }
 }
 
