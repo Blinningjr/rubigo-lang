@@ -55,7 +55,7 @@ impl TypeChecker {
     pub fn type_check(ast: Statement, print_errors: bool) -> TypeChecker {
         let mut type_checker: TypeChecker = TypeChecker{
             error_handler: ErrorHandler::new(true),
-            modual: Modual::new(),
+            modual: Modual::new(ast.clone()),
         };
 
         type_checker.check_statement(ast);

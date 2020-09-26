@@ -5,6 +5,8 @@ pub use super::{
     Span,
 };
 
+use crate::parser::literal::Literal;
+
 pub use super::expressions::{
     Expression,
     FunctionCall,
@@ -12,21 +14,25 @@ pub use super::expressions::{
 };
 
 impl Interpreter {
-    pub(super) fn interpret_expression(&mut self, expression: Expression, original: Span<String>) -> () {
+    pub(super) fn interpret_expression(&mut self, expression: Expression) -> Literal {
         return match expression {
-            Expression::BinOp(binop) => self.interpret_binop(*binop, original),
-            Expression::UnOp(unop) => self.interpret_unop(*unop, original),
-            Expression::FunctionCall(function_call) => self.interpret_function_call(*function_call, original),
-            Expression::Variable(variable) => self.interpret_variable(variable, original),
-            Expression::Literal(literal) => (),
+            Expression::BinOp(binop) => self.interpret_binop(*binop),
+            Expression::UnOp(unop) => self.interpret_unop(*unop),
+            Expression::FunctionCall(function_call) => self.interpret_function_call(*function_call),
+            Expression::Variable(variable) => self.interpret_variable(variable),
+            Expression::Literal(literal) => literal,
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
         };
     }
 
-    fn interpret_function_call(&mut self, function_call: FunctionCall, original: Span<String>) -> () {
+    pub(super) fn interpret_function_call(&mut self, function_call: FunctionCall) -> Literal {
+        return Literal::I32(Span::new(1, 0, 0))
+        // TODO
     }
 
-    fn interpret_variable(&mut self, variable: Variable, original: Span<String>) -> () {
+    fn interpret_variable(&mut self, variable: Variable) -> Literal {
+        return Literal::I32(Span::new(1, 0, 0))
+        // TODO
     }
 }
 
