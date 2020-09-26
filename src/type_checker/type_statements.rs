@@ -46,6 +46,10 @@ impl TypeChecker {
         let current_body_id = self.modual.current_body_id;
 
         self.new_function_env(function.clone());
+        for p in function.parameters {
+            self.add_variable(p.0, p.1.r#type);
+        }
+
         self.check_body(function.body, false);
 
         self.check_if_all_bodies_return();
