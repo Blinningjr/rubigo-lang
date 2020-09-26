@@ -31,6 +31,7 @@ pub enum Statement {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Function {
+    pub id: usize,
     pub original: Span<String>,
     pub identifier: Span<String>,
     pub parameters: Vec<(Span<String>, TypeDecleration)>,
@@ -41,6 +42,7 @@ pub struct Function {
 impl Function{
     pub fn create_dummy() -> Function {
         return Function{
+            id: 0,
             original: Span::new("DUMMY".to_string(), 0, 0),
             identifier: Span::new("DUMMY".to_string(), 0, 0),
             parameters: vec!(),
@@ -50,6 +52,7 @@ impl Function{
                 r#type: Span::new("ANY".to_string(), 0, 0),
             },
             body: Body{
+                id: 0,
                 original: Span::new("DUMMY".to_string(), 0, 0),
                 body: vec!(), 
             },
@@ -63,6 +66,7 @@ impl Function{
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct While {
+    pub id: usize,
     pub original: Span<String>,
     pub condition: Expression,
     pub body: Body,
@@ -74,6 +78,7 @@ pub struct While {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct If {
+    pub id: usize,
     pub original: Span<String>,
     pub condition: Expression,
     pub if_body: Body,
@@ -86,6 +91,7 @@ pub struct If {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Let {
+    pub id: usize,
     pub original: Span<String>,
     pub identifier: Span<String>,
     pub type_dec: TypeDecleration,
@@ -98,6 +104,7 @@ pub struct Let {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Assignment {
+    pub id: usize,
     pub original: Span<String>,
     pub identifier: Span<String>,
     pub value: Expression,
@@ -109,6 +116,7 @@ pub struct Assignment {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Return {
+    pub id: usize,
     pub original: Span<String>,
     pub value: Expression,
 }
@@ -119,6 +127,7 @@ pub struct Return {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct Body {
+    pub id: usize,
     pub original: Span<String>,
     pub body: Vec<Statement>,
 }
@@ -148,7 +157,7 @@ impl Parser {
             return self.parse_return();
 
         } else if self.is_tokentype(TokenType::BodyStart) {
-            return self.parse_body();
+            return self.parse_body(true);
 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Statement".to_string());
@@ -164,6 +173,14 @@ impl Parser {
      * Parse function.
      */
     fn parse_function(&mut self) -> Statement {
+        let func_id: usize = self.func_id;
+        self.func_id += 1;
+
+        let prev_body_id: usize = self.body_id;
+        let prev_last_id: usize = self.last_id;
+        self.body_id = 0;
+        
+
         let original_start: usize = self.get_original_start();
 
         let _fn: Token = self.next_token();
@@ -191,18 +208,23 @@ impl Parser {
         let _arrow: Token = self.parse_type(TokenType::FnType);
         let return_type: TypeDecleration = self.parse_type_decleration();
         let body: Body;
-        if let Statement::Body(box_body) = self.parse_body() {
+        if let Statement::Body(box_body) = self.parse_body(false) {
             body = * box_body;
 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             body = Body {
+                id: self.body_id,
                 original: Span::new("".to_string(), 0, 0),
                 body: Vec::new(), 
             };
         }
+        
+        self.body_id = prev_body_id;
+        self.last_id = prev_last_id;
 
         return Statement::Function(Box::new(Function {
+            id: func_id,
             original: self.get_original(original_start),
             identifier: self.create_span(fn_identifier.get_value(), & fn_identifier),
             parameters: parameters,
@@ -222,18 +244,20 @@ impl Parser {
         let expression: Expression = self.parse_expression();
         
         let body: Body;
-        if let Statement::Body(box_body) = self.parse_body() {
+        if let Statement::Body(box_body) = self.parse_body(true) {
             body = * box_body;
 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             body = Body {
+                id: self.body_id,
                 original: Span::new("".to_string(), 0, 0),
                 body: Vec::new(),
             };
         }
 
         return Statement::While(Box::new(While {
+            id: self.body_id,
             original: self.get_original(original_start),
             condition: expression,
             body: body,
@@ -251,12 +275,13 @@ impl Parser {
         let expression: Expression = self.parse_expression(); 
         
         let if_body: Body;
-        if let Statement::Body(box_body) = self.parse_body() {
+        if let Statement::Body(box_body) = self.parse_body(true) {
             if_body = * box_body;
 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
             if_body = Body {
+                id: self.body_id,
                 original: Span::new("".to_string(), 0, 0),
                 body: Vec::new(),
             };
@@ -270,12 +295,13 @@ impl Parser {
             if self.is_tokentype(TokenType::BodyStart) {
 
                 let e_body: Body;
-                if let Statement::Body(box_body) = self.parse_body() {
+                if let Statement::Body(box_body) = self.parse_body(true) {
                     e_body = * box_body;
 
                 } else {
                     self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
                     e_body = Body {
+                        id: self.body_id,
                         original: Span::new("".to_string(), 0, 0),
                         body: Vec::new(),
                     };
@@ -286,6 +312,7 @@ impl Parser {
             } else {
                 self.create_error(ErrorLevel::Error, "Expected a Body".to_string());
                 else_body = Some(Body {
+                    id: self.body_id,
                     original: Span::new("".to_string(), 0, 0),
                     body: Vec::new(),
                 });
@@ -293,6 +320,7 @@ impl Parser {
         }
         
         return Statement::If(Box::new(If {
+            id: self.body_id,
             original: self.get_original(original_start),
             condition: expression,
             if_body: if_body,
@@ -318,6 +346,7 @@ impl Parser {
         let _end: Token = self.parse_type(TokenType::SemiColon);
         
         return Statement::Let(Let {
+            id: self.body_id,
             original: self.get_original(original_start),
             identifier: self.create_span(identifier.get_value(), & identifier),
             type_dec: type_dec,
@@ -361,6 +390,7 @@ impl Parser {
         let _end: Token = self.parse_type(TokenType::SemiColon);
         
         return Statement::Assignment(Assignment {
+            id: self.body_id,
             original: self.get_original(original_start),
             identifier: self.create_span(identifier.get_value(), & identifier),
             value: expression, 
@@ -379,6 +409,7 @@ impl Parser {
         let _end: Token = self.parse_type(TokenType::SemiColon);
         
         return Statement::Return(Return {
+            id: self.body_id,
             original: self.get_original(original_start),
             value: expression, 
         }); 
@@ -388,7 +419,13 @@ impl Parser {
     /**
      * Parse body.
      */
-    fn parse_body(&mut self) -> Statement {
+    fn parse_body(&mut self, update_id: bool) -> Statement {
+        let prev_body_id: usize = self.body_id;
+        if update_id {
+            self.last_id += 1;
+            self.body_id = self.last_id;
+        }
+
         let original_start: usize = self.get_original_start();
         
         let _start: Token = self.parse_type(TokenType::BodyStart);
@@ -399,8 +436,13 @@ impl Parser {
             match token.get_type() {
                 TokenType::BodyEnd => {
                     let _end: Token = self.next_token();
+        
+                    if update_id {
+                        self.body_id = prev_body_id;
+                    }
 
                     return Statement::Body(Box::new(Body {
+                        id: self.body_id,
                         original: self.get_original(original_start),
                         body: statements,
                     }));

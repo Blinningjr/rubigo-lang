@@ -49,6 +49,10 @@ pub struct Parser {
     error_handler: ErrorHandler,
     lexer: Lexer,
     last_token: Option<Token>,
+
+    func_id: usize,
+    body_id: usize,
+    last_id: usize,
 }
 
 
@@ -58,6 +62,10 @@ impl Parser {
             error_handler: ErrorHandler::new(verbose),
             lexer: Lexer::new(input),
             last_token: None,
+
+            func_id: 0,
+            body_id: 0,
+            last_id: 0,
         }; 
         let statement: Statement = parser.parse_statement();
         parser.error_handler.print_errors();
