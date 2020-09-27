@@ -11,3 +11,5 @@ See the lexer README for full desription: https://github.com/Blinningjr/rubigo-l
 ## Parser
 See the parser README for full desription: https://github.com/Blinningjr/rubigo-lang/tree/master/src/parser
 
+## Interpreter
+Very simple interpreter that runs the main function and you have to use the print functon to see the result.
