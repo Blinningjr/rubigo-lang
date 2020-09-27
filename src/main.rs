@@ -32,7 +32,7 @@ fn main() {
     let test: String = "    fn main() -> i32 {
         fn quad(num: i32) -> i32 {
             fn duble(num: i32) -> i32 {
-                return num + num;
+                return num * 2;
             }
             let duble: i32 = duble(num);
             return duble(duble);
