@@ -23,13 +23,13 @@ use interpreter::{
 
 fn main() {
     let filename = "example-code/example.rbg";
-    println!("In file {}", filename);
+    //println!("In file {}", filename);
 
 //    let _contents = fs::read_to_string(filename)
 //        .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
  
-    let test: String = "    fn main() -> i32 {
+    let test: String = "    fn main() -> () {
         fn quad(num: i32) -> i32 {
             fn duble(num: i32) -> i32 {
                 return num * 2;
@@ -37,7 +37,7 @@ fn main() {
             let duble: i32 = duble(num);
             return duble(duble);
         }
-        return quad(3);
+        print(quad(3));
     }
     
     
@@ -75,7 +75,7 @@ fn main() {
 
 
 
-    println!("\nWith text:\n{}\n", test);
+    //println!("\nWith text:\n{}\n", test);
 
     let statement: Statement = Parser::parse(test, true); 
     //println!("Parsed: \n{:#?}\n", statement);

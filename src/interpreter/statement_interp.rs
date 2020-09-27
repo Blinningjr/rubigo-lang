@@ -50,7 +50,7 @@ impl Interpreter {
         let result: Literal = self.interpret_body(function.body);
         
         //if result != Literal::Dummy {
-            println!("{:?} returned: {:?}", function.identifier.get_fragment(), result);
+//            println!("{:?} returned: {:?}", function.identifier.get_fragment(), result);
         //}
 
         self.drop_func_env();

@@ -63,7 +63,7 @@ impl Parser {
             lexer: Lexer::new(input),
             last_token: None,
 
-            func_id: 0,
+            func_id: 1,
             body_id: 0,
             last_id: 0,
         }; 

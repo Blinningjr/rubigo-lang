@@ -29,7 +29,14 @@ impl Interpreter {
 
     pub(super) fn interpret_function_call(&mut self, function_call: FunctionCall) -> Literal {
         let function: Function = self.get_function(function_call.identifier.get_fragment(), function_call.id);
-        
+       
+        if function.identifier.get_fragment() == "print" {
+            let text: Literal = self.interpret_expression(function_call.parameters[0].clone());
+            println!("{}", lit_to_string(text));
+            return Literal::Dummy;
+        } 
+
+
         let mut values: Vec<Literal> = vec!();
         for expr in function_call.parameters {
             values.push(self.interpret_expression(expr));
@@ -41,5 +48,17 @@ impl Interpreter {
     fn interpret_variable(&mut self, variable: Variable) -> Literal {
         return self.get_variable(variable.identifier.get_fragment());
     }
+}
+
+
+fn lit_to_string(literal: Literal) -> String {
+    return match literal {
+        Literal::I32(val) => format!("{}", val.get_fragment()),
+        Literal::F32(val) => format!("{}", val.get_fragment()),
+        Literal::Bool(val) => format!("{}", val.get_fragment()),
+        Literal::Char(val) => format!("{}", val.get_fragment()),
+        Literal::String(val) => format!("{}", val.get_fragment()),
+        _ => panic!("Fatal interpreter error"),
+    };
 }
 

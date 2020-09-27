@@ -57,6 +57,14 @@ impl TypeChecker {
             error_handler: ErrorHandler::new(true),
             modual: Modual::new(ast.clone()),
         };
+       
+        let mut print_func: Function = Function::create_dummy();
+        print_func.identifier = Span::new("print".to_string(), 0, 0);
+        print_func.parameters.push((Span::new("DUMMY".to_string(), 0, 0), 
+                                    TypeDecleration{borrow: false,
+                                    mutable: false,
+                                    r#type: Span::new(" ANY".to_string(), 0, 0)}));
+        type_checker.new_function_env(print_func);
 
         type_checker.check_statement(ast);
 

@@ -4,6 +4,7 @@ pub use super::{
     FunctionEnv,
     Environment,
     Statement,
+    Span,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -19,7 +20,7 @@ pub struct Modual {
 
 impl Modual {
     pub fn new(ast: Statement) -> Modual {
-        return Modual{
+        let mut modual: Modual = Modual{
             environments: vec!(),
             environment: Environment::new(0, None),
             
@@ -28,6 +29,7 @@ impl Modual {
             
             ast: ast,
         };
+        return modual;
     }
 }
 
