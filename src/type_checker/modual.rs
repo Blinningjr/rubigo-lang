@@ -3,7 +3,7 @@
 pub use super::{
     FunctionEnv,
     Environment,
-    Statement,
+    ModualBody,
     Span,
 };
 
@@ -15,11 +15,11 @@ pub struct Modual {
     pub current_env_id: Option<usize>,
     pub current_body_id: usize,
 
-    pub ast: Statement,
+    pub ast: ModualBody,
 }
 
 impl Modual {
-    pub fn new(ast: Statement) -> Modual {
+    pub fn new(ast: ModualBody) -> Modual {
         let mut modual: Modual = Modual{
             environments: vec!(),
             environment: Environment::new(0, None),

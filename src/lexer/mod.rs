@@ -310,18 +310,36 @@ impl Lexer {
                                     self.consume();
                                     return self.tokenize(token_type);
                                 },
-                                Err(err) => panic!("Lexer err: {} char '{}'", err, ch),
+                                Err(err) => panic!("Lexer err: {} char: '{}'", err, ch),
                             };
                         },
                     };
                 },
                 None => {
+                    if ch == ' ' {
+                        self.discard();
+                        self.partial_token_offset += 1;
+                        
+                        return self.tokenize(TokenType::EOF);
+                    
+                    } else if ch == '\n' {
+                        self.discard();
+                        self.current_line += 1;
+                        self.partial_token_offset = 1;
+                        
+                        return self.tokenize(TokenType::EOF);
+                    } else if ch == '\t' {
+                        self.discard();
+                        self.partial_token_offset += 3;
+                        
+                        return self.tokenize(TokenType::EOF);
+                    }
                     match check_symbol(ch) {
                         Ok(token_type) => {
                             self.consume();
                             return self.tokenize(token_type);
                         },
-                        Err(err) => panic!("Lexer err: {}", err),
+                        Err(err) => panic!("Lexer err: {} char: '{}'", err, ch),
                     };
                 }
             };

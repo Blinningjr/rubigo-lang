@@ -16,6 +16,7 @@ pub use super::error::{
 };
 
 pub use super::parser::{
+    ModualBody,
     statement,
     statement::Function,
     Statement,
@@ -54,8 +55,14 @@ impl Interpreter {
             env: InterpEnv::new(),
             func_envs: vec!(),
         };
-        let ast: Statement = interpreter.modual.ast.clone();
-        interpreter.interpret_statement(ast);
+        let ast: ModualBody = interpreter.modual.ast.clone();
+        interpreter.interpret_modual_body(ast);
+    }
+
+    fn interpret_modual_body(&mut self, mod_body: ModualBody) {
+        for stmt in mod_body.body.iter() {
+            self.interpret_statement(stmt.clone());
+        }
     }
 
     fn create_func_env(&mut self, func_id: usize) -> () {

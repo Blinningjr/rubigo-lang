@@ -29,6 +29,7 @@ pub use super::parser::{
     operations,
     Literal,
     TypeDecleration,
+    ModualBody,
 };
 
 use statement::Function;
@@ -52,7 +53,7 @@ pub struct TypeChecker {
 
 
 impl TypeChecker {
-    pub fn type_check(ast: Statement, print_errors: bool) -> TypeChecker {
+    pub fn type_check(ast: ModualBody, print_errors: bool) -> TypeChecker {
         let mut type_checker: TypeChecker = TypeChecker{
             error_handler: ErrorHandler::new(true),
             modual: Modual::new(ast.clone()),
@@ -66,7 +67,7 @@ impl TypeChecker {
                                     r#type: Span::new(" ANY".to_string(), 0, 0)}));
         type_checker.new_function_env(print_func);
 
-        type_checker.check_statement(ast);
+        type_checker.check_modual_body(ast);
 
         //println!("{:#?}", type_checker);
         if print_errors { 
@@ -74,6 +75,12 @@ impl TypeChecker {
         }
 
         return type_checker; 
+    }
+
+    fn check_modual_body(&mut self, mod_body: ModualBody) -> () {
+        for stmt in mod_body.body.iter() {
+            self.check_statement(stmt.clone());
+        }
     }
 
     pub fn get_modual(&mut self) -> Modual {

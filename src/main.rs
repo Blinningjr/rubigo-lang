@@ -9,7 +9,7 @@ use std::fs;
 
 use parser::{
     Parser,
-    Statement,
+    ModualBody,
 };
 
 use type_checker::{
@@ -77,10 +77,10 @@ fn main() {
 
     //println!("\nWith text:\n{}\n", test);
 
-    let statement: Statement = Parser::parse(test, true); 
+    let mod_body: ModualBody = Parser::parse("test".to_string(), test, true); 
     //println!("Parsed: \n{:#?}\n", statement);
 
-    let type_checker: TypeChecker = TypeChecker::type_check(statement, true);
+    let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
     //println!("Type Checked: \n{:#?}\n", type_checker); 
 
     Interpreter::interpret(type_checker.modual);

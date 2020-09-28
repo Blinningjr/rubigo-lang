@@ -56,8 +56,14 @@ pub struct Parser {
 }
 
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct ModualBody {
+    pub name: String,
+    pub body: Vec<Statement>,
+}
+
 impl Parser {
-    pub fn parse(input: String, verbose: bool) -> Statement {
+    pub fn parse(name: String, input: String, verbose: bool) -> ModualBody {
         let mut parser: Parser = Parser {
             error_handler: ErrorHandler::new(verbose),
             lexer: Lexer::new(input),
@@ -67,9 +73,22 @@ impl Parser {
             body_id: 0,
             last_id: 0,
         }; 
-        let statement: Statement = parser.parse_statement();
+        let mod_body: ModualBody = parser.parse_modual_body(name);
         parser.error_handler.print_errors();
-        return statement;
+        return mod_body;
+    }
+
+    fn parse_modual_body(&mut self, name: String) -> ModualBody { 
+        let mut mod_body: ModualBody = ModualBody{
+            name: name,
+            body: vec!(),
+        };
+        loop {
+            if self.is_tokentype(TokenType::EOF) {
+                return mod_body;
+            }
+            mod_body.body.push(self.parse_statement());
+        }
     }
 
 
