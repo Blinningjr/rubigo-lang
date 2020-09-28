@@ -6,9 +6,9 @@ pub use super::{
     expressions::Expression,
 //    TypeDecleration,
     Span,
+    Literal,
 };
 
-use crate::parser::literal::Literal;
 
 pub use super::statement::{
     Function,
@@ -22,7 +22,7 @@ pub use super::statement::{
 
 
 impl Interpreter {
-    pub(super) fn interpret_statement(&mut self, statement: Statement) -> Literal {
+    pub fn interpret_statement(&mut self, statement: Statement) -> Literal {
         match statement {
             Statement::Function(function) => {
                 if function.identifier.get_fragment() == "main" {

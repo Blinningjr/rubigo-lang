@@ -4,9 +4,8 @@ pub use super::{
     Interpreter,
     Span,
     Function,
+    Literal,
 };
-
-use crate::parser::literal::Literal;
 
 pub use super::expressions::{
     Expression,
