@@ -66,6 +66,8 @@ impl TypeChecker {
                                     mutable: false,
                                     r#type: Span::new(" ANY".to_string(), 0, 0)}));
         type_checker.new_function_env(print_func);
+        type_checker.modual.current_env_id = None;
+        type_checker.modual.current_body_id = 0;
 
         type_checker.check_modual_body(ast);
 
@@ -137,18 +139,28 @@ impl TypeChecker {
                 None => break,
             };
         }
-        match self.modual.environment.lookup_function(identifier.get_fragment()) {
-            Ok(id) => {
-                return Ok(self.modual.environments[id].function.clone());
-            },
-            Err(msg) => return Err(msg),
-        };   
+
+        let mut env_body_id_r: Option<usize> = Some(self.modual.current_body_id);  
+        loop {
+            match env_body_id_r {
+                Some(env_id) =>{
+                    match self.modual.mod_envs[env_id].lookup_function(identifier.get_fragment()) {
+                        Ok(id) => {
+                            return Ok(self.modual.environments[id].function.clone());
+                        },
+                        Err(_) => env_body_id_r = self.modual.mod_envs[env_id].previus_id,
+                    };
+                },
+                None => return Err("fatal interpreter error".to_string()),
+            };
+        }
+
     }
 
     fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> () {
         match self.modual.current_env_id {
             Some(id) => self.modual.environments[id].add_variable(identifier, r#type, self.modual.current_body_id),
-            None => self.modual.environment.add_variable(identifier, r#type),
+            None => self.modual.mod_envs[self.modual.current_body_id].add_variable(identifier, r#type),
         };
     }
 
@@ -164,13 +176,24 @@ impl TypeChecker {
                 };
             },
             None => {
-                match self.modual.environment.lookup_variable(identifier.get_fragment()) {
-                    Ok(val) => return val,
-                    Err(msg) => {
-                        self.create_type_error(ErrorLevel::Error, msg, original, identifier.get_line(), identifier.get_offset());
-                        return Type::Any;
-                    },
-                }
+                let mut env_body_id_r: Option<usize> = Some(self.modual.current_body_id);  
+                loop {
+                    match env_body_id_r {
+                        Some(env_id) =>{
+                            match self.modual.mod_envs[env_id].lookup_variable(identifier.get_fragment()) {
+                                Ok(val) => return val,
+                                Err(_) => env_body_id_r = self.modual.mod_envs[env_id].previus_id,
+                            }
+                        },
+                        None => {
+                            self.create_type_error(ErrorLevel::Error,
+                                                   format!("Variable {:#?} not in scope.", identifier),
+                                                   original, identifier.get_line(), identifier.get_offset());
+                            return Type::Any;
+                        },
+                    };
+
+                } 
             },
         };
     }
@@ -178,7 +201,7 @@ impl TypeChecker {
     fn get_environment(&mut self) -> &mut Environment {
         return match self.modual.current_env_id {
             Some(env_id) => &mut self.modual.environments[env_id].environments[self.modual.current_body_id],
-            None => &mut self.modual.environment,
+            None => &mut self.modual.mod_envs[self.modual.current_body_id],
         };
     }
 

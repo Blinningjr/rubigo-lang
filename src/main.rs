@@ -29,16 +29,15 @@ fn main() {
 //        .expect("Something went wrong reading the file");
     //println!("With text:\n{}", contents);
  
-    let test: String = "    fn main() -> () {
-        fn quad(num: i32) -> i32 {
-            fn duble(num: i32) -> i32 {
-                return num * 2;
-            }
-            let duble: i32 = duble(num);
-            return duble(duble);
+    let test: String = "    
+    fn quad(num: i32) -> i32 {
+        fn duble(num: i32) -> i32 {
+            return num * 2;
         }
-        print(quad(3));
+        let duble: i32 = duble(num);
+        return duble(duble);
     }
+    print(quad(3));
     
     
     ".to_string();
@@ -78,7 +77,7 @@ fn main() {
     //println!("\nWith text:\n{}\n", test);
 
     let mod_body: ModualBody = Parser::parse("test".to_string(), test, true); 
-    //println!("Parsed: \n{:#?}\n", statement);
+    //println!("Parsed: \n{:#?}\n", mod_body);
 
     let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
     //println!("Type Checked: \n{:#?}\n", type_checker); 

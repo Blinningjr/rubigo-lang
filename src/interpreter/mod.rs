@@ -40,7 +40,7 @@ pub struct Interpreter {
     
     pub modual: Modual,
 
-    pub env: InterpEnv,
+    pub envs: Vec<InterpEnv>,
     pub func_envs: Vec<InterpFuncEnv>,
 }
 
@@ -52,7 +52,7 @@ impl Interpreter {
             
             modual: modual,
  
-            env: InterpEnv::new(),
+            envs: vec!(InterpEnv::new()),
             func_envs: vec!(),
         };
         let ast: ModualBody = interpreter.modual.ast.clone();
@@ -89,13 +89,21 @@ impl Interpreter {
     } 
 
     fn get_function(&mut self, name: String, body_id: usize) -> Function {
-        let mut func_id: usize;
+        let func_id: usize;
         match self.func_envs.len() {
             0 => {
-                match self.modual.environment.lookup_function(name) {
-                    Ok(id) => return self.modual.environments[id].function.clone(),
-                    Err(msg) => panic!(msg),
-                };
+                let mut body_id_r: Option<usize> = Some(body_id);
+                loop {
+                    match body_id_r {
+                        Some(b_id) => {
+                            match self.modual.mod_envs[b_id].lookup_function(name.clone()) {
+                                Ok(id) => return self.modual.environments[id].function.clone(),
+                                Err(_) => body_id_r = self.modual.mod_envs[b_id].previus_id
+                            };
+                        },
+                        None => panic!("fatal interpreter error"),
+                    };
+                }
             },
             n => func_id = self.func_envs[n-1].func_id,
         };
@@ -103,10 +111,18 @@ impl Interpreter {
         match result {
             Ok(id) => return self.modual.environments[id].function.clone(),
             Err(_) => {
-                match self.modual.environment.lookup_function(name) {
-                    Ok(id) => return self.modual.environments[id].function.clone(),
-                    Err(msg) => panic!(msg),
-                };
+                let mut body_id_r: Option<usize> = Some(body_id);
+                loop {
+                    match body_id_r {
+                        Some(b_id) => {
+                            match self.modual.mod_envs[b_id].lookup_function(name.clone()) {
+                                Ok(id) => return self.modual.environments[id].function.clone(),
+                                Err(_) => body_id_r = self.modual.mod_envs[b_id].previus_id
+                            };
+                        },
+                        None => panic!("fatal interpreter error"),
+                    };
+                }
             },
         };
     }
@@ -119,10 +135,13 @@ impl Interpreter {
         match result {
             Ok(val) => return val,
             Err(_) => {
-                match self.env.get_variable(name) {
-                    Ok(val) => return val,
-                    Err(msg) => panic!(msg), 
-                };
+                for i in (0..self.envs.len()).rev() {
+                    match self.envs[i].get_variable(name.clone()) {
+                        Ok(val) => return val,
+                        Err(_) => (), 
+                    };
+                } 
+                panic!("fatal interpreter error");
             },
 
         };
@@ -131,7 +150,10 @@ impl Interpreter {
 
     fn store_variable(&mut self, name: Span<String>, value: Literal) -> () { 
         let result: bool = match self.func_envs.len() {
-            0 => self.env.store_variable(name, value),
+            0 => {
+                let length: usize = self.envs.len();
+                self.envs[length - 1].store_variable(name, value)
+            },
             n => self.func_envs[n-1].store_variable(name, value),
         };
 
@@ -148,10 +170,12 @@ impl Interpreter {
         };
 
         if !result {
-            if self.env.assign_variable(name, value) {
-                panic!("Fatal interpreter error")
-                //TODO Create error,
-            }
+            for i in (0..self.envs.len()).rev() {
+                if self.envs[i].assign_variable(name.clone(), value.clone()) {
+                    return 
+                }
+            } 
+            panic!("fatal interpreter error");
         }
     }
 }

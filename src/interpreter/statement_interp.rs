@@ -24,11 +24,7 @@ pub use super::statement::{
 impl Interpreter {
     pub fn interpret_statement(&mut self, statement: Statement) -> Literal {
         match statement {
-            Statement::Function(function) => {
-                if function.identifier.get_fragment() == "main" {
-                    return self.interpret_function(*function, vec!());
-                }
-            },
+            Statement::Function(_) => (),
             Statement::While(r#while) => return self.interpret_while(*r#while),
             Statement::If(r#if) => return self.interpret_if(*r#if),
             Statement::Let(r#let) => self.interpret_let(r#let),
