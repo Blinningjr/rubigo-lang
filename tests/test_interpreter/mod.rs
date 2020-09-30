@@ -19,13 +19,15 @@ pub mod type_checker;
 pub mod interpreter;
 
 mod test_statements;
+mod operations;
 
 pub use parser::{
     Parser, 
     ModualBody,
     literal::Literal,
     statement::Statement,
-    Span,   
+    Span,
+    statement,
 };
 
 pub use type_checker::TypeChecker;

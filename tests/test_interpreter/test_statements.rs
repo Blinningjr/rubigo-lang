@@ -2,8 +2,10 @@ use super::{
     interpret_modual,
     Literal,
     Interpreter,
-    InterpEnv,
     Span,
+    statement::Function,
+    statement::Body,
+    parser::TypeDecleration,
 };
 
 
@@ -70,3 +72,65 @@ fn test_interpret_while() {
                Literal::I32(Span::new(10, 1, 18)));
 }
 
+
+/**
+ * Test interpret return statement.
+ */
+#[test]
+fn test_interpret_return() {
+    let input: String = "return 10;".to_string();
+    let (literal, _interpreter): (Literal, Interpreter) = interpret_modual(input);
+    assert_eq!(literal,
+               Literal::I32(Span::new(10, 1, 8)));
+}
+
+
+/**
+ * Test interpret body statement.
+ */
+#[test]
+fn test_interpret_body() {
+    let input: String = "{return 10;}".to_string();
+    let (literal, _interpreter): (Literal, Interpreter) = interpret_modual(input);
+    assert_eq!(literal,
+               Literal::I32(Span::new(10, 1, 9)));
+}
+
+
+/**
+ * Test interpret function statement.
+ */
+#[test]
+fn test_interpret_function() {
+    let input: String = "fn test() -> i32 {}".to_string();
+    let (_literal, mut interpreter): (Literal, Interpreter) = interpret_modual(input.clone());
+    assert_eq!(interpreter.get_function("test".to_string(), 0),
+               Function{
+                    original: Span::new(input, 1, 1),
+                    id: 1,
+                    identifier: Span::new("test".to_string(), 1, 4),
+                    parameters: vec!(),
+                    body: Body{
+                        original: Span::new(" {}".to_string(), 1, 17),
+                        id: 0,
+                        body: vec!(),
+                    },
+                    return_type: TypeDecleration{
+                        borrow: false,
+                        mutable: false,
+                        r#type: Span::new("i32".to_string(), 1, 14),                        
+                    },
+               });
+}
+
+
+/**
+ * Test interpret function call statement.
+ */
+#[test]
+fn test_interpret_function_call() {
+    let input: String = "fn duble(num: i32) -> i32 {return num * 2;} return duble(10);".to_string();
+    let (literal, _interpreter): (Literal, Interpreter) = interpret_modual(input);
+    assert_eq!(literal,
+               Literal::I32(Span::new(20, 1, 58)));
+}
