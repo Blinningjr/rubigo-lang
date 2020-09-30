@@ -22,6 +22,7 @@ mod test_statements;
 
 pub use parser::{
     Parser, 
+    ModualBody,
     literal::Literal,
     statement::Statement,
     
@@ -36,17 +37,17 @@ pub use interpreter::{
 
 
 
-pub fn interpret_statement(input: String) -> Literal {
+pub fn interpret_a_statement(input: String) -> Literal {
      let mut interpreter: Interpreter = Interpreter{
          error_handler: ErrorHandler::new(true),
          
-         modual: TypeChecker::type_check(Parser::parse(input, true), false).modual,
+         modual: TypeChecker::type_check(Parser::parse("TEST".to_string(), input, true), false).modual,
  
-         env: InterpEnv::new(),
+         envs: vec!(InterpEnv::new()),
          func_envs: vec!(),
      };
-     let ast: Statement = interpreter.modual.ast.clone();
+     let ast: ModualBody = interpreter.modual.ast.clone();
      
-    return interpreter.interpret_statement(ast);;
+    return interpreter.interpret_statement(ast.body[0].clone());;
 }
 

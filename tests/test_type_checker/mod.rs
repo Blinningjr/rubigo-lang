@@ -27,7 +27,7 @@ pub use type_checker::TypeChecker;
  * Runs Type check on string. 
  */
 pub fn type_check_string(input: String) -> TypeChecker {
-    return TypeChecker::type_check(Parser::parse(input, true), false);
+    return TypeChecker::type_check(Parser::parse("TEST".to_string(), input, true), false);
 }
 
 pub fn get_num_of_errors(type_checker: TypeChecker) -> usize {

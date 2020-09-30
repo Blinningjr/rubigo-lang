@@ -140,10 +140,13 @@ impl TypeChecker {
             };
         }
 
-        let mut env_body_id_r: Option<usize> = Some(self.modual.current_body_id);  
+        let mut env_body_id_r: Option<usize> = Some(self.modual.current_body_id);
         loop {
             match env_body_id_r {
                 Some(env_id) =>{
+                    if env_id >= self.modual.mod_envs.len() {
+                        return Err(format!("Function {:#?} not in scope.", identifier.get_fragment()));
+                    }
                     match self.modual.mod_envs[env_id].lookup_function(identifier.get_fragment()) {
                         Ok(id) => {
                             return Ok(self.modual.environments[id].function.clone());
@@ -151,7 +154,7 @@ impl TypeChecker {
                         Err(_) => env_body_id_r = self.modual.mod_envs[env_id].previus_id,
                     };
                 },
-                None => return Err("fatal interpreter error".to_string()),
+                None => return Err(format!("Function {:#?} not in scope.", identifier.get_fragment())),
             };
         }
 

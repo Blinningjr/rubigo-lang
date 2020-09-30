@@ -38,8 +38,6 @@ fn main() {
         return duble(duble);
     }
     print(quad(3));
-    
-    
     ".to_string();
 
     let _test_type_checker_fail: String = "    fn testfn(apa: i32) -> i32 {

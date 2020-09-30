@@ -1,5 +1,5 @@
 use super::{
-    parse_string,
+    parse_statement,
     span::Span,
 };
 
@@ -29,7 +29,7 @@ use super::parser::literal::Literal;
 #[test]
 fn test_parse_let() {
     let input: String = "let test: i32 = 10;".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::Let(Let {
             id: 0,
@@ -53,7 +53,7 @@ fn test_parse_let() {
 #[test]
 fn test_parse_assignment() {
     let input: String = "test = 10;".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::Assignment(Assignment {
             id: 0,
@@ -71,7 +71,7 @@ fn test_parse_assignment() {
 #[test]
 fn test_parse_function_call() {
     let input: String = "test(10);".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::Expression(Expression::FunctionCall(Box::new(FunctionCall {
             id: 0,
@@ -89,7 +89,7 @@ fn test_parse_function_call() {
 #[test]
 fn test_parse_if() {
     let input: String = "if true {\ntest = 10;\n}".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::If(Box::new(If {
             id: 0,
@@ -117,7 +117,7 @@ fn test_parse_if() {
 #[test]
 fn test_parse_if_else() {
     let input: String = "if true {\ntest = 10;\n} else {}".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::If(Box::new(If {
             id: 0,
@@ -149,7 +149,7 @@ fn test_parse_if_else() {
 #[test]
 fn test_parse_while() {
     let input: String = "while true {\ntest = 10;\n}".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::While(Box::new(While {
             id: 0,
@@ -176,7 +176,7 @@ fn test_parse_while() {
 #[test]
 fn test_parse_body() {
     let input: String = "{\ntest = 10;\n}".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::Body(Box::new(Body {
             id: 0,
@@ -198,7 +198,7 @@ fn test_parse_body() {
 #[test]
 fn test_parse_function() {
     let input: String = "fn test(t: i32) -> i32 {\ntest = 10;\n}".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::Function(Box::new(Function {
             id: 1,
@@ -237,7 +237,7 @@ fn test_parse_function() {
 #[test]
 fn test_parse_return() {
     let input: String = "return 10;".to_string();
-    let statement: Statement = parse_string(input.clone());
+    let statement: Statement = parse_statement(input.clone());
     assert_eq!(statement, 
         Statement::Return(Return {
             id: 0,

@@ -1,5 +1,5 @@
 use super::{
-    interpret_statement,
+    interpret_a_statement,
     Literal,
 };
 
@@ -10,7 +10,7 @@ use super::{
 #[test]
 fn test_interpret_let() {
     let input: String = "let test: i32 = 10;".to_string();
-    let literal: Literal = interpret_statement(input);
+    let literal: Literal = interpret_a_statement(input);
     assert_eq!(literal, Literal::Dummy);
 }
 

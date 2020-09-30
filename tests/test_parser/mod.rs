@@ -23,7 +23,7 @@ use parser::{
 /**
  * parsers the string into statments, expressions and more.
  */
-pub fn parse_string(input: String) -> Statement {
-    return Parser::parse(input, false);
+pub fn parse_statement(input: String) -> Statement {
+    return Parser::parse("TEST".to_string(), input, false).body[0].clone();
 }
 
