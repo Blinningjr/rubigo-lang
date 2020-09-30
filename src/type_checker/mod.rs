@@ -232,7 +232,12 @@ impl TypeChecker {
     fn create_body(&mut self) -> () {
         match self.modual.current_env_id {
             Some(id) => self.modual.current_body_id = self.modual.environments[id].create_env(self.modual.current_body_id),
-            None => panic!("Can't create body in module"),
+            None => {
+                let new_id: usize = self.modual.mod_envs.len();
+                let current_id: usize = self.modual.current_body_id;
+                self.modual.mod_envs.push(Environment::new(new_id, Some(current_id)));
+                self.modual.current_body_id = new_id;
+            },
         };
     }
 

@@ -25,7 +25,7 @@ pub use parser::{
     ModualBody,
     literal::Literal,
     statement::Statement,
-    
+    Span,   
 };
 
 pub use type_checker::TypeChecker;
@@ -36,18 +36,23 @@ pub use interpreter::{
 };
 
 
-
-pub fn interpret_a_statement(input: String) -> Literal {
-     let mut interpreter: Interpreter = Interpreter{
-         error_handler: ErrorHandler::new(true),
+pub fn interpret_modual(input: String) -> (Literal, Interpreter) {
+    let mut interpreter: Interpreter = Interpreter{
+        error_handler: ErrorHandler::new(true),
          
-         modual: TypeChecker::type_check(Parser::parse("TEST".to_string(), input, true), false).modual,
+        modual: TypeChecker::type_check(Parser::parse("TEST".to_string(), input, true), false).modual,
  
-         envs: vec!(InterpEnv::new()),
-         func_envs: vec!(),
-     };
-     let ast: ModualBody = interpreter.modual.ast.clone();
-     
-    return interpreter.interpret_statement(ast.body[0].clone());;
+        envs: vec!(InterpEnv::new()),
+        func_envs: vec!(),
+    };
+    let ast: ModualBody = interpreter.modual.ast.clone();
+
+    let mut literal: Literal = Literal::Dummy;
+    for stmt in ast.body.iter() {
+        literal = interpreter.interpret_statement(stmt.clone());
+    }
+
+    return (literal, interpreter);
 }
+
 

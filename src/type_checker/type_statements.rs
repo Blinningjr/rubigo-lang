@@ -88,7 +88,7 @@ impl TypeChecker {
                 let env_id: usize = self.modual.environments[id].environments.len() - 1;
                 self.modual.environments[id].environments[env_id].if_body = true;
             },
-            None => panic!("Fatal error in type checker!!!"),
+            None => (),
         };
 
         match if_statement.else_body {

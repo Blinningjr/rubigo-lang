@@ -76,19 +76,24 @@ impl Interpreter {
     
     fn create_env(&mut self) -> () {
         match self.func_envs.len() {
-            0 => panic!("fatal interpreter error"), 
+            0 => self.envs.push(InterpEnv::new()), 
             n => self.func_envs[n-1].create_env(),
         };
     } 
     
     fn drop_env(&mut self) -> () {
         match self.func_envs.len() {
-            0 => panic!("fatal interpreter error"), 
+            0 => {
+                match self.envs.pop() {
+                    Some(_) => (),
+                    None => panic!("fatal intepreter error"),
+                };
+            },
             n => self.func_envs[n-1].drop_env(),
         };
     } 
 
-    fn get_function(&mut self, name: String, body_id: usize) -> Function {
+    pub fn get_function(&mut self, name: String, body_id: usize) -> Function {
         let func_id: usize;
         match self.func_envs.len() {
             0 => {
@@ -127,7 +132,7 @@ impl Interpreter {
         };
     }
     
-    fn get_variable(&mut self, name: String) -> Literal {    
+    pub fn get_variable(&mut self, name: String) -> Literal {    
         let result: Result<Literal, String> = match self.func_envs.len() {
             0 => Err("error".to_string()), 
             n => self.func_envs[n-1].get_variable(name.clone()),
