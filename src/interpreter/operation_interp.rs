@@ -38,7 +38,6 @@ impl Interpreter {
             },
             BinOperator::Or => Literal::Bool(Span::new(self.get_bool(left) || self.get_bool(right), 0, 0)),
             BinOperator::Dummy => panic!("Fatal Error"),
-            _ => panic!("Not Implemented"),        
         };
     }
 

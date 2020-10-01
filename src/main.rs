@@ -5,8 +5,6 @@ mod parser;
 mod type_checker;
 mod interpreter;
 
-use std::fs;
-
 use parser::{
     Parser,
     ModualBody,
@@ -21,8 +19,6 @@ use interpreter::{
 };
 
 use structopt::StructOpt;
-use indicatif::{ProgressBar, ProgressIterator, ProgressStyle};
-use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, StructOpt)]
 /// A simple rust-like compiler
@@ -66,7 +62,6 @@ fn main() {
             let filename: &str = path.file_name().unwrap().to_str().unwrap();
             command_check(filename.to_string(), content);
         },
-        _ => (),
     };
 }
 
@@ -78,33 +73,13 @@ fn command_run(filename: String, content: String) -> () {
 }
 
 fn command_build(filename: String, content: String) -> () {
-    let pb = indicatif::ProgressBar::new(3);
-    
     let mod_body: ModualBody = Parser::parse(filename.clone(), content, true);
-    pb.println(format!("[+] finished parsing #{}", &filename));
-    pb.inc(1);
-   
-    let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
-    pb.println(format!("[+] finished type checking #{}", &filename));
-    pb.inc(1);
-    
+    let _type_checker: TypeChecker = TypeChecker::type_check(mod_body, true); 
     // TODO llvm
-    pb.println(format!("[+] finished creating binary file #{}", &filename));
-    pb.inc(1);
-    pb.finish_with_message("done");
 }
 
 fn command_check(filename: String, content: String) -> () {
-    let pb = indicatif::ProgressBar::new(2);
-
     let mod_body: ModualBody = Parser::parse(filename.clone(), content, true);
-    pb.println(format!("[+] finished parsing #{}",  &filename));
-    pb.inc(1);
-
-    let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
-    pb.println(format!("[+] finished type checking #{}", &filename));
-    pb.inc(1);
-    
-    pb.finish_with_message("done");
+    let _type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
 }
 
