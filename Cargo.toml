@@ -1,6 +1,6 @@
 [package]
 name = "rubigo"
-version = "0.1.0"
+version = "0.0.8"
 authors = ["Blinningjr <nicke.l@telia.com>"]
 edition = "2018"
 
