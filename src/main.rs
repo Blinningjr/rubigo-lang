@@ -20,77 +20,91 @@ use interpreter::{
     Interpreter,
 };
 
+use structopt::StructOpt;
+use indicatif::{ProgressBar, ProgressIterator, ProgressStyle};
+use std::str::FromStr;
+
+#[derive(Debug, Clone, PartialEq, StructOpt)]
+/// A simple rust-like compiler
+enum Cli {
+    /// Run interpreter
+    Run {
+        #[structopt(parse(from_os_str))]
+        path: std::path::PathBuf,
+    },
+    /// Build binary file
+    Build {
+        #[structopt(parse(from_os_str))]
+        path: std::path::PathBuf,
+    },
+    /// Run type and borrow checker
+    Check {
+        #[structopt(parse(from_os_str))]
+        path: std::path::PathBuf,
+    },
+}
 
 fn main() {
-    let filename = "example-code/example.rbg";
-    //println!("In file {}", filename);
+    let args = Cli::from_args();
 
-//    let _contents = fs::read_to_string(filename)
-//        .expect("Something went wrong reading the file");
-    //println!("With text:\n{}", contents);
- 
-    let test: String = "    
-    fn quad(num: i32) -> i32 {
-        fn duble(num: i32) -> i32 {
-            return num * 2;
-        }
-        let duble: i32 = duble(num);
-        return duble(duble);
-    }
-    print(quad(3));
-    ".to_string();
-
-    let _test_type_checker_fail: String = "    fn testfn(apa: i32) -> i32 {
-        return false;
-        fn testfn() -> i32 {
-            if 1 {
-                let a: i32 = 10;
-                a = 20;
-                return testfn(false);
-            }
-            a = 2;
-        }
-        return testfn2(1);
-    }
-    ".to_string();
-
-    let _test_parser_fail: String = "fn testfn(apa: i32, te: i32) -> i32 {
-        let test: &mut i32 = 2 * (123 - 122);
-        let test: char = \" asd asd  \"
-        if a == apa(123) {
-            return 10;
-         else {
-            return apa(123);
-            asdasd
-        }
-        while true {
-            let a: f32 = 1.2;
-            return 2;
-        } 
-        return 10;
-    }".to_string();
+    match args {
+        Cli::Run{path} => {
+            let content: String = std::fs::read_to_string(&path)
+                .expect("could not read file");
+            let filename: &str = path.file_name().unwrap().to_str().unwrap();
+            command_run(filename.to_string(), content);
+        },
+        Cli::Build{path} => {
+            let content: String = std::fs::read_to_string(&path)
+                .expect("could not read file");
+            let filename: &str = path.file_name().unwrap().to_str().unwrap();
+            command_build(filename.to_string(), content);
+        },
+        Cli::Check{path} => {
+            let content: String = std::fs::read_to_string(&path)
+                .expect("could not read file");
+            let filename: &str = path.file_name().unwrap().to_str().unwrap();
+            command_check(filename.to_string(), content);
+        },
+        _ => (),
+    };
+}
 
 
+fn command_run(filename: String, content: String) -> () {
+    let mod_body: ModualBody = Parser::parse(filename, content, true);
+    let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
+    Interpreter::interpret(type_checker.modual);
+}
 
-    //println!("\nWith text:\n{}\n", test);
+fn command_build(filename: String, content: String) -> () {
+    let pb = indicatif::ProgressBar::new(3);
+    
+    let mod_body: ModualBody = Parser::parse(filename.clone(), content, true);
+    pb.println(format!("[+] finished parsing #{}", &filename));
+    pb.inc(1);
+   
+    let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
+    pb.println(format!("[+] finished type checking #{}", &filename));
+    pb.inc(1);
+    
+    // TODO llvm
+    pb.println(format!("[+] finished creating binary file #{}", &filename));
+    pb.inc(1);
+    pb.finish_with_message("done");
+}
 
-    let mod_body: ModualBody = Parser::parse("test".to_string(), test, true); 
-    //println!("Parsed: \n{:#?}\n", mod_body);
+fn command_check(filename: String, content: String) -> () {
+    let pb = indicatif::ProgressBar::new(2);
+
+    let mod_body: ModualBody = Parser::parse(filename.clone(), content, true);
+    pb.println(format!("[+] finished parsing #{}",  &filename));
+    pb.inc(1);
 
     let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
-    //println!("Type Checked: \n{:#?}\n", type_checker); 
-
-    Interpreter::interpret(type_checker.modual);
+    pb.println(format!("[+] finished type checking #{}", &filename));
+    pb.inc(1);
     
-//    let mut tokens: Vec<Token> = Vec::new();
-//    let mut lexer: Lexer = Lexer::new(test); 
-//    let mut hungry: bool = true;
-//    while hungry {
-//        match lexer.next_token() {
-//            Ok(token) => tokens.push(token),
-//            Err(_err) => hungry = false,
-//        };
-//    }
-//    println!("Tokens:\n{:#?}", tokens);
+    pb.finish_with_message("done");
 }
 
