@@ -18,7 +18,7 @@ pub mod type_checker;
 #[path = "../../src/interpreter/mod.rs"]
 pub mod interpreter;
 
-mod test_statements;
+mod statements;
 mod operations;
 
 pub use parser::{
