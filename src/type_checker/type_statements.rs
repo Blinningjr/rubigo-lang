@@ -141,6 +141,7 @@ impl TypeChecker {
 
     fn check_body(&mut self, body: Body, create_env: bool) -> () {
         let current_body_id: usize = self.modual.current_body_id;
+
         if create_env {
             self.create_body();
         }
@@ -149,6 +150,9 @@ impl TypeChecker {
             self.check_statement(statement.clone());
         } 
         self.modual.current_body_id = current_body_id;
+        if self.modual.environments.len() < 1 {
+            self.modual.mod_body_id = current_body_id;
+        }
     }
 
     fn check_expression(&mut self, expression: Expression) -> () {

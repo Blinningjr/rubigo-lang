@@ -141,7 +141,7 @@ impl TypeChecker {
             };
         }
 
-        let mut env_body_id_r: Option<usize> = Some(self.modual.current_body_id);
+        let mut env_body_id_r: Option<usize> = Some(self.modual.mod_body_id);
         loop {
             match env_body_id_r {
                 Some(env_id) =>{
@@ -165,7 +165,7 @@ impl TypeChecker {
         let variable: Variable = Variable::new(identifier, Type::Custom(type_dec.r#type.get_fragment()), type_dec.mutable);
         match self.modual.current_env_id {
             Some(id) => self.modual.environments[id].add_variable(variable, self.modual.current_body_id),
-            None => self.modual.mod_envs[self.modual.current_body_id].add_variable(variable),
+            None => self.modual.mod_envs[self.modual.mod_body_id].add_variable(variable),
         };
     }
 
@@ -174,9 +174,16 @@ impl TypeChecker {
             Some(id) => {
                 match self.modual.environments[id].lookup_variable(identifier.get_fragment(), self.modual.current_body_id) {
                     Ok(val) => return val,
-                    Err(msg) => {
-                        self.create_type_error(ErrorLevel::Error, msg, original, identifier.get_line(), identifier.get_offset());
-                        return Variable::new(Span::new("".to_string(), 0, 0), Type::Any, true);
+                    Err(_) => {
+                        match self.modual.lookup_variable_in_mod_envs(identifier.clone()) {
+                            Ok(val) => return val,
+                            Err(msg) => {
+                                self.create_type_error(ErrorLevel::Error,
+                                                       msg,
+                                                       original, identifier.get_line(), identifier.get_offset());
+                                return Variable::new(Span::new("".to_string(), 0, 0), Type::Any, true);
+                            },
+                        };
                     },
                 };
             },
@@ -198,7 +205,7 @@ impl TypeChecker {
     fn get_environment(&mut self) -> &mut Environment {
         return match self.modual.current_env_id {
             Some(env_id) => &mut self.modual.environments[env_id].environments[self.modual.current_body_id],
-            None => &mut self.modual.mod_envs[self.modual.current_body_id],
+            None => &mut self.modual.mod_envs[self.modual.mod_body_id],
         };
     }
 
@@ -231,6 +238,7 @@ impl TypeChecker {
                 let current_id: usize = self.modual.current_body_id;
                 self.modual.mod_envs.push(Environment::new(new_id, Some(current_id)));
                 self.modual.current_body_id = new_id;
+                self.modual.mod_body_id = new_id;
             },
         };
     }

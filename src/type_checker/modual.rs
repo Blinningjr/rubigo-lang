@@ -16,6 +16,8 @@ pub struct Modual {
     pub current_env_id: Option<usize>,
     pub current_body_id: usize,
 
+    pub mod_body_id: usize,
+
     pub ast: ModualBody,
 }
 
@@ -27,6 +29,7 @@ impl Modual {
             
             current_env_id: None,
             current_body_id: 0,
+            mod_body_id: 0,
             
             ast: ast,
         };
@@ -35,7 +38,7 @@ impl Modual {
 
    
     pub fn lookup_variable_in_mod_envs(&mut self, identifier: Span<String>) -> Result<Variable, String> { 
-        let mut env_body_id_r: Option<usize> = Some(self.current_body_id);  
+        let mut env_body_id_r: Option<usize> = Some(self.mod_body_id);  
         loop {
             match env_body_id_r {
                 Some(env_id) =>{
