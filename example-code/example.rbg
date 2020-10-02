@@ -1,6 +1,7 @@
+let c: f32 = 22.2;
 fn foo(bar: i32) -> bool {
     while true {
-        let a: f32 = 10.2 + 11.2;
+        let a: f32 = 10.2 + c;
 	let b: String = " asa a";
         if bar == 21 {
             return true;

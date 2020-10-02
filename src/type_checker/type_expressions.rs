@@ -58,6 +58,7 @@ impl TypeChecker {
                return Type::Any;
             },
         };
+
         let mut parameters_type: Vec<Type> = vec!();
         for (_, type_dec) in function.parameters {
             if type_dec.r#type.get_fragment() == " ANY" {
@@ -85,7 +86,7 @@ impl TypeChecker {
     }
 
     fn get_variable_type(&mut self, variable: Variable, original: Span<String>) -> Type {
-        return self.lookup_variable(variable.identifier, original);
+        return self.lookup_variable(variable.identifier, original).r#type;
     }
 
 

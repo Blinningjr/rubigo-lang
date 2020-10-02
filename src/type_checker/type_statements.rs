@@ -47,7 +47,7 @@ impl TypeChecker {
 
         self.new_function_env(function.clone());
         for p in function.parameters {
-            self.add_variable(p.0, p.1.r#type);
+            self.add_variable(p.0, p.1);
         }
 
         self.check_body(function.body, false);
@@ -102,7 +102,7 @@ impl TypeChecker {
         self.check_if_unreachable_code(original.clone());
         
         let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment());
-        self.add_variable(let_statement.identifier, let_statement.type_dec.r#type);
+        self.add_variable(let_statement.identifier, let_statement.type_dec);
         
         let expression_type: Type = self.get_expression_type(let_statement.value.clone(), original.clone()); 
         if !compare_types(&variable_type, &expression_type) {
@@ -115,7 +115,7 @@ impl TypeChecker {
         let original: Span<String> = assignment.original;
         self.check_if_unreachable_code(original.clone());
         
-        let variable_type: Type = self.lookup_variable(assignment.identifier, original.clone());
+        let variable_type: Type = self.lookup_variable(assignment.identifier, original.clone()).r#type;
         
         let expression_type: Type = self.get_expression_type(assignment.value.clone(), original.clone());
         if !compare_types(&variable_type, &expression_type) {

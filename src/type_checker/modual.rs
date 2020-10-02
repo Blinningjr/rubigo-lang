@@ -5,6 +5,7 @@ pub use super::{
     Environment,
     ModualBody,
     Span,
+    Variable,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -29,6 +30,26 @@ impl Modual {
             
             ast: ast,
         };
+    }
+
+
+   
+    pub fn lookup_variable_in_mod_envs(&mut self, identifier: Span<String>) -> Result<Variable, String> { 
+        let mut env_body_id_r: Option<usize> = Some(self.current_body_id);  
+        loop {
+            match env_body_id_r {
+                Some(env_id) =>{
+                    match self.mod_envs[env_id].lookup_variable(identifier.get_fragment()) {
+                        Ok(val) => return Ok(val),
+                        Err(_) => env_body_id_r = self.mod_envs[env_id].previus_id,
+                    }
+                },
+                None => {
+                    return Err(format!("Variable {:#?} not in scope.", identifier));
+                },
+            };
+        
+        } 
     }
 }
 

@@ -4,6 +4,7 @@ pub use super::{
     Span,
     environment::Environment,
     statement::Function,
+    Variable,
 };
 
 pub use super::r#type::{
@@ -57,11 +58,11 @@ impl FunctionEnv {
         }
     }
 
-    pub fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>, body_id: usize) -> bool {
-        return self.environments[body_id].add_variable(identifier, r#type);
+    pub fn add_variable(&mut self, variable: Variable, body_id: usize) -> bool {
+        return self.environments[body_id].add_variable(variable);
     }
 
-    pub fn lookup_variable(&mut self, identifier: String, start_id: usize) -> Result<Type, String> {
+    pub fn lookup_variable(&mut self, identifier: String, start_id: usize) -> Result<Variable, String> {
         let mut env_id_r: Option<usize> = Some(start_id); 
         loop {
             match env_id_r {

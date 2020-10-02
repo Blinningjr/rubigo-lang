@@ -38,6 +38,7 @@ pub use statement::Statement;
 
 pub use environment::{
     Environment,
+    Variable,
 };
 
 pub use function_env::FunctionEnv;
@@ -160,46 +161,39 @@ impl TypeChecker {
 
     }
 
-    fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> () {
+    fn add_variable(&mut self, identifier: Span<String>, type_dec: TypeDecleration) -> () {
+        let variable: Variable = Variable::new(identifier, Type::Custom(type_dec.r#type.get_fragment()), type_dec.mutable);
         match self.modual.current_env_id {
-            Some(id) => self.modual.environments[id].add_variable(identifier, r#type, self.modual.current_body_id),
-            None => self.modual.mod_envs[self.modual.current_body_id].add_variable(identifier, r#type),
+            Some(id) => self.modual.environments[id].add_variable(variable, self.modual.current_body_id),
+            None => self.modual.mod_envs[self.modual.current_body_id].add_variable(variable),
         };
     }
 
-    fn lookup_variable(&mut self, identifier: Span<String>, original: Span<String>) -> Type {
+    fn lookup_variable(&mut self, identifier: Span<String>, original: Span<String>) -> Variable {
         match self.modual.current_env_id {
             Some(id) => {
                 match self.modual.environments[id].lookup_variable(identifier.get_fragment(), self.modual.current_body_id) {
                     Ok(val) => return val,
                     Err(msg) => {
                         self.create_type_error(ErrorLevel::Error, msg, original, identifier.get_line(), identifier.get_offset());
-                        return Type::Any;
+                        return Variable::new(Span::new("".to_string(), 0, 0), Type::Any, true);
                     },
                 };
             },
             None => {
-                let mut env_body_id_r: Option<usize> = Some(self.modual.current_body_id);  
-                loop {
-                    match env_body_id_r {
-                        Some(env_id) =>{
-                            match self.modual.mod_envs[env_id].lookup_variable(identifier.get_fragment()) {
-                                Ok(val) => return val,
-                                Err(_) => env_body_id_r = self.modual.mod_envs[env_id].previus_id,
-                            }
-                        },
-                        None => {
-                            self.create_type_error(ErrorLevel::Error,
-                                                   format!("Variable {:#?} not in scope.", identifier),
-                                                   original, identifier.get_line(), identifier.get_offset());
-                            return Type::Any;
-                        },
-                    };
-
-                } 
+                match self.modual.lookup_variable_in_mod_envs(identifier.clone()) {
+                    Ok(val) => return val,
+                    Err(msg) => {
+                        self.create_type_error(ErrorLevel::Error,
+                                               msg,
+                                               original, identifier.get_line(), identifier.get_offset());
+                        return Variable::new(Span::new("".to_string(), 0, 0), Type::Any, true);
+                    },
+                };
             },
         };
     }
+
 
     fn get_environment(&mut self) -> &mut Environment {
         return match self.modual.current_env_id {

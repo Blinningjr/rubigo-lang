@@ -14,10 +14,27 @@ pub struct Environment {
     pub id: usize,
     pub previus_id: Option<usize>,
     pub functions: Vec<(Span<String>, usize)>, 
-    pub variables: Vec<(Span<String>, Type)>, 
+    pub variables: Vec<Variable>, 
 
     pub returns_value: bool,
     pub if_body: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Variable {
+    pub mutable: bool,
+    pub identifier: Span<String>,
+    pub r#type: Type,
+}
+
+impl Variable {
+    pub fn new(identifier: Span<String>, r#type: Type, mutable: bool) -> Variable {
+        return Variable {
+            mutable: mutable,
+            identifier: identifier,
+            r#type: r#type,
+        };
+    }
 }
 
 
@@ -48,15 +65,15 @@ impl Environment {
         return Err(format!("Function {:#?} not in scope.", identifier));
     }
 
-    pub fn add_variable(&mut self, identifier: Span<String>, r#type: Span<String>) -> bool {
-        self.variables.push((identifier, Type::Custom(r#type.get_fragment())));
+    pub fn add_variable(&mut self, variable: Variable) -> bool {
+        self.variables.push(variable);
         return true;
     }
 
-    pub fn lookup_variable(&mut self, identifier: String) -> Result<Type, String> {
-        for (ident, r#type) in self.variables.iter() {
-            if ident.get_fragment() == identifier {
-                return Ok(r#type.clone());
+    pub fn lookup_variable(&mut self, identifier: String) -> Result<Variable, String> {
+        for var in self.variables.iter() {
+            if var.identifier.get_fragment() == identifier {
+                return Ok(var.clone());
             }
         }
         return Err(format!("Variable {:#?} not in scope.", identifier));
