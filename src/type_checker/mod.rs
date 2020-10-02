@@ -126,20 +126,18 @@ impl TypeChecker {
     }
 
     fn lookup_function(&mut self, identifier: Span<String>) -> Result<Function, String> {
-        let mut env_id_r: Option<usize> = self.modual.current_env_id;
-        loop {
-            match env_id_r {
-                Some(env_id) => {
-                    match self.modual.environments[env_id].lookup_function_id(identifier.get_fragment(), self.modual.current_body_id) {
-                        Ok(id) => {
-                            return Ok(self.modual.environments[id].function.clone());
-                        },
-                        Err(_) => env_id_r = self.modual.environments[env_id].previus_id,
-                    };   
-                },
-                None => break,
-            };
-        }
+        match self.modual.current_env_id {
+            Some(env_id) => {
+                match self.modual.environments[env_id].lookup_function_id(identifier.get_fragment(), self.modual.current_body_id) {
+                    Ok(id) => {
+                        return Ok(self.modual.environments[id].function.clone());
+                    },
+                    Err(_) => (),
+                };
+            },
+            None => (),
+        };
+
 
         let mut env_body_id_r: Option<usize> = Some(self.modual.mod_body_id);
         loop {
