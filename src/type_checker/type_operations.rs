@@ -26,16 +26,26 @@ impl TypeChecker {
 
     pub(super) fn get_binop_type(&mut self, binop: BinOp, original: Span<String>) -> Type {
         let left_expression_type: Type = self.get_expression_type(binop.left_expression.clone(), original.clone());
-        let right_expression_type: Type = self.get_expression_type(binop.right_expression, original.clone()); 
+        let right_expression_type: Type = self.get_expression_type(binop.right_expression.clone(), original.clone()); 
         let binop_type: (Type, Type) = self.binop_type(binop.bin_op.get_fragment());
 
         if !compare_types(&left_expression_type, &right_expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression);
-            self.create_type_error(ErrorLevel::Error, "type error binop".to_string(), original, line, offset);
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Both the left and right expression of a binary operation must be of the same type. left: {} right {}",
+                                           left_expression_type.to_string(),
+                                           right_expression_type.to_string()),
+                                   original,
+                                   line,
+                                   offset);
 
         } else if !compare_types(&binop_type.1, &left_expression_type.clone()) {
-            let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression);
-            self.create_type_error(ErrorLevel::Error, "type error binop".to_string(), original, line, offset);  
+            let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression.clone());
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Binary operator {:?} requiers that the expressions are of type {}", binop, binop_type.1.to_string()),
+                                   original,
+                                   line,
+                                   offset);  
         }
 
         return binop_type.0;
@@ -69,7 +79,11 @@ impl TypeChecker {
 
         if !compare_types(&unop_type, &expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(unop.expression);
-            self.create_type_error(ErrorLevel::Error, "type error unop".to_string(), original, line, offset); 
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Expected type {} got {}", unop_type.to_string(), expression_type.to_string()),
+                                   original,
+                                   line, 
+                                   offset); 
         }
         return unop_type;
     }

@@ -70,14 +70,21 @@ impl TypeChecker {
 
         if inputs_type.len() != parameters_type.len() {
             self.create_type_error(ErrorLevel::Error,
-                                   format!("Function {:#?} requiers {} parameters, recived {}", function.identifier.get_fragment(), parameters_type.len(), inputs_type.len()),
+                                   format!("Function {:#?} requiers {} parameters got {}", function.identifier.get_fragment(), parameters_type.len(), inputs_type.len()),
                                    original,
                                    function_call.identifier.get_line(),
                                    function_call.identifier.get_offset());
         } else {
             for i in 0..inputs_type.len() {
                 if !compare_types(&inputs_type[i], &parameters_type[i]) {
-                    self.create_type_error(ErrorLevel::Error, format!("type error parameter {} wrong type", i), original.clone(), inputs_location[i].0, inputs_location[i].1);
+                    self.create_type_error(ErrorLevel::Error,
+                                           format!("Expected parameter {} to be of type {} but got {}",
+                                                   i,
+                                                   parameters_type[i].to_string(),
+                                                   inputs_type[i].to_string()),
+                                           original.clone(),
+                                           inputs_location[i].0,
+                                           inputs_location[i].1);
                 } 
             }
         }

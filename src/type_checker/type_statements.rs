@@ -8,6 +8,7 @@ pub use super::{
     TypeDecleration,
     Span,
     ErrorLevel,
+    Variable,
 };
 
 pub use super::r#type::{
@@ -78,7 +79,11 @@ impl TypeChecker {
         let condition_type: Type = self.get_expression_type(if_statement.condition.clone(), original.clone());
         if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
             let (line, offset): (usize, usize) = self.get_expression_location(if_statement.condition);
-            self.create_type_error(ErrorLevel::Error, "type error in if statement.".to_string(), original, line, offset);
+            self.create_type_error(ErrorLevel::Error,
+                                   "Incorrect type, if condition must be of type bool".to_string(),
+                                   original,
+                                   line,
+                                   offset);
         }
 
         self.check_body(if_statement.if_body, true);
@@ -102,12 +107,16 @@ impl TypeChecker {
         self.check_if_unreachable_code(original.clone());
         
         let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment());
-        self.add_variable(let_statement.identifier, let_statement.type_dec);
+        self.add_variable(let_statement.identifier.clone(), let_statement.type_dec);
         
         let expression_type: Type = self.get_expression_type(let_statement.value.clone(), original.clone()); 
         if !compare_types(&variable_type, &expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(let_statement.value);
-            self.create_type_error(ErrorLevel::Error, "type error in let statement.".to_string(), original, line, offset);
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Incorrect type, variable {} is of type {}", let_statement.identifier.get_fragment(), variable_type.to_string()),
+                                   original,
+                                   line,
+                                   offset);
         }
     }
     
@@ -115,12 +124,23 @@ impl TypeChecker {
         let original: Span<String> = assignment.original;
         self.check_if_unreachable_code(original.clone());
         
-        let variable_type: Type = self.lookup_variable(assignment.identifier, original.clone()).r#type;
-        
+        let variable: Variable = self.lookup_variable(assignment.identifier.clone(), original.clone());
+        if !variable.mutable {
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Variable {} is not mutable", assignment.identifier.get_fragment()),
+                                   original.clone(),
+                                   assignment.identifier.get_line(),
+                                   assignment.identifier.get_offset());
+        }
+
         let expression_type: Type = self.get_expression_type(assignment.value.clone(), original.clone());
-        if !compare_types(&variable_type, &expression_type) {
+        if !compare_types(&variable.r#type, &expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(assignment.value);
-            self.create_type_error(ErrorLevel::Error, "type error: in assignment statement.".to_string(), original, line, offset);
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Incorrect type, variable {} is of type {}", assignment.identifier.get_fragment(), variable.r#type.to_string()),
+                                   original,
+                                   line,
+                                   offset);
         }
     }
 
@@ -135,7 +155,12 @@ impl TypeChecker {
 
         if !compare_types(&expression_type, &return_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(return_statement.value);
-            self.create_type_error(ErrorLevel::Error, "type error: in return statement.".to_string(), original, line, offset);
+            let func_name: String = self.get_function().identifier.get_fragment();
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Incorrect type, function {} has return type {}", func_name, return_type.to_string()),
+                                   original,
+                                   line,
+                                   offset);
         }
     }
 

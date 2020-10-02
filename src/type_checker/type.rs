@@ -8,6 +8,16 @@ pub enum Type {
     Custom(String),
 }
 
+impl Type {
+    pub fn to_string(& self) -> String {
+        return match self {
+            Type::Any => "<ANY>".to_string(),
+            Type::Number => "<A Number>".to_string(),
+            Type::Custom(string) => string.clone(),
+        };
+    }
+}
+
 pub fn compare_types(type1: &Type, type2: &Type) -> bool {
     match type1 {
         Type::Any => return true,
