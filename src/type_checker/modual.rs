@@ -6,6 +6,7 @@ pub use super::{
     ModualBody,
     Span,
     Variable,
+    Function,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -35,7 +36,6 @@ impl Modual {
         };
     }
 
-
    
     pub fn lookup_variable_in_mod_envs(&mut self, identifier: Span<String>) -> Result<Variable, String> { 
         let mut env_body_id_r: Option<usize> = Some(self.mod_body_id);  
@@ -54,5 +54,26 @@ impl Modual {
         
         } 
     }
+
+    pub fn lookup_function_in_mod_envs(&mut self, identifier: Span<String>) -> Result<Function, String> {
+        let mut env_body_id_r: Option<usize> = Some(self.mod_body_id);
+        loop {
+            match env_body_id_r {
+                Some(env_id) =>{
+                    if env_id >= self.mod_envs.len() {
+                        return Err(format!("Function {:#?} not in scope.", identifier.get_fragment()));
+                    }
+                    match self.mod_envs[env_id].lookup_function(identifier.get_fragment()) {
+                        Ok(id) => {
+                            return Ok(self.environments[id].function.clone());
+                        },
+                        Err(_) => env_body_id_r = self.mod_envs[env_id].previus_id,
+                    };
+                },
+                None => return Err(format!("Function {:#?} not in scope.", identifier.get_fragment())),
+            };
+        }
+    }
+
 }
 

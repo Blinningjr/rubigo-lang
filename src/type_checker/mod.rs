@@ -32,7 +32,7 @@ pub use super::parser::{
     ModualBody,
 };
 
-use statement::Function;
+pub use statement::Function;
 
 pub use statement::Statement;
 
@@ -110,7 +110,6 @@ impl TypeChecker {
 
 
     fn add_function(&mut self, identifier: Span<String>, env_id: usize, original: Span<String>) -> () {
-
         match self.lookup_function(identifier.clone()) {
             Ok(_) => {
                 self.create_type_error(ErrorLevel::Error,
@@ -138,25 +137,7 @@ impl TypeChecker {
             None => (),
         };
 
-
-        let mut env_body_id_r: Option<usize> = Some(self.modual.mod_body_id);
-        loop {
-            match env_body_id_r {
-                Some(env_id) =>{
-                    if env_id >= self.modual.mod_envs.len() {
-                        return Err(format!("Function {:#?} not in scope.", identifier.get_fragment()));
-                    }
-                    match self.modual.mod_envs[env_id].lookup_function(identifier.get_fragment()) {
-                        Ok(id) => {
-                            return Ok(self.modual.environments[id].function.clone());
-                        },
-                        Err(_) => env_body_id_r = self.modual.mod_envs[env_id].previus_id,
-                    };
-                },
-                None => return Err(format!("Function {:#?} not in scope.", identifier.get_fragment())),
-            };
-        }
-
+        return self.modual.lookup_function_in_mod_envs(identifier);
     }
 
     fn add_variable(&mut self, identifier: Span<String>, type_dec: TypeDecleration) -> () {
@@ -172,29 +153,19 @@ impl TypeChecker {
             Some(id) => {
                 match self.modual.environments[id].lookup_variable(identifier.get_fragment(), self.modual.current_body_id) {
                     Ok(val) => return val,
-                    Err(_) => {
-                        match self.modual.lookup_variable_in_mod_envs(identifier.clone()) {
-                            Ok(val) => return val,
-                            Err(msg) => {
-                                self.create_type_error(ErrorLevel::Error,
-                                                       msg,
-                                                       original, identifier.get_line(), identifier.get_offset());
-                                return Variable::new(Span::new("".to_string(), 0, 0), Type::Any, true);
-                            },
-                        };
-                    },
+                    Err(_) => (),
                 };
             },
-            None => {
-                match self.modual.lookup_variable_in_mod_envs(identifier.clone()) {
-                    Ok(val) => return val,
-                    Err(msg) => {
-                        self.create_type_error(ErrorLevel::Error,
-                                               msg,
-                                               original, identifier.get_line(), identifier.get_offset());
-                        return Variable::new(Span::new("".to_string(), 0, 0), Type::Any, true);
-                    },
-                };
+            None => (),
+        };
+
+        match self.modual.lookup_variable_in_mod_envs(identifier.clone()) {
+            Ok(val) => return val,
+            Err(msg) => {
+                self.create_type_error(ErrorLevel::Error,
+                                       msg,
+                                       original, identifier.get_line(), identifier.get_offset());
+                return Variable::new(Span::new("".to_string(), 0, 0), Type::Any, true);
             },
         };
     }
