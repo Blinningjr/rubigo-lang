@@ -48,7 +48,7 @@ impl Modual {
                     }
                 },
                 None => {
-                    return Err(format!("Variable {:#?} not in scope.", identifier));
+                    return Err(format!("Variable {} not in scope.", identifier.get_fragment()));
                 },
             };
         
@@ -61,7 +61,7 @@ impl Modual {
             match env_body_id_r {
                 Some(env_id) =>{
                     if env_id >= self.mod_envs.len() {
-                        return Err(format!("Function {:#?} not in scope.", identifier.get_fragment()));
+                        return Err(format!("Function {} not in scope.", identifier.get_fragment()));
                     }
                     match self.mod_envs[env_id].lookup_function(identifier.get_fragment()) {
                         Ok(id) => {
@@ -70,7 +70,7 @@ impl Modual {
                         Err(_) => env_body_id_r = self.mod_envs[env_id].previus_id,
                     };
                 },
-                None => return Err(format!("Function {:#?} not in scope.", identifier.get_fragment())),
+                None => return Err(format!("Function {} not in scope.", identifier.get_fragment())),
             };
         }
     }

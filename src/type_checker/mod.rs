@@ -218,7 +218,8 @@ impl TypeChecker {
                 if !self.modual.environments[id].check_if_all_bodies_return() {
                     let function: Function = self.get_function();
                     self.create_type_error(ErrorLevel::Error, 
-                                           format!("Function {:#?} dosen't return value in every branch", function.identifier.get_fragment()),
+                                           format!("Function {} dosen't return value in every branch",
+                                                   function.identifier.get_fragment()),
                                            function.original,
                                            function.identifier.get_line(),
                                            function.identifier.get_offset());

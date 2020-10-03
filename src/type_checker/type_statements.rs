@@ -66,7 +66,11 @@ impl TypeChecker {
         let condition_type: Type = self.get_expression_type(while_statement.condition.clone(), original.clone());
         if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
             let (line, offset): (usize, usize) = self.get_expression_location(while_statement.condition);
-            self.create_type_error(ErrorLevel::Error, "type error in while statement.".to_string(), original, line, offset);
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("while condition must be of type bool got {}", condition_type.to_string()),
+                                   original,
+                                   line,
+                                   offset);
         }
 
         self.check_body(while_statement.body, true);
@@ -80,7 +84,7 @@ impl TypeChecker {
         if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
             let (line, offset): (usize, usize) = self.get_expression_location(if_statement.condition);
             self.create_type_error(ErrorLevel::Error,
-                                   "Incorrect type, if condition must be of type bool".to_string(),
+                                   format!("if condition must be of type bool got {}", condition_type.to_string()),
                                    original,
                                    line,
                                    offset);
@@ -113,7 +117,10 @@ impl TypeChecker {
         if !compare_types(&variable_type, &expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(let_statement.value);
             self.create_type_error(ErrorLevel::Error,
-                                   format!("Incorrect type, variable {} is of type {}", let_statement.identifier.get_fragment(), variable_type.to_string()),
+                                   format!("Variable {} is of type {} got {}",
+                                           let_statement.identifier.get_fragment(),
+                                           variable_type.to_string(),
+                                           expression_type.to_string()),
                                    original,
                                    line,
                                    offset);
@@ -137,7 +144,10 @@ impl TypeChecker {
         if !compare_types(&variable.r#type, &expression_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(assignment.value);
             self.create_type_error(ErrorLevel::Error,
-                                   format!("Incorrect type, variable {} is of type {}", assignment.identifier.get_fragment(), variable.r#type.to_string()),
+                                   format!("Variable {} is of type {} got {}",
+                                           assignment.identifier.get_fragment(),
+                                           variable.r#type.to_string(),
+                                           expression_type.to_string()),
                                    original,
                                    line,
                                    offset);
@@ -157,7 +167,10 @@ impl TypeChecker {
             let (line, offset): (usize, usize) = self.get_expression_location(return_statement.value);
             let func_name: String = self.get_function().identifier.get_fragment();
             self.create_type_error(ErrorLevel::Error,
-                                   format!("Incorrect type, function {} has return type {}", func_name, return_type.to_string()),
+                                   format!("Function {} has return type {} got {}",
+                                           func_name,
+                                           return_type.to_string(),
+                                           expression_type.to_string()),
                                    original,
                                    line,
                                    offset);

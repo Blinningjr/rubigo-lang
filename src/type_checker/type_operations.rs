@@ -42,7 +42,9 @@ impl TypeChecker {
         } else if !compare_types(&binop_type.1, &left_expression_type.clone()) {
             let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression.clone());
             self.create_type_error(ErrorLevel::Error,
-                                   format!("Binary operator {:?} requiers that the expressions are of type {}", binop, binop_type.1.to_string()),
+                                   format!("Binary operator {:?} requiers that the expressions are of type {}",
+                                           binop.bin_op.get_fragment(),
+                                           binop_type.1.to_string()),
                                    original,
                                    line,
                                    offset);  

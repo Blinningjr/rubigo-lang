@@ -21,7 +21,7 @@ fn test_type_check_let() {
  */
 #[test]
 fn test_type_check_assignment() {
-    let input: String = "let test: i32 = 10; test = 2;".to_string();
+    let input: String = "let test: mut i32 = 10; test = 2;".to_string();
     let type_checker: TypeChecker = type_check_string(input);
     assert!(check_no_errors(type_checker));
 }

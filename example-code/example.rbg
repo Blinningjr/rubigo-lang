@@ -19,3 +19,4 @@ fn foo(bar: i32) -> bool {
 }
 
 print(foo(10));
+

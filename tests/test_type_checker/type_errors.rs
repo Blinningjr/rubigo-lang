@@ -25,7 +25,7 @@ fn test_type_check_let_error() {
  */
 #[test]
 fn test_type_check_assignment_error() {
-    let input: String = "fn test() -> () {let test: bool = false; test = 10;}".to_string();
+    let input: String = "let test: mut bool = false; test = 10;".to_string();
     let type_checker: TypeChecker = type_check_string(input);
     assert_eq!(get_num_of_errors(type_checker), 1);
 }
@@ -161,5 +161,15 @@ fn test_type_check_unreachable_code() {
     let input: String = "fn test() -> i32 {return 2; let a: i32 = 10; return a;}".to_string();
     let type_checker: TypeChecker = type_check_string(input);
     assert_eq!(get_num_of_errors(type_checker), 2);
+}
+
+/**
+ * Test mutability.
+ */
+#[test]
+fn test_mutability_error() {
+    let input: String = "let test: bool = false; test = true;".to_string();
+    let type_checker: TypeChecker = type_check_string(input);
+    assert_eq!(get_num_of_errors(type_checker), 1);
 }
 

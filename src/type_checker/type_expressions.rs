@@ -54,7 +54,11 @@ impl TypeChecker {
         match self.lookup_function(function_call.identifier.clone()) {
             Ok(func) => function = func,
             Err(msg) => {
-               self.create_type_error(ErrorLevel::Error, msg, original, function_call.identifier.get_line(), function_call.identifier.get_offset());
+               self.create_type_error(ErrorLevel::Error,
+                                      msg,
+                                      original,
+                                      function_call.identifier.get_line(),
+                                      function_call.identifier.get_offset());
                return Type::Any;
             },
         };
@@ -70,7 +74,10 @@ impl TypeChecker {
 
         if inputs_type.len() != parameters_type.len() {
             self.create_type_error(ErrorLevel::Error,
-                                   format!("Function {:#?} requiers {} parameters got {}", function.identifier.get_fragment(), parameters_type.len(), inputs_type.len()),
+                                   format!("Function {} requiers {} parameters got {}",
+                                           function.identifier.get_fragment(),
+                                           parameters_type.len(),
+                                           inputs_type.len()),
                                    original,
                                    function_call.identifier.get_line(),
                                    function_call.identifier.get_offset());
