@@ -93,6 +93,7 @@ pub struct If {
 pub struct Let {
     pub id: usize,
     pub original: Span<String>,
+    pub mutable: Span<bool>,
     pub identifier: Span<String>,
     pub type_dec: TypeDecleration,
     pub value: Expression,
@@ -106,6 +107,7 @@ pub struct Let {
 pub struct Assignment {
     pub id: usize,
     pub original: Span<String>,
+    pub derefrenced: Span<bool>,
     pub identifier: Span<String>,
     pub value: Expression,
 }
@@ -158,6 +160,14 @@ impl Parser {
 
         } else if self.is_tokentype(TokenType::BodyStart) {
             return self.parse_body(true);
+
+        } else if self.is_tokentype(TokenType::Star) {
+            let original_start: usize = self.get_original_start();
+      
+            let star: Token = self.next_token();
+            let identifier: Token = self.parse_type(TokenType::Identifier);
+            
+            return self.parse_assignment(identifier, original_start, self.create_span(true, &star));
 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Statement".to_string());
@@ -334,8 +344,15 @@ impl Parser {
      */
     fn parse_let(&mut self) -> Statement {
         let original_start: usize = self.get_original_start();
-        
+
         let _let: Token = self.next_token();
+       
+        let mut mutable: Span<bool> = Span::new(false, 0, 0);
+        if self.is_tokentype(TokenType::Mut) {
+            let mut_token: Token = self.next_token();
+            mutable = self.create_span(true, & mut_token);
+        }
+
         let identifier: Token = self.parse_type(TokenType::Identifier);
 
         let _type_dec: Token = self.parse_type(TokenType::TypeDec);
@@ -348,6 +365,7 @@ impl Parser {
         return Statement::Let(Let {
             id: self.body_id,
             original: self.get_original(original_start),
+            mutable: mutable,
             identifier: self.create_span(identifier.get_value(), & identifier),
             type_dec: type_dec,
             value: expression, 
@@ -364,7 +382,7 @@ impl Parser {
         let identifier: Token = self.next_token();
 
         if self.is_tokentype(TokenType::Equals) {
-            return self.parse_assignment(identifier, original_start);
+            return self.parse_assignment(identifier, original_start, Span::new(false, 0, 0));
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
             let statement: Statement = Statement::Expression(
@@ -384,14 +402,15 @@ impl Parser {
     /**
      * Parse assignment.
      */
-    fn parse_assignment(&mut self, identifier: Token, original_start: usize) -> Statement {
-        let _equal: Token = self.next_token();
+    fn parse_assignment(&mut self, identifier: Token, original_start: usize, derefrenced: Span<bool>) -> Statement {
+        let _equal: Token = self.parse_type(TokenType::Equals);
         let expression: Expression = self.parse_expression();
         let _end: Token = self.parse_type(TokenType::SemiColon);
         
         return Statement::Assignment(Assignment {
             id: self.body_id,
             original: self.get_original(original_start),
+            derefrenced: derefrenced,
             identifier: self.create_span(identifier.get_value(), & identifier),
             value: expression, 
         }); 

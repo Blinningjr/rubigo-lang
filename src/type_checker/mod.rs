@@ -141,7 +141,7 @@ impl TypeChecker {
     }
 
     fn add_variable(&mut self, identifier: Span<String>, type_dec: TypeDecleration) -> () {
-        let variable: Variable = Variable::new(identifier, Type::Custom(type_dec.r#type.get_fragment()), type_dec.mutable);
+        let variable: Variable = Variable::new(identifier, Type::Custom(type_dec.r#type.get_fragment(), type_dec.borrow, type_dec.mutable), type_dec.mutable);
         match self.modual.current_env_id {
             Some(id) => self.modual.environments[id].add_variable(variable, self.modual.current_body_id),
             None => self.modual.mod_envs[self.modual.mod_body_id].add_variable(variable),

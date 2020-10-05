@@ -38,6 +38,43 @@ impl TypeChecker {
             Expression::FunctionCall(function_call) => self.get_function_call_type(*function_call, original),
             Expression::Variable(variable) => self.get_variable_type(variable, original),
             Expression::Literal(literal) => self.get_literal_type(literal),
+            Expression::Borrow(expr) => {
+                let expr_type: Type = self.get_expression_type(*expr, original);
+                return match expr_type {
+                    Type::Any => expr_type,
+                    Type::Number(borrow, mutable) => {
+                        if borrow {
+                            panic!("Error");
+                        }
+                        return Type::Number(true, mutable);
+                    },
+                    Type::Custom(t, borrow, mutable) => {
+                        if borrow {
+                            panic!("Error");
+                        }
+                        return Type::Custom(t, true, mutable);
+                    },
+                };
+            },
+            Expression::Mutable(expr) => {
+                let expr_type: Type = self.get_expression_type(*expr, original);
+                return match expr_type {
+                    Type::Any => expr_type,
+                    Type::Number(borrow, mutable) => {
+                        if mutable {
+                            panic!("Error");
+                        }
+                        return Type::Number(borrow, true);
+                    },
+                    Type::Custom(t, borrow, mutable) => {
+                        if mutable {
+                            panic!("Error");
+                        }
+                        return Type::Custom(t, borrow, true);
+                    },
+                };
+            },
+            Expression::DeRefrence(expr) => self.get_expression_type(*expr, original),
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
         };
     }
@@ -68,7 +105,7 @@ impl TypeChecker {
             if type_dec.r#type.get_fragment() == " ANY" {
                 parameters_type.push(Type::Any);
             } else {
-                parameters_type.push(Type::Custom(type_dec.r#type.get_fragment())); 
+                parameters_type.push(Type::Custom(type_dec.r#type.get_fragment(), type_dec.borrow, type_dec.mutable)); 
             }
         }
 
@@ -96,7 +133,7 @@ impl TypeChecker {
             }
         }
 
-        return Type::Custom(function.return_type.r#type.get_fragment());
+        return Type::Custom(function.return_type.r#type.get_fragment(), function.return_type.borrow, function.return_type.mutable);
     }
 
     fn get_variable_type(&mut self, variable: Variable, original: Span<String>) -> Type {
@@ -130,6 +167,15 @@ impl TypeChecker {
                     Literal::String(span) => (span.get_line(), span.get_offset()),
                     Literal::Dummy => panic!("Fatal Error!!!"),
                 };
+            },
+            Expression::Borrow(expr) => {
+                return self.get_expression_location(*expr);
+            },
+            Expression::DeRefrence(expr) => {
+                return self.get_expression_location(*expr);
+            },
+            Expression::Mutable(expr) => {
+                return self.get_expression_location(*expr);
             },
             Expression::Dummy => panic!("Fatal Error!!!"),
         };

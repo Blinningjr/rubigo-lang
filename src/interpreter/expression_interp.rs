@@ -22,6 +22,9 @@ impl Interpreter {
             Expression::FunctionCall(function_call) => self.interpret_function_call(*function_call),
             Expression::Variable(variable) => self.interpret_variable(variable),
             Expression::Literal(literal) => literal,
+            Expression::Borrow(expr) => self.interpret_expression(*expr), //TODO
+            Expression::DeRefrence(expr) => self.interpret_expression(*expr), //TODO
+            Expression::Mutable(expr) => self.interpret_expression(*expr), //TODO
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
         };
     }

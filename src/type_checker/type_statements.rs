@@ -64,7 +64,7 @@ impl TypeChecker {
         self.check_if_unreachable_code(original.clone());
         
         let condition_type: Type = self.get_expression_type(while_statement.condition.clone(), original.clone());
-        if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
+        if !compare_types(&condition_type, &Type::Custom("bool".to_string(), false, false)) {
             let (line, offset): (usize, usize) = self.get_expression_location(while_statement.condition);
             self.create_type_error(ErrorLevel::Error,
                                    format!("while condition must be of type bool got {}", condition_type.to_string()),
@@ -81,7 +81,7 @@ impl TypeChecker {
         self.check_if_unreachable_code(original.clone());
         
         let condition_type: Type = self.get_expression_type(if_statement.condition.clone(), original.clone());
-        if !compare_types(&condition_type, &Type::Custom("bool".to_string())) {
+        if !compare_types(&condition_type, &Type::Custom("bool".to_string(), false, false)) {
             let (line, offset): (usize, usize) = self.get_expression_location(if_statement.condition);
             self.create_type_error(ErrorLevel::Error,
                                    format!("if condition must be of type bool got {}", condition_type.to_string()),
@@ -110,7 +110,7 @@ impl TypeChecker {
         let original: Span<String> = let_statement.original;
         self.check_if_unreachable_code(original.clone());
         
-        let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment());
+        let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment(), let_statement.type_dec.borrow, let_statement.type_dec.mutable);
         self.add_variable(let_statement.identifier.clone(), let_statement.type_dec);
         
         let expression_type: Type = self.get_expression_type(let_statement.value.clone(), original.clone()); 
@@ -161,7 +161,8 @@ impl TypeChecker {
         self.get_environment().returns_value = true;
         
         let expression_type: Type = self.get_expression_type(return_statement.value.clone(), original.clone());
-        let return_type: Type = Type::Custom(self.get_function().return_type.r#type.get_fragment());
+        let func_return: TypeDecleration = self.get_function().return_type;
+        let return_type: Type = Type::Custom(func_return.r#type.get_fragment(), func_return.borrow, func_return.mutable);
 
         if !compare_types(&expression_type, &return_type) {
             let (line, offset): (usize, usize) = self.get_expression_location(return_statement.value);

@@ -20,6 +20,9 @@ pub enum Expression {
     FunctionCall(Box<FunctionCall>),
     Variable(Variable),
     Literal(Literal),
+    Borrow(Box<Expression>),
+    DeRefrence(Box<Expression>),
+    Mutable(Box<Expression>),
     Dummy,
 }
 
@@ -67,6 +70,15 @@ impl Parser {
 
             let _end: Token = self.parse_type(TokenType::ParenthesisEnd);
 
+        } else if self.is_tokentype(TokenType::Borrow) {
+            let _borrow: Token = self.next_token();
+            return Expression::Borrow(Box::new(self.parse_expression())); 
+        } else if self.is_tokentype(TokenType::Star) {
+            let _star: Token = self.next_token();
+            return Expression::DeRefrence(Box::new(self.parse_expression())); 
+        } else if self.is_tokentype(TokenType::Mut) {
+            let _Mut: Token = self.next_token();
+            return Expression::Mutable(Box::new(self.parse_expression())); 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Expression".to_string());
 

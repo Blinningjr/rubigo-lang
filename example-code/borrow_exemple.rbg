@@ -1,0 +1,7 @@
+let mut a: i32 = 10;
+let b: &mut i32 = & mut a;
+*b = 2;
+
+
+print(b);
+print(a);

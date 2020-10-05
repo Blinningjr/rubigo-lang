@@ -58,19 +58,19 @@ impl TypeChecker {
      */
     fn binop_type(&mut self, binop: BinOperator) -> (Type, Type) {
         return match binop {
-            BinOperator::Plus => (Type::Number, Type::Number),
-            BinOperator::Minus => (Type::Number, Type::Number),
-            BinOperator::Divition => (Type::Number, Type::Number),
-            BinOperator::Multiplication => (Type::Number, Type::Number),
-            BinOperator::Modilus => (Type::Number, Type::Number),
-            BinOperator::LessThen => (Type::Custom("bool".to_string()), Type::Number),
-            BinOperator::GreaterThen => (Type::Custom("bool".to_string()), Type::Number),
-            BinOperator::NotEqual => (Type::Custom("bool".to_string()), Type::Any),
-            BinOperator::Equal => (Type::Custom("bool".to_string()), Type::Any),
-            BinOperator::GreaterEqual => (Type::Custom("bool".to_string()), Type::Number),
-            BinOperator::LessEqual => (Type::Custom("bool".to_string()), Type::Number),
-            BinOperator::And => (Type::Custom("bool".to_string()), Type::Custom("bool".to_string())),
-            BinOperator::Or => (Type::Custom("bool".to_string()), Type::Custom("bool".to_string())),
+            BinOperator::Plus => (Type::Number(false, false), Type::Number(false, false)),
+            BinOperator::Minus => (Type::Number(false, false), Type::Number(false, false)),
+            BinOperator::Divition => (Type::Number(false, false), Type::Number(false, false)),
+            BinOperator::Multiplication => (Type::Number(false, false), Type::Number(false, false)),
+            BinOperator::Modilus => (Type::Number(false, false), Type::Number(false, false)),
+            BinOperator::LessThen => (Type::Custom("bool".to_string(), false, false), Type::Number(false, false)),
+            BinOperator::GreaterThen => (Type::Custom("bool".to_string(), false, false), Type::Number(false, false)),
+            BinOperator::NotEqual => (Type::Custom("bool".to_string(), false, false), Type::Any),
+            BinOperator::Equal => (Type::Custom("bool".to_string(), false, false), Type::Any),
+            BinOperator::GreaterEqual => (Type::Custom("bool".to_string(), false, false), Type::Number(false, false)),
+            BinOperator::LessEqual => (Type::Custom("bool".to_string(), false, false), Type::Number(false, false)),
+            BinOperator::And => (Type::Custom("bool".to_string(), false, false), Type::Custom("bool".to_string(), false, false)),
+            BinOperator::Or => (Type::Custom("bool".to_string(), false, false), Type::Custom("bool".to_string(), false, false)),
             BinOperator::Dummy => panic!("Parser failed! Dummy BinOperator in type checker"),
         };
     } 
@@ -92,8 +92,8 @@ impl TypeChecker {
 
     fn unop_type(&mut self, unop: UnOperator) -> Type {
         return match unop {
-            UnOperator::Not => Type::Custom("bool".to_string()),
-            UnOperator::Minus => Type::Number,
+            UnOperator::Not => Type::Custom("bool".to_string(), false, false),
+            UnOperator::Minus => Type::Number(false, false),
             UnOperator::Dummy => panic!("Parser failed! Dummy UnOperator in type checker"),
         };
     } 
