@@ -131,14 +131,52 @@ impl TypeChecker {
         let original: Span<String> = assignment.original;
         self.check_if_unreachable_code(original.clone());
         
-        let variable: Variable = self.lookup_variable(assignment.identifier.clone(), original.clone());
-        if !variable.mutable {
+        let mut variable: Variable = self.lookup_variable(assignment.identifier.clone(), original.clone());
+
+        if assignment.derefrenced.get_fragment() {
+            let mut isMutable: bool = false; 
+            let mut borrowed: bool = false;
+            match &variable.r#type {
+                Type::Any => {
+                    borrowed = true;
+                    isMutable = true;
+                },
+                Type::Number(b, m) => {
+                    isMutable = *m;
+                    borrowed = *b;
+                    variable.r#type = Type::Number(false, false);
+                },
+                Type::Custom(t, b, m) => {
+                    isMutable = *m;
+                    borrowed = *b;
+                    variable.r#type = Type::Custom(t.to_string(), false, false);
+                },
+            };
+            if !borrowed  {
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Variable {} can't derefrence none borrowed value", assignment.identifier.get_fragment()),
+                                       original.clone(),
+                                       assignment.identifier.get_line(),
+                                       assignment.identifier.get_offset());
+
+            } else if !isMutable {
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Variable {} is not borrowed as mutable", assignment.identifier.get_fragment()),
+                                       original.clone(),
+                                       assignment.identifier.get_line(),
+                                       assignment.identifier.get_offset());
+
+            }
+
+        } else if !variable.mutable {
             self.create_type_error(ErrorLevel::Error,
                                    format!("Variable {} is not mutable", assignment.identifier.get_fragment()),
                                    original.clone(),
                                    assignment.identifier.get_line(),
                                    assignment.identifier.get_offset());
         }
+
+
 
         let expression_type: Type = self.get_expression_type(assignment.value.clone(), original.clone());
         if !compare_types(&variable.r#type, &expression_type) {
