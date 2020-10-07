@@ -5,3 +5,12 @@ let b: &mut i32 = & mut a;
 
 print(b);
 print(a);
+
+let mut c: i32 = 20;
+
+fn test(input: &mut i32) -> () {
+	*input = *input / 2;
+}
+
+test(&mut c);
+print(c);

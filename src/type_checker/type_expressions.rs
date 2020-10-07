@@ -6,6 +6,7 @@ pub use super::{
     Literal,
     Span,
     ErrorLevel,
+    environment,
 };
 
 pub use super::r#type::{
@@ -74,7 +75,24 @@ impl TypeChecker {
                     },
                 };
             },
-            Expression::DeRefrence(expr) => self.get_expression_type(*expr, original),
+            Expression::DeRefrence(expr) => {
+                let expr_type: Type = self.get_expression_type(*expr, original);
+                return match expr_type {
+                    Type::Any => expr_type,
+                    Type::Number(borrow, _) => {
+                        if !borrow {
+                            panic!("Error");
+                        }
+                        return Type::Number(false, false);
+                    },
+                    Type::Custom(t, borrow, _) => {
+                        if !borrow {
+                            panic!("Error");
+                        }
+                        return Type::Custom(t, false, false);
+                    },
+                };
+            },
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
         };
     }

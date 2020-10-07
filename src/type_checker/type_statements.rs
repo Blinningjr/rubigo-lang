@@ -48,7 +48,7 @@ impl TypeChecker {
 
         self.new_function_env(function.clone());
         for p in function.parameters {
-            self.add_variable(p.0, p.1);
+            self.add_variable(p.0, p.1, true); // TODO: Shall all parameters be mutable?
         }
 
         self.check_body(function.body, false);
@@ -111,7 +111,7 @@ impl TypeChecker {
         self.check_if_unreachable_code(original.clone());
         
         let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment(), let_statement.type_dec.borrow, let_statement.type_dec.mutable);
-        self.add_variable(let_statement.identifier.clone(), let_statement.type_dec);
+        self.add_variable(let_statement.identifier.clone(), let_statement.type_dec, let_statement.mutable.get_fragment());
         
         let expression_type: Type = self.get_expression_type(let_statement.value.clone(), original.clone()); 
         if !compare_types(&variable_type, &expression_type) {
