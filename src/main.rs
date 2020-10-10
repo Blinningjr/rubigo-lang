@@ -68,8 +68,7 @@ fn main() {
 
 fn command_run(filename: String, content: String) -> () {
     let mod_body: ModualBody = Parser::parse(filename, content, true);
-    println!("{:#?}", mod_body);
-    //let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
+    let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
     //Interpreter::interpret(type_checker.modual);
 }
 

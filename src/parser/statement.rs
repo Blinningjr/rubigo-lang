@@ -211,15 +211,17 @@ impl Parser {
                 TokenType::ParenthesisEnd => until = false,
                 _ => {
                     let mut mutable: Option<Span<String>> = None;
-                    if self.peak().get_type() == TokenType::Mut {
-                        let mut_token: Token = self.next_token();
-                        mutable = Some(self.create_span(token.get_value(), &token))
+                    let mut identifier: Token = token.clone();
+                    if token.get_type() == TokenType::Mut {
+                        mutable = Some(self.create_span(token.get_value(), &token));
+                        identifier = self.parse_type(TokenType::Identifier);
                     }
+                    
                     let _type_dec: Token = self.parse_type(TokenType::TypeDec);
                     let type_dec: TypeDecleration = self.parse_type_decleration();
                     parameters.push(Parameter{
                         mutable: mutable,
-                        identifier: self.create_span(token.get_value(), & token),
+                        identifier: self.create_span(identifier.get_value(), & identifier),
                         type_dec: type_dec});
 
                     if self.is_tokentype(TokenType::Comma) {

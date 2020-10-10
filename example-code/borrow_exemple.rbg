@@ -8,9 +8,10 @@ print(a);
 
 let mut c: i32 = 20;
 
-fn test(input: &mut i32) -> () {
+fn test(input: &mut i32, mut tal: i32) -> () {
 	*input = *input / 2;
+	tal = 2;
 }
 
-test(&mut c);
+test(&mut c, 213);
 print(c);
