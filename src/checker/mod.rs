@@ -28,6 +28,8 @@ pub use super::parser::{
 
 pub use module_type::TypeModule;
 
+pub use environment_type::TypeFunction;
+
 pub use r#type::Type;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -62,6 +64,13 @@ impl Checker {
         for stmt in mod_body.body.iter() {
             self.check_statement(stmt.clone());
         }
+    }
+    
+    pub fn get_function(& self, ident: String) -> TypeFunction {
+        match self.module.get_function_id(ident, self.current_func, self.current_env) {
+            Some(id) => return self.module.mod_funcs[id],
+            None => panic!("TODO: Add type error"),
+        };
     }
 
 }

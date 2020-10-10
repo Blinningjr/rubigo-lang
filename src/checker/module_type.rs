@@ -47,5 +47,6 @@ impl TypeModule {
 
         return self.mod_envs.get_function_id(ident, env_id);
     }
+
 }
 

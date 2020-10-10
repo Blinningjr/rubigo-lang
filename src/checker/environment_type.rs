@@ -39,7 +39,7 @@ impl TypeEnvironments {
     }
 
 
-    pub fn get_function_id(& self, ident: String, env_id: usize) -> Option<Option<usize>> {
+    pub fn get_function_id(& self, ident: String, env_id: usize) -> Option<usize> {
         match self.envs[env_id].get_function_id(&ident) {
             Some(func_id) => return Some(func_id),
             None => {
@@ -58,7 +58,7 @@ pub struct TypeEnvironment {
     pub id: usize,
     pub prev_id: Option<usize>,
 
-    pub functions: HashMap<String, Option<usize>>, 
+    pub functions: HashMap<String, usize>, 
     pub variables: HashMap<String, TypeVarMem>, 
 
     pub returns: bool,
@@ -97,7 +97,7 @@ impl TypeEnvironment {
     }
 
 
-    pub fn get_function_id(& self, identifier: &String) -> Option<Option<usize>> {
+    pub fn get_function_id(& self, identifier: &String) -> Option<usize> {
         return match self.functions.get(identifier) {
             Some(id) => Some(*id),
             None => None,
@@ -108,7 +108,7 @@ impl TypeEnvironment {
     /**
      * Retruns TypeFunciton if it already is declared and None if it isen't.
      */
-    pub fn set_function(&mut self, function: TypeFunction) -> Option<Option<usize>> {
+    pub fn set_function(&mut self, function: TypeFunction) -> Option<usize> {
         match self.get_function_id(&function.get_ident()) {
             Some(func_id) => return Some(func_id),
             None => {
@@ -137,15 +137,15 @@ impl TypeFunction {
         return self.og_func.identifier.get_fragment();
     }
     
-    pub fn get_id(& self) -> Option<usize> {
-        return Some(self.og_func.id);
+    pub fn get_id(& self) -> usize {
+        return self.og_func.id;
     }
 
     pub fn get_variable(& self, ident: String, env_id: usize) -> Option<&TypeVarMem> {
         return self.environments.get_variable(ident, env_id)
     }
 
-    pub fn get_function_id(& self, ident: String, env_id: usize) -> Option<Option<usize>> {
+    pub fn get_function_id(& self, ident: String, env_id: usize) -> Option<usize> {
         return self.environments.get_function_id(ident, env_id)
     }
     

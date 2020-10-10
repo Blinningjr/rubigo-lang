@@ -5,6 +5,7 @@ pub use super::{
     literal::Literal,
     Span,
     ErrorLevel,
+    environment_type::TypeFunction,
 };
 
 pub use super::r#type::{
@@ -14,6 +15,7 @@ pub use super::r#type::{
 pub use super::expressions::{
     Expression,
     Variable,
+    FunctionCall,
 };
 
 
@@ -22,7 +24,12 @@ impl Checker {
         return match expression {
             Expression::BinOp(binop) => self.get_binop_type(*binop, original),
             Expression::UnOp(unop) => self.get_unop_type(*unop, original),
-//            Expression::FunctionCall(function_call) => self.get_function_call_type(*function_call, original),
+            Expression::FunctionCall(function_call) => {
+                match self.get_function_call_type(*function_call, original) {
+                    Some(t) => return t,
+                    None => panic!("TODO: Add type error"),
+                };
+            },
             Expression::Variable(variable) => self.get_variable_type(variable, original),
             Expression::Literal(literal) => self.get_literal_type(literal),
             Expression::Borrow(expr) => {
@@ -65,6 +72,27 @@ impl Checker {
             Some(var) => return var.get_type(),
             None => panic!("TODO: add type error here"),
         };
+    }
+
+    fn get_function_call_type(&mut self, func_call: FunctionCall, original: Span<String>) -> Option<Type> {
+        let mut input_type: Vec<Type> = vec!();
+        for expr in func_call.parameters.iter() {
+            input_type.push(self.get_expression_type(expr.clone(), original.clone()));
+        }
+
+        let func: TypeFunction = self.get_function(func_call.identifier.get_fragment());
+
+        if input_type.len() != func.parameters.len() {
+            panic!("TODO: Add type error");
+        } else {
+            for i in 0..input_type.len() {
+                if !input_type[i].same_type(& func.parameters[i].1) {
+                    panic!("TODO: Add type error");
+                }
+            }
+        }
+
+        return func.return_type;
     }
 }
 
