@@ -48,7 +48,7 @@ impl TypeChecker {
 
         self.new_function_env(function.clone());
         for p in function.parameters {
-            self.add_variable(p.identifier, p.type_dec, p.mutable);
+            self.add_variable(p.identifier, p.type_dec, p.mutable != None);
         }
 
         self.check_body(function.body, false);
@@ -111,7 +111,7 @@ impl TypeChecker {
         self.check_if_unreachable_code(original.clone());
         
         let variable_type: Type = Type::Custom(let_statement.type_dec.r#type.get_fragment(), let_statement.type_dec.borrow, let_statement.type_dec.mutable);
-        self.add_variable(let_statement.identifier.clone(), let_statement.type_dec, let_statement.mutable.get_fragment());
+        self.add_variable(let_statement.identifier.clone(), let_statement.type_dec, let_statement.mutable != None);
         
         let expression_type: Type = self.get_expression_type(let_statement.value.clone(), original.clone()); 
         if !compare_types(&variable_type, &expression_type) {
@@ -133,7 +133,7 @@ impl TypeChecker {
         
         let mut variable: Variable = self.lookup_variable(assignment.identifier.clone(), original.clone());
 
-        if assignment.derefrenced.get_fragment() {
+        if assignment.derefrenced != None {
             let mut isMutable: bool = false; 
             let mut borrowed: bool = false;
             match &variable.r#type {
