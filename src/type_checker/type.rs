@@ -4,7 +4,9 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum Type {
     Any,
+    // (Borrow, Mutable)
     Number(bool, bool),
+    // (type, Borrow, Mutable)
     Custom(String, bool, bool),
 }
 
