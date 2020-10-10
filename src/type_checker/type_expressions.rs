@@ -101,11 +101,11 @@ impl TypeChecker {
         };
 
         let mut parameters_type: Vec<Type> = vec!();
-        for (_, type_dec) in function.parameters {
-            if type_dec.r#type.get_fragment() == " ANY" {
+        for parameter in function.parameters {
+            if parameter.type_dec.r#type.get_fragment() == " ANY" {
                 parameters_type.push(Type::Any);
             } else {
-                parameters_type.push(Type::Custom(type_dec.r#type.get_fragment(), type_dec.borrow, type_dec.mutable)); 
+                parameters_type.push(Type::Custom(parameter.type_dec.r#type.get_fragment(), parameter.type_dec.borrow, parameter.type_dec.mutable)); 
             }
         }
 

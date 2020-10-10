@@ -41,7 +41,7 @@ impl Interpreter {
     pub(super) fn interpret_function(&mut self, function: Function, values: Vec<Literal>) -> Literal {
         self.create_func_env(function.id);
         for i in 0..function.parameters.len() {
-            self.store_variable(function.parameters[i].0.clone(), values[i].clone())
+            self.store_variable(function.parameters[i].identifier.clone(), values[i].clone())
         } 
         let result: Literal = self.interpret_body(function.body);
         

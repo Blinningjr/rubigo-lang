@@ -48,7 +48,7 @@ impl TypeChecker {
 
         self.new_function_env(function.clone());
         for p in function.parameters {
-            self.add_variable(p.0, p.1);
+            self.add_variable(p.identifier, p.type_dec);
         }
 
         self.check_body(function.body, false);

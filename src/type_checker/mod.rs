@@ -32,9 +32,11 @@ pub use super::parser::{
     ModualBody,
 };
 
-pub use statement::Function;
-
-pub use statement::Statement;
+pub use statement::{
+    Function,
+    Statement,
+    Parameter,
+};
 
 pub use environment::{
     Environment,
@@ -62,10 +64,12 @@ impl TypeChecker {
        
         let mut print_func: Function = Function::create_dummy();
         print_func.identifier = Span::new("print".to_string(), 0, 0);
-        print_func.parameters.push((Span::new("DUMMY".to_string(), 0, 0), 
-                                    TypeDecleration{borrow: false,
-                                    mutable: false,
-                                    r#type: Span::new(" ANY".to_string(), 0, 0)}));
+        print_func.parameters.push(Parameter{
+                                    mutable: None,
+                                    identifier: Span::new("DUMMY".to_string(), 0, 0), 
+                                    type_dec: TypeDecleration{borrow: false,
+                                        mutable: false,
+                                        r#type: Span::new(" ANY".to_string(), 0, 0)}});
         type_checker.new_function_env(print_func);
         type_checker.modual.current_env_id = None;
         type_checker.modual.current_body_id = 0;

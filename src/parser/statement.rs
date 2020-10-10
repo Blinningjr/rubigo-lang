@@ -25,7 +25,6 @@ pub enum Statement {
     Dummy,
 }
 
-
 /**
  * Defines function in Rubigo.
  */
@@ -34,9 +33,16 @@ pub struct Function {
     pub id: usize,
     pub original: Span<String>,
     pub identifier: Span<String>,
-    pub parameters: Vec<(Span<String>, TypeDecleration)>,
+    pub parameters: Vec<Parameter>,
     pub return_type: TypeDecleration,
     pub body: Body,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Parameter {
+    pub mutable: Option<Span<String>>,
+    pub identifier: Span<String>,
+    pub type_dec: TypeDecleration,
 }
 
 impl Function{
@@ -93,7 +99,7 @@ pub struct If {
 pub struct Let {
     pub id: usize,
     pub original: Span<String>,
-    pub mutable: Span<bool>,
+    pub mutable: Option<Span<String>>,
     pub identifier: Span<String>,
     pub type_dec: TypeDecleration,
     pub value: Expression,
@@ -107,7 +113,7 @@ pub struct Let {
 pub struct Assignment {
     pub id: usize,
     pub original: Span<String>,
-    pub derefrenced: Span<bool>,
+    pub derefrenced: Option<Span<String>>,
     pub identifier: Span<String>,
     pub value: Expression,
 }
@@ -167,7 +173,7 @@ impl Parser {
             let star: Token = self.next_token();
             let identifier: Token = self.parse_type(TokenType::Identifier);
             
-            return self.parse_assignment(identifier, original_start, self.create_span(true, &star));
+            return self.parse_assignment(identifier, original_start, Some(self.create_span(star.get_value(), &star)));
 
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Statement".to_string());
@@ -197,16 +203,24 @@ impl Parser {
         let fn_identifier: Token = self.parse_type(TokenType::Identifier);
         let _start_p: Token = self.parse_type(TokenType::ParenthesisStart);
        
-        let mut parameters: Vec<(Span<String>, TypeDecleration)> = Vec::new();
+        let mut parameters: Vec<Parameter> = Vec::new();
         let mut until: bool = true;
         while until {
             let token: Token = self.next_token();
             match & token.get_type() {
                 TokenType::ParenthesisEnd => until = false,
                 _ => {
+                    let mut mutable: Option<Span<String>> = None;
+                    if self.peak().get_type() == TokenType::Mut {
+                        let mut_token: Token = self.next_token();
+                        mutable = Some(self.create_span(token.get_value(), &token))
+                    }
                     let _type_dec: Token = self.parse_type(TokenType::TypeDec);
                     let type_dec: TypeDecleration = self.parse_type_decleration();
-                    parameters.push((self.create_span(token.get_value(), & token), type_dec));
+                    parameters.push(Parameter{
+                        mutable: mutable,
+                        identifier: self.create_span(token.get_value(), & token),
+                        type_dec: type_dec});
 
                     if self.is_tokentype(TokenType::Comma) {
                         let _comma: Token = self.next_token();
@@ -347,10 +361,10 @@ impl Parser {
 
         let _let: Token = self.next_token();
        
-        let mut mutable: Span<bool> = Span::new(false, 0, 0);
+        let mut mutable: Option<Span<String>> = None;
         if self.is_tokentype(TokenType::Mut) {
             let mut_token: Token = self.next_token();
-            mutable = self.create_span(true, & mut_token);
+            mutable = Some(self.create_span(mut_token.get_value(), & mut_token));
         }
 
         let identifier: Token = self.parse_type(TokenType::Identifier);
@@ -382,7 +396,7 @@ impl Parser {
         let identifier: Token = self.next_token();
 
         if self.is_tokentype(TokenType::Equals) {
-            return self.parse_assignment(identifier, original_start, Span::new(false, 0, 0));
+            return self.parse_assignment(identifier, original_start, None);
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
             let statement: Statement = Statement::Expression(
@@ -402,7 +416,7 @@ impl Parser {
     /**
      * Parse assignment.
      */
-    fn parse_assignment(&mut self, identifier: Token, original_start: usize, derefrenced: Span<bool>) -> Statement {
+    fn parse_assignment(&mut self, identifier: Token, original_start: usize, derefrenced: Option<Span<String>>) -> Statement {
         let _equal: Token = self.parse_type(TokenType::Equals);
         let expression: Expression = self.parse_expression();
         let _end: Token = self.parse_type(TokenType::SemiColon);
