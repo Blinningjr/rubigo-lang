@@ -72,13 +72,16 @@ impl Parser {
 
         } else if self.is_tokentype(TokenType::Borrow) {
             let _borrow: Token = self.next_token();
-            expression = Expression::Borrow(Box::new(self.parse_singel_expression())); 
+            expression = Expression::Borrow(Box::new(self.parse_singel_expression()));
+
         } else if self.is_tokentype(TokenType::Star) {
             let _star: Token = self.next_token();
-            expression = Expression::DeRefrence(Box::new(self.parse_singel_expression())); 
+            expression = Expression::DeRefrence(Box::new(self.parse_singel_expression()));
+
         } else if self.is_tokentype(TokenType::Mut) {
             let _mut: Token = self.next_token();
-            expression = Expression::Mutable(Box::new(self.parse_singel_expression())); 
+            expression = Expression::Mutable(Box::new(self.parse_singel_expression()));
+
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Expression".to_string());
 
@@ -104,19 +107,23 @@ impl Parser {
         
         } else if self.is_tokentype(TokenType::ParenthesisStart) {
             let _start: Token = self.next_token();
-            return self.parse_expression();
-
+            let expression: Expression = self.parse_expression();
             let _end: Token = self.parse_type(TokenType::ParenthesisEnd);
+            
+            return expression;
 
         } else if self.is_tokentype(TokenType::Borrow) {
             let _borrow: Token = self.next_token();
-            return Expression::Borrow(Box::new(self.parse_singel_expression())); 
+            return Expression::Borrow(Box::new(self.parse_singel_expression()));
+
         } else if self.is_tokentype(TokenType::Star) {
             let _star: Token = self.next_token();
-            return Expression::DeRefrence(Box::new(self.parse_singel_expression())); 
+            return Expression::DeRefrence(Box::new(self.parse_singel_expression()));
+
         } else if self.is_tokentype(TokenType::Mut) {
             let _Mut: Token = self.next_token();
-            return Expression::Mutable(Box::new(self.parse_singel_expression())); 
+            return Expression::Mutable(Box::new(self.parse_singel_expression()));
+
         } else {
             self.create_error(ErrorLevel::Error, "Expected a Expression".to_string());
 
