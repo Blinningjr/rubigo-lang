@@ -25,11 +25,43 @@ pub enum MyTypes {
 
 impl Type {
 
+
     pub fn new(mytype: MyTypes) -> Type {
         return Type{
             borrow: false,
             mutable:false,
             r#type: mytype,
+        };
+    }
+
+    pub fn parse(r#type: &str, borrow: bool, mutable: bool) -> Option<Type> {
+        return match r#type {
+            "i32" => Some(Type{
+                borrow: borrow,
+                mutable: mutable,
+                r#type: MyTypes::I32,
+            }),
+            "f32" => Some(Type{
+                borrow: borrow,
+                mutable: mutable,
+                r#type: MyTypes::F32,
+            }),
+            "bool" => Some(Type{
+                borrow: borrow,
+                mutable: mutable,
+                r#type: MyTypes::Bool,
+            }),
+            "char" => Some(Type{
+                borrow: borrow,
+                mutable: mutable,
+                r#type: MyTypes::Char,
+            }),
+            "String" => Some(Type{
+                borrow: borrow,
+                mutable: mutable,
+                r#type: MyTypes::String,
+            }),
+            _ => None,
         };
     }
 

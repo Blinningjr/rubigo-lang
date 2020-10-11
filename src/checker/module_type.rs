@@ -20,18 +20,21 @@ impl TypeModule {
         };
     }
 
-    pub fn get_variable(& self, ident: String, func_id: Option<usize>, env_id: usize) -> Option<&TypeVarMem> {
+    pub fn get_variable(& self, ident: String, func_id: Option<usize>, env_id: usize) -> Option<(Option<usize>, usize, &TypeVarMem)> {
        match func_id {
             Some(id) => {
                 match self.mod_funcs[id].get_variable(ident.clone(), env_id) {
-                   Some(var) => return Some(var),
+                   Some((env_id, var)) => return Some((func_id, env_id, var)),
                    None => (),
                 };
             },
             None => (),
        }; 
 
-        return self.mod_envs.get_variable(ident, env_id);
+        return match self.mod_envs.get_variable(ident, env_id) {
+            Some((env_id, var)) => Some((None, env_id, var)),
+            None => None,
+        };
     }
     
     pub fn get_function_id(& self, ident: String, func_id: Option<usize>, env_id: usize) -> Option<usize> {

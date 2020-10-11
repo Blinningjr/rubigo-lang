@@ -26,12 +26,12 @@ impl TypeEnvironments {
         return &mut self.envs[id];
     }
 
-    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<&TypeVarMem> {
+    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &TypeVarMem)> {
         match self.envs[env_id].get_variable(&ident) {
-            Some(var) => return Some(var),
+            Some(var) => return Some((env_id, var)),
             None => {
                 match self.envs[env_id].prev_id {
-                    Some(id) => return self.envs[id].get_variable(&ident),
+                    Some(id) => return self.get_variable(ident, id),
                     None => return None,
                 };
             },
@@ -141,7 +141,7 @@ impl TypeFunction {
         return self.og_func.id;
     }
 
-    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<&TypeVarMem> {
+    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &TypeVarMem)> {
         return self.environments.get_variable(ident, env_id)
     }
 
@@ -159,21 +159,22 @@ pub enum TypeVarMem{
     // The Option<String> is the funciton the variable is in, None if it is decleared in the
     // modual.
     // The usize is the environment id.
-    Pointer(Option<String>, usize, TypeVariable),
+    // The String is the variable name.
+    Pointer(Option<usize>, usize, String, TypeVariable),
 }
 
 impl TypeVarMem { 
     pub fn get_ident(& self) -> String {
         match self {
             TypeVarMem::Var(var) => return var.get_ident(),
-            TypeVarMem::Pointer(_, _, var) => return var.get_ident(),
+            TypeVarMem::Pointer(_, _, _, var) => return var.get_ident(),
         };
     }
     
     pub fn get_type(& self) -> Type {
         match self {
             TypeVarMem::Var(var) => return var.r#type.clone(),
-            TypeVarMem::Pointer(_, _, var) => return var.r#type.clone(),
+            TypeVarMem::Pointer(_, _, _, var) => return var.r#type.clone(),
         };
     }
 }

@@ -66,12 +66,8 @@ impl Checker {
 
 
     fn get_variable_type(&mut self, var: Variable, original: Span<String>) -> Type {
-        match self.module.get_variable(var.identifier.get_fragment(), 
-                                            self.current_func,
-                                            self.current_env) {
-            Some(var) => return var.get_type(),
-            None => panic!("TODO: add type error here"),
-        };
+        let (_, _, t) = self.get_variable(var.identifier.get_fragment(), original);
+        return t.get_type();
     }
 
     fn get_function_call_type(&mut self, func_call: FunctionCall, original: Span<String>) -> Option<Type> {
