@@ -3,7 +3,6 @@
 mod r#type;
 mod environment_type;
 mod module_type;
-mod literals_type;
 mod expressions_type;
 mod operations_type;
 mod statements_type;
@@ -68,7 +67,7 @@ impl Checker {
     
     pub fn get_function(& self, ident: String) -> TypeFunction {
         match self.module.get_function_id(ident, self.current_func, self.current_env) {
-            Some(id) => return self.module.mod_funcs[id],
+            Some(id) => return self.module.mod_funcs[id].clone(),
             None => panic!("TODO: Add type error"),
         };
     }

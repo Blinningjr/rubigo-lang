@@ -31,7 +31,7 @@ impl Checker {
                 };
             },
             Expression::Variable(variable) => self.get_variable_type(variable, original),
-            Expression::Literal(literal) => self.get_literal_type(literal),
+            Expression::Literal(literal) => Type::get_literal_type(literal),
             Expression::Borrow(expr) => {
                 let mut expr_type: Type = self.get_expression_type(*expr, original);
                 if expr_type.borrow {

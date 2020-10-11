@@ -34,7 +34,7 @@ impl TypeModule {
         return self.mod_envs.get_variable(ident, env_id);
     }
     
-    pub fn get_function_id(& self, ident: String, func_id: Option<usize>, env_id: usize) -> Option<Option<usize>> {
+    pub fn get_function_id(& self, ident: String, func_id: Option<usize>, env_id: usize) -> Option<usize> {
        match func_id {
             Some(id) => {
                 match self.mod_funcs[id].get_function_id(ident.clone(), env_id) {
