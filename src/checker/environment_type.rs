@@ -148,7 +148,12 @@ impl TypeFunction {
     pub fn get_function_id(& self, ident: String, env_id: usize) -> Option<usize> {
         return self.environments.get_function_id(ident, env_id)
     }
-    
+   
+    pub fn create_env(&mut self, id: usize) -> usize {
+        let new_id: usize = self.environments.envs.len();
+        self.environments.envs.push(TypeEnvironment::new(new_id, Some(id)));
+        return new_id;
+    }
 }
 
 

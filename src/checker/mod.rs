@@ -143,5 +143,19 @@ impl Checker {
             None => (),
         }; 
     }
+    
+
+    fn create_body(&mut self) -> () {
+        match self.current_func {
+            Some(id) => self.current_env = self.module.mod_funcs[id].create_env(self.current_env),
+            None => {
+                let new_id: usize = self.module.mod_envs.envs.len();
+                let current_id: usize = self.current_env;
+                self.module.mod_envs.envs.push(TypeEnvironment::new(new_id, Some(current_id)));
+                self.current_env = new_id;
+                self.current_mod_env = new_id;
+            },
+        };
+    }
 }
 
