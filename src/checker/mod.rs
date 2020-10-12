@@ -119,7 +119,7 @@ impl Checker {
         };
     }
 
-    fn get_variable(&mut self, ident: String, original: Span<String>) -> (Option<usize>, usize, TypeVariable) { 
+    fn get_variable(&mut self, ident: String, _original: Span<String>) -> (Option<usize>, usize, TypeVariable) { 
         match self.module.get_variable(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
             Some((func_id, env_id, val)) => return (func_id, env_id, val.clone()),
             None => panic!("TODO: add type error here {}", ident),
@@ -141,7 +141,7 @@ impl Checker {
         let result: Option<TypeVariable> = self.get_environment().set_variable(type_var);
 
         match result {
-            Some(var) => {
+            Some(_var) => {
                 panic!("TODO: add error");
             },
             None => (),
@@ -163,7 +163,7 @@ impl Checker {
     }
     
     fn new_function_env(&mut self, function: Function, parameters: Vec<(bool, Type)>, return_type: Option<Type>) -> () {
-        let prev_func: Option<usize> = self.current_func;
+        let _prev_func: Option<usize> = self.current_func;
         let new_func: usize = self.module.mod_funcs.len();
 
         let type_func: TypeFunction = TypeFunction::new(function, parameters, return_type);

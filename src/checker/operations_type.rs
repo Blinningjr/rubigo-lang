@@ -42,7 +42,7 @@ impl Checker {
     pub(super) fn get_unop_type(&mut self, unop: UnOp, original: Span<String>) -> Type {
         let expr: Type = self.get_expression_type(unop.expression.clone(), original.clone());
 
-        let mut r#type: Type = Type::new(MyTypes::I32); // TODO: Add a any type
+        let mut r#type: Type = Type::new(MyTypes::Any);
         match self.check_unop_type(unop.un_op.get_fragment(), expr.r#type) {
             Some(t) => r#type = t,
             None => {

@@ -60,7 +60,6 @@ impl Checker {
                 return expr_type;
             },
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
-            _ => panic!("TODO: Needs to be implemented"),
         };
     }
 

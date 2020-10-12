@@ -55,7 +55,7 @@ impl Checker {
             parameters.push(self.get_parameter_type(p, original.clone()));
         }
 
-        let return_type: Option<Type> = self.get_type_dec_type(function.return_type.clone(), original.clone());
+        let return_type: Option<Type> = self.get_type_dec_type(function.return_type.clone());
         
         self.new_function_env(function.clone(), parameters.clone(), return_type);
 
@@ -72,7 +72,7 @@ impl Checker {
     }
 
     fn get_parameter_type(&mut self, parameter: Parameter, original: Span<String>) -> (bool, Type) {
-        match self.get_type_dec_type(parameter.type_dec, original.clone()) {
+        match self.get_type_dec_type(parameter.type_dec) {
             Some(t) => return (parameter.mutable != None, t),
             None => {
                 panic!("TODO: Add type Error \n{:#?}", original);
@@ -80,7 +80,7 @@ impl Checker {
         };
     }
 
-    fn get_type_dec_type(&mut self, type_dec: TypeDecleration, original: Span<String>) -> Option<Type> {
+    fn get_type_dec_type(&mut self, type_dec: TypeDecleration) -> Option<Type> {
        return Type::parse(&type_dec.r#type.get_fragment(), type_dec.borrow, type_dec.mutable);
     }
 

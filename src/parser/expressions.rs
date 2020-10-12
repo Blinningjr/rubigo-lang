@@ -121,7 +121,7 @@ impl Parser {
             return Expression::DeRefrence(Box::new(self.parse_singel_expression()));
 
         } else if self.is_tokentype(TokenType::Mut) {
-            let _Mut: Token = self.next_token();
+            let _mut: Token = self.next_token();
             return Expression::Mutable(Box::new(self.parse_singel_expression()));
 
         } else {
