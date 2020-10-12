@@ -188,7 +188,10 @@ impl Checker {
 
         let expr_type: Type = self.get_expression_type(assignment.value.clone(), original.clone());
         
-        let (_, _, mut ass_var) = self.get_variable(assignment.identifier.get_fragment(), original.clone());
+        let (_, _, mut ass_var) = match self.get_variable(assignment.identifier.get_fragment(), original.clone()) {
+            Some(val) => val,
+            None => return,
+        };
         if assignment.derefrenced != None {
             if !ass_var.r#type.borrow {
                 self.create_type_error(ErrorLevel::Error,

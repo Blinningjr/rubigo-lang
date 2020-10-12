@@ -33,7 +33,7 @@ impl Checker {
             None => {
                 let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression.clone());
                 self.create_type_error(ErrorLevel::Error,
-                                       format!("Binary operation {} {:#?} {} is not supported", left_expr.to_string(), binop.bin_op, right_expr.to_string()),
+                                       format!("Binary operation {} {:?} {} is not supported", left_expr.to_string(), binop.bin_op.get_fragment(), right_expr.to_string()),
                                        original,
                                        line,
                                        offset);
@@ -53,7 +53,7 @@ impl Checker {
             None => {
                 let (line, offset): (usize, usize) = self.get_expression_location(unop.expression.clone());
                 self.create_type_error(ErrorLevel::Error,
-                                       format!("Unary operation {:#?} {} is not supported", unop.un_op, expr.to_string()),
+                                       format!("Unary operation {:?} {} is not supported", unop.un_op.get_fragment(), expr.to_string()),
                                        original,
                                        line,
                                        offset);

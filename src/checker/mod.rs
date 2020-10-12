@@ -105,10 +105,17 @@ impl Checker {
         self.error_handler.add(error);
     }
     
-    fn get_function(& self, ident: String) -> TypeFunction {
+    fn get_function(&mut self, ident: String, original: Span<String>) -> Option<TypeFunction> {
         match self.module.get_function_id(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
-            Some(id) => return self.module.mod_funcs[id].clone(),
-            None => panic!("TODO: Add type error {}", ident),
+            Some(id) => return Some(self.module.mod_funcs[id].clone()),
+            None => {
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Function {} out of scope", ident),
+                                       original.clone(),
+                                       original.get_line(),
+                                       original.get_offset());
+                return None;
+            },
         };
     }
 
@@ -119,10 +126,17 @@ impl Checker {
         };
     }
 
-    fn get_variable(&mut self, ident: String, _original: Span<String>) -> (Option<usize>, usize, TypeVariable) { 
+    fn get_variable(&mut self, ident: String, original: Span<String>) -> Option<(Option<usize>, usize, TypeVariable)> { 
         match self.module.get_variable(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
-            Some((func_id, env_id, val)) => return (func_id, env_id, val.clone()),
-            None => panic!("TODO: add type error here {}", ident),
+            Some((func_id, env_id, val)) => return Some((func_id, env_id, val.clone())),
+            None =>{
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Variable {} out of scope", ident),
+                                       original.clone(),
+                                       original.get_line(),
+                                       original.get_offset());
+                return None;
+            },
         };
     }
 

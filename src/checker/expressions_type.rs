@@ -99,7 +99,10 @@ impl Checker {
     }
 
     fn get_variable_type(&mut self, var: Variable, original: Span<String>) -> Type {
-        let (_, _, mut t) = self.get_variable(var.identifier.get_fragment(), original);
+        let (_, _, mut t) = match self.get_variable(var.identifier.get_fragment(), original) {
+            Some(val) => val,
+            None => return Type::new(MyTypes::Any), 
+        };
         t.r#type.ident = Some(var.identifier.get_fragment()); 
         return t.r#type;
     }
@@ -110,7 +113,10 @@ impl Checker {
             input_type.push(self.get_expression_type(expr.clone(), original.clone()));
         }
 
-        let func: TypeFunction = self.get_function(func_call.identifier.get_fragment());
+        let func: TypeFunction = match self.get_function(func_call.identifier.get_fragment(), original.clone()) {
+            Some(val) => val,
+            None => return None,
+        };
 
         if input_type.len() != func.parameters.len() {
             self.create_type_error(ErrorLevel::Error,
