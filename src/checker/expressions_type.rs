@@ -67,10 +67,10 @@ impl Checker {
 
     fn get_variable_type(&mut self, var: Variable, original: Span<String>) -> Type {
         let (_, _, t) = self.get_variable(var.identifier.get_fragment(), original);
-        return t.get_type();
+        return t.r#type;
     }
 
-    fn get_function_call_type(&mut self, func_call: FunctionCall, original: Span<String>) -> Option<Type> {
+    pub(super) fn get_function_call_type(&mut self, func_call: FunctionCall, original: Span<String>) -> Option<Type> {
         let mut input_type: Vec<Type> = vec!();
         for expr in func_call.parameters.iter() {
             input_type.push(self.get_expression_type(expr.clone(), original.clone()));
@@ -83,7 +83,7 @@ impl Checker {
         } else {
             for i in 0..input_type.len() {
                 if !input_type[i].same_type(& func.parameters[i].1) {
-                    panic!("TODO: Add type error");
+                    panic!("TODO: Add type error \n{:#?}", original);
                 }
             }
         }

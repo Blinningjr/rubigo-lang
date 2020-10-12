@@ -21,10 +21,12 @@ pub use super::parser::{
     expressions,
     operations,
     literal,
-//    TypeDecleration,
+    TypeDecleration,
     ModualBody,
 
     statement::{
+        Function,
+        Parameter,
         Let,
     },
 };
@@ -34,7 +36,6 @@ pub use module_type::TypeModule;
 pub use environment_type::{
     TypeFunction,
     TypeEnvironment,
-    TypeVarMem,
     TypeVariable,
 };
 
@@ -60,6 +61,16 @@ impl Checker {
             current_env: 0,
             current_func: None,
         };
+
+        let mut print_func: Function = Function::create_dummy();
+        print_func.identifier = Span::new("print".to_string(), 0, 0);
+        print_func.parameters.push(Parameter{
+                                    mutable: None,
+                                    identifier: Span::new("DUMMY".to_string(), 0, 0), 
+                                    type_dec: TypeDecleration{borrow: false,
+                                        mutable: false,
+                                        r#type: Span::new(" ANY".to_string(), 0, 0)}});
+        checker.check_function(print_func);
 
         checker.check_modual_body(ast);
         
@@ -95,9 +106,9 @@ impl Checker {
     }
     
     fn get_function(& self, ident: String) -> TypeFunction {
-        match self.module.get_function_id(ident, self.current_func, self.current_env) {
+        match self.module.get_function_id(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
             Some(id) => return self.module.mod_funcs[id].clone(),
-            None => panic!("TODO: Add type error"),
+            None => panic!("TODO: Add type error {}", ident),
         };
     }
 
@@ -108,33 +119,26 @@ impl Checker {
         };
     }
 
-    fn get_variable(&mut self, ident: String, original: Span<String>) -> (Option<usize>, usize, TypeVarMem) {
-        
-        match self.module.get_variable(ident, self.current_func, self.current_env) {
+    fn get_variable(&mut self, ident: String, original: Span<String>) -> (Option<usize>, usize, TypeVariable) { 
+        match self.module.get_variable(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
             Some((func_id, env_id, val)) => return (func_id, env_id, val.clone()),
-            None => panic!("TODO: add type error here"),
+            None => panic!("TODO: add type error here {}", ident),
         };
     }
 
-    fn add_variable(&mut self, let_stmt: Let, r#type: Type) -> () {
+    fn add_variable(&mut self, original: Span<String>, ident: Span<String>, mutable: bool, r#type: Type) -> () {
         let type_var: TypeVariable = TypeVariable{
-            og_var: let_stmt.clone(),
+            original: original.clone(),
+            ident: ident.clone(),
 
-            mutable: let_stmt.mutable != None,
+            mutable: mutable,
             r#type: r#type.clone(),
 
             num_borrows: 0,
             borrowed_as_mut: false,
         };
 
-        let result: Option<TypeVarMem>;
-        if r#type.borrow {
-           let (func_id, env_id, ref_var) = self.get_variable(let_stmt.identifier.get_fragment(),
-                                                              let_stmt.original.clone());
-           result = self.get_environment().set_variable(TypeVarMem::Pointer(func_id, env_id, ref_var.get_ident(), type_var));
-        } else {
-            result = self.get_environment().set_variable(TypeVarMem::Var(type_var));
-        } 
+        let result: Option<TypeVariable> = self.get_environment().set_variable(type_var);
 
         match result {
             Some(var) => {
@@ -156,6 +160,20 @@ impl Checker {
                 self.current_mod_env = new_id;
             },
         };
+    }
+    
+    fn new_function_env(&mut self, function: Function, parameters: Vec<(bool, Type)>, return_type: Option<Type>) -> () {
+        let prev_func: Option<usize> = self.current_func;
+        let new_func: usize = self.module.mod_funcs.len();
+
+        let type_func: TypeFunction = TypeFunction::new(function, parameters, return_type);
+
+        self.get_environment().set_function(type_func.clone());
+       
+        self.module.mod_funcs.push(type_func);
+        
+        self.current_env = 0;
+        self.current_func = Option::Some(new_func);
     }
 }
 

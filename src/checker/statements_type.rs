@@ -4,12 +4,12 @@
 pub use super::{
     Checker,
     expressions::Expression,
-//    TypeDecleration,
+    TypeDecleration,
     Span,
     ErrorLevel,
 
-    TypeVarMem,
     TypeFunction,
+    TypeVariable,
 };
 
 pub use super::r#type::{
@@ -20,6 +20,7 @@ pub use super::r#type::{
 pub use super::statement::{
     Statement,
     Function,
+    Parameter,
     While,
     If,
     Let,
@@ -32,8 +33,8 @@ pub use super::statement::{
 impl Checker {
     pub(super) fn check_statement(&mut self, statement: Statement) -> () { 
         match statement {
-//            Statement::Function(function) => self.check_function(*function),
-//            Statement::While(r#while) => self.check_while(*r#while),
+            Statement::Function(function) => self.check_function(*function),
+            Statement::While(r#while) => self.check_while(*r#while),
             Statement::If(r#if) => self.check_if(*r#if),
             Statement::Let(r#let) => self.check_let(r#let),
             Statement::Assignment(assignment) => self.check_assignment(assignment),
@@ -44,11 +45,58 @@ impl Checker {
         };
     }
 
-//    fn check_function(&mut self, function: Function) -> () {
-//    }
-//
-//    fn check_while(&mut self, while_statement: While) -> () {
-//    }
+    pub(super) fn check_function(&mut self, function: Function) -> () {
+        let original: Span<String> = function.original.clone();
+        let current_env = self.current_env;
+        let current_func = self.current_func;
+
+        let mut parameters: Vec<(bool, Type)> = vec!();
+        for p in function.parameters.clone() {
+            parameters.push(self.get_parameter_type(p, original.clone()));
+        }
+
+        let return_type: Option<Type> = self.get_type_dec_type(function.return_type.clone(), original.clone());
+        
+        self.new_function_env(function.clone(), parameters.clone(), return_type);
+
+        for i in 0..parameters.len() {
+            self.add_variable(original.clone(), function.parameters[i].identifier.clone(), parameters[i].0, parameters[i].1.clone());
+        }
+
+        self.check_body(function.body, false);
+
+        //self.check_if_all_bodies_return();
+
+        self.current_env = current_env;
+        self.current_func = current_func;
+    }
+
+    fn get_parameter_type(&mut self, parameter: Parameter, original: Span<String>) -> (bool, Type) {
+        match self.get_type_dec_type(parameter.type_dec, original.clone()) {
+            Some(t) => return (parameter.mutable != None, t),
+            None => {
+                panic!("TODO: Add type Error \n{:#?}", original);
+            },
+        };
+    }
+
+    fn get_type_dec_type(&mut self, type_dec: TypeDecleration, original: Span<String>) -> Option<Type> {
+       return Type::parse(&type_dec.r#type.get_fragment(), type_dec.borrow, type_dec.mutable);
+    }
+
+    fn check_while(&mut self, while_stmt: While) -> () {
+        let original: Span<String> = while_stmt.original;
+        self.check_if_unreachable_code(original.clone());
+
+        let condition: Type = self.get_expression_type(while_stmt.condition, original.clone());
+        let expected: Type = Type::new(MyTypes::Bool);
+        
+        if !expected.same_type(& condition) {
+            panic!("TODO add error");
+        }
+
+        self.check_body(while_stmt.body, true);
+    }
 
     fn check_if(&mut self, if_stmt: If) -> () {
         let original: Span<String> = if_stmt.original;
@@ -58,10 +106,17 @@ impl Checker {
         let expected: Type = Type::new(MyTypes::Bool);
         
         if !expected.same_type(& condition) {
-            panic!("TODO add error"),
+            panic!("TODO add error");
         }
 
         self.check_body(if_stmt.if_body, true);
+
+        // TODO: Set that this is a if body in the environment.
+        
+        match if_stmt.else_body {
+            Some(body) => self.check_body(body, true),
+            None => (),
+        };
     }
 
     fn check_let(&mut self, let_stmt: Let) -> () {
@@ -77,7 +132,7 @@ impl Checker {
                 panic!("TODO: Add type error");
             },
         };
-        self.add_variable(let_stmt.clone(), var_type.clone());
+        self.add_variable(original.clone(), let_stmt.identifier.clone(), let_stmt.mutable != None, var_type.clone());
 
         let expr_type: Type = self.get_expression_type(let_stmt.value.clone(), original.clone()); 
         
@@ -99,23 +154,22 @@ impl Checker {
         let original: Span<String> = assignment.original;
         self.check_if_unreachable_code(original.clone());
 
+
+
         let (_, _, mut ass_var) = self.get_variable(assignment.identifier.get_fragment(), original.clone());
         if assignment.derefrenced != None {
-            match ass_var {
-                TypeVarMem::Var(_var) => {
-                    panic!("TODO add error");
-                },
-                TypeVarMem::Pointer(func_id, env_id, ident, var) => {
-                    ass_var = match func_id {
-                        Some(id) => self.module.mod_funcs[id].environments.envs[env_id].get_variable(&ident).unwrap().clone(),
-                        None => self.module.mod_envs.envs[env_id].get_variable(&ident).unwrap().clone(),
-                    };
-                },
-            };
+            if !ass_var.r#type.borrow {
+                panic!("TODO: add error");
+            }
+            ass_var.r#type.borrow = false;
+        }
+
+        if !ass_var.mutable {
+            panic!("TODO add error");
         }
 
         let expr_type: Type = self.get_expression_type(assignment.value, original.clone());
-        if !ass_var.get_type().same_type(&expr_type) {
+        if !ass_var.r#type.same_type(&expr_type) {
             panic!("TODO add type error");
         } 
     }
@@ -166,9 +220,9 @@ impl Checker {
     fn check_expression(&mut self, expression: Expression) -> () {
         match &expression {
             Expression::FunctionCall(expr) => {
-                let original: Span<String> = expr.original.clone();
+                let original: Span<String> = (**expr).original.clone();
                 self.check_if_unreachable_code(original.clone());
-                self.get_expression_type(expression, original);
+                self.get_function_call_type((**expr).clone(), original);
             },
             _ => panic!("fatal panic"),
         };

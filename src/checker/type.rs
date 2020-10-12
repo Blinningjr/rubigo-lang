@@ -20,6 +20,7 @@ pub enum MyTypes {
     Bool,
     Char,
     String,
+    Any,
 }
 
 
@@ -61,6 +62,11 @@ impl Type {
                 mutable: mutable,
                 r#type: MyTypes::String,
             }),
+            " ANY" => Some(Type{
+                borrow: borrow,
+                mutable: mutable,
+                r#type: MyTypes::Any,
+            }),
             _ => None,
         };
     }
@@ -82,6 +88,11 @@ impl Type {
     }
 
     pub fn same_type(& self, other: &Type) -> bool {
+        match (&self.r#type, &other.r#type) {
+            (_, MyTypes::Any) => return true,
+            (MyTypes::Any, _) => return true,
+            _ => (),
+        };
         if self.borrow == other.borrow {
             if self.mutable == other.mutable {
                 return match (&self.r#type, &other.r#type) {

@@ -26,7 +26,7 @@ impl TypeEnvironments {
         return &mut self.envs[id];
     }
 
-    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &TypeVarMem)> {
+    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &TypeVariable)> {
         match self.envs[env_id].get_variable(&ident) {
             Some(var) => return Some((env_id, var)),
             None => {
@@ -59,7 +59,7 @@ pub struct TypeEnvironment {
     pub prev_id: Option<usize>,
 
     pub functions: HashMap<String, usize>, 
-    pub variables: HashMap<String, TypeVarMem>, 
+    pub variables: HashMap<String, TypeVariable>, 
 
     pub returns: bool,
 }
@@ -78,15 +78,15 @@ impl TypeEnvironment {
         };
     }
 
-    pub fn get_variable(& self, identifier: &String) -> Option<&TypeVarMem> {
+    pub fn get_variable(& self, identifier: &String) -> Option<&TypeVariable> {
         return self.variables.get(identifier);
     }
    
 
     /**
-     * Retruns TypeVarMem if it already is declared and None if it isen't.
+     * Retruns Typevariable if it already is declared and None if it isen't.
      */
-    pub fn set_variable(&mut self, variable: TypeVarMem) -> Option<TypeVarMem> {
+    pub fn set_variable(&mut self, variable: TypeVariable) -> Option<TypeVariable> {
         match self.get_variable(&variable.get_ident()) {
             Some(var) => return Some(var.clone()),
             None => {
@@ -133,6 +133,18 @@ pub struct TypeFunction {
 }
 
 impl TypeFunction {
+    pub fn new(func: Function, parameters: Vec<(bool, Type)>, return_type: Option<Type>) -> TypeFunction {
+        return TypeFunction{
+            og_func: func,
+
+            parameters: parameters,
+
+            environments: TypeEnvironments::new(),
+
+            return_type: return_type,
+        };
+    }
+
     pub fn get_ident(& self) -> String {
         return self.og_func.identifier.get_fragment();
     }
@@ -141,7 +153,7 @@ impl TypeFunction {
         return self.og_func.id;
     }
 
-    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &TypeVarMem)> {
+    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &TypeVariable)> {
         return self.environments.get_variable(ident, env_id)
     }
 
@@ -158,36 +170,9 @@ impl TypeFunction {
 
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum TypeVarMem{
-    Var(TypeVariable),
-   
-    // The Option<String> is the funciton the variable is in, None if it is decleared in the
-    // modual.
-    // The usize is the environment id.
-    // The String is the variable name.
-    Pointer(Option<usize>, usize, String, TypeVariable),
-}
-
-impl TypeVarMem { 
-    pub fn get_ident(& self) -> String {
-        match self {
-            TypeVarMem::Var(var) => return var.get_ident(),
-            TypeVarMem::Pointer(_, _, _, var) => return var.get_ident(),
-        };
-    }
-    
-    pub fn get_type(& self) -> Type {
-        match self {
-            TypeVarMem::Var(var) => return var.r#type.clone(),
-            TypeVarMem::Pointer(_, _, _, var) => return var.r#type.clone(),
-        };
-    }
-}
-
-
-#[derive(Debug, Clone, PartialEq)]
 pub struct TypeVariable {
-    pub og_var: Let, 
+    pub original: Span<String>,
+    pub ident: Span<String>,
 
     pub mutable: bool,
     pub r#type: Type,
@@ -198,7 +183,7 @@ pub struct TypeVariable {
 
 impl TypeVariable {
     pub fn get_ident(& self) -> String {
-        return self.og_var.identifier.get_fragment();
+        return self.ident.get_fragment();
     }
 
     // returns true if error
