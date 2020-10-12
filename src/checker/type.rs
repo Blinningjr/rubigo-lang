@@ -7,6 +7,8 @@ pub use super::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Type {
+    pub ident: Option<String>,
+
     pub borrow: bool,
     pub mutable: bool,
 
@@ -29,6 +31,8 @@ impl Type {
 
     pub fn new(mytype: MyTypes) -> Type {
         return Type{
+            ident: None,
+
             borrow: false,
             mutable:false,
             r#type: mytype,
@@ -38,31 +42,37 @@ impl Type {
     pub fn parse(r#type: &str, borrow: bool, mutable: bool) -> Option<Type> {
         return match r#type {
             "i32" => Some(Type{
+                ident: None,
                 borrow: borrow,
                 mutable: mutable,
                 r#type: MyTypes::I32,
             }),
             "f32" => Some(Type{
+                ident: None,
                 borrow: borrow,
                 mutable: mutable,
                 r#type: MyTypes::F32,
             }),
             "bool" => Some(Type{
+                ident: None,
                 borrow: borrow,
                 mutable: mutable,
                 r#type: MyTypes::Bool,
             }),
             "char" => Some(Type{
+                ident: None,
                 borrow: borrow,
                 mutable: mutable,
                 r#type: MyTypes::Char,
             }),
             "String" => Some(Type{
+                ident: None,
                 borrow: borrow,
                 mutable: mutable,
                 r#type: MyTypes::String,
             }),
             " ANY" => Some(Type{
+                ident: None,
                 borrow: borrow,
                 mutable: mutable,
                 r#type: MyTypes::Any,
@@ -73,6 +83,8 @@ impl Type {
 
     pub fn get_literal_type(literal: Literal) -> Type {
         return Type{
+            ident: None,
+
             borrow: false,
             mutable: false,
 

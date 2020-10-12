@@ -10,6 +10,7 @@ pub use super::{
 
 pub use super::r#type::{
     Type,
+    MyTypes,
 };
 
 pub use super::expressions::{
@@ -33,15 +34,32 @@ impl Checker {
             Expression::Variable(variable) => self.get_variable_type(variable, original),
             Expression::Literal(literal) => Type::get_literal_type(literal),
             Expression::Borrow(expr) => {
-                let mut expr_type: Type = self.get_expression_type(*expr, original);
+                let mut expr_type: Type = self.get_expression_type(*expr, original.clone());
                 if expr_type.borrow {
                     panic!("error");
                     // TODO: Change it to type error instead of panic
                 }
                 expr_type.borrow = true;
+               
+                match expr_type.ident.clone() {
+                    Some(ident) => {
+                        if expr_type.mutable {
+                            self.add_borrow_as_mut(ident, original);
+                        } else {
+                            self.add_borrow(ident, original);
+                        }
+                    }, 
+                    None => {
+                        if expr_type.r#type != MyTypes::Any {
+                            panic!("TODO: Add type error");
+                        }
+                    },
+                };
+
                 return expr_type;
             },
             Expression::Mutable(expr) => {
+                // TODO: Check that the variable is mutable
                 let mut expr_type: Type = self.get_expression_type(*expr, original);
                 if expr_type.mutable {
                     panic!("error");
@@ -63,9 +81,9 @@ impl Checker {
         };
     }
 
-
     fn get_variable_type(&mut self, var: Variable, original: Span<String>) -> Type {
-        let (_, _, t) = self.get_variable(var.identifier.get_fragment(), original);
+        let (_, _, mut t) = self.get_variable(var.identifier.get_fragment(), original);
+        t.r#type.ident = Some(var.identifier.get_fragment()); 
         return t.r#type;
     }
 

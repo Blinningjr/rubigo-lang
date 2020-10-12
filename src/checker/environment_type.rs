@@ -117,6 +117,59 @@ impl TypeEnvironment {
             },
         };
     }
+
+    pub fn add_borrow_as_mut(&mut self, ident: &String) -> Result<bool, TypeVariable> {
+        let mut var: TypeVariable = self.get_variable(ident).unwrap().clone();
+        self.variables.remove(ident);
+
+        let result: bool = var.add_borrow_as_mut();
+        if self.set_variable(var.clone()) != None {
+            panic!("Fatal error");
+        }
+
+        if result {
+            return Err(var.clone());
+        } else {
+            return Ok(true);
+        }
+    }
+    
+    pub fn add_borrow(&mut self, ident: &String) -> Result<bool, TypeVariable> {
+        let mut var: TypeVariable = self.get_variable(ident).unwrap().clone();
+        self.variables.remove(ident);
+
+        let result: bool = var.add_borrow();
+        if self.set_variable(var.clone()) != None {
+            panic!("Fatal error");
+        }
+
+        if result {
+            return Err(var.clone());
+        } else {
+            return Ok(true);
+        }
+    }
+
+
+    pub fn remove_borrow_as_mut(&mut self, ident: &String) -> () {
+        let mut var: TypeVariable = self.get_variable(ident).unwrap().clone();
+        self.variables.remove(ident);
+
+        var.remove_borrow_as_mut();
+        if self.set_variable(var.clone()) != None {
+            panic!("Fatal error");
+        }
+    }
+
+    pub fn remove_borrow(&mut self, ident: &String) -> () {
+        let mut var: TypeVariable = self.get_variable(ident).unwrap().clone();
+        self.variables.remove(ident);
+
+        var.remove_borrow();
+        if self.set_variable(var.clone()) != None {
+            panic!("Fatal error");
+        }
+    }
 }
 
 

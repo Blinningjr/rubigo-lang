@@ -51,5 +51,70 @@ impl TypeModule {
         return self.mod_envs.get_function_id(ident, mod_env_id);
     }
 
+    pub fn add_borrow_as_mut(&mut self, ident: String, func_id: Option<usize>, env_id: usize, mod_env_id: usize) -> Result<bool, TypeVariable> {
+        match self.get_variable(ident.clone(), func_id, env_id, mod_env_id) {
+            Some((f_id, e_id, _)) => {
+                match f_id {
+                    Some(func) => {
+                        return self.mod_funcs[func].environments.envs[e_id].add_borrow_as_mut(&ident);
+                    },
+                    None => {
+                        return self.mod_envs.envs[e_id].add_borrow_as_mut(&ident);
+                    },
+                };
+            },
+            None => return Ok(false),
+        };
+    }
+
+
+    pub fn add_borrow(&mut self, ident: String, func_id: Option<usize>, env_id: usize, mod_env_id: usize) -> Result<bool, TypeVariable> {
+        match self.get_variable(ident.clone(), func_id, env_id, mod_env_id) {
+            Some((f_id, e_id, _)) => {
+                match f_id {
+                    Some(func) => {
+                        return self.mod_funcs[func].environments.envs[e_id].add_borrow(&ident);
+                    },
+                    None => {
+                        return self.mod_envs.envs[e_id].add_borrow(&ident);
+                    },
+                };
+            },
+            None => return Ok(false),
+        };
+    }
+
+
+    pub fn remove_borrow_as_mut(&mut self, ident: String, func_id: Option<usize>, env_id: usize, mod_env_id: usize) -> () {
+        match self.get_variable(ident.clone(), func_id, env_id, mod_env_id) {
+            Some((f_id, e_id, _)) => {
+                match f_id {
+                    Some(func) => {
+                        self.mod_funcs[func].environments.envs[e_id].remove_borrow_as_mut(&ident);
+                    },
+                    None => {
+                        self.mod_envs.envs[e_id].remove_borrow_as_mut(&ident);
+                    },
+                };
+            },
+            None => panic!("Fatal error"),
+        };
+    }
+
+    pub fn remove_borrow(&mut self, ident: String, func_id: Option<usize>, env_id: usize, mod_env_id: usize) -> () {
+        match self.get_variable(ident.clone(), func_id, env_id, mod_env_id) {
+            Some((f_id, e_id, _)) => {
+                match f_id {
+                    Some(func) => {
+                        self.mod_funcs[func].environments.envs[e_id].remove_borrow(&ident);
+                    },
+                    None => {
+                        self.mod_envs.envs[e_id].remove_borrow(&ident);
+                    },
+                };
+            },
+            None => panic!("Fatal error"),
+        };
+    }
 }
 

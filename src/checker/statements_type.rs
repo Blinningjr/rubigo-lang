@@ -123,7 +123,7 @@ impl Checker {
         let original: Span<String> = let_stmt.original.clone();
         self.check_if_unreachable_code(original.clone());
         
-        let var_type: Type;
+        let mut var_type: Type;
         match Type::parse(&let_stmt.type_dec.r#type.get_fragment(),
                           let_stmt.type_dec.borrow,
                           let_stmt.type_dec.mutable) {
@@ -132,9 +132,13 @@ impl Checker {
                 panic!("TODO: Add type error");
             },
         };
-        self.add_variable(original.clone(), let_stmt.identifier.clone(), let_stmt.mutable != None, var_type.clone());
 
         let expr_type: Type = self.get_expression_type(let_stmt.value.clone(), original.clone()); 
+        if var_type.borrow {
+            var_type.ident = expr_type.ident.clone();
+        }
+
+        self.add_variable(original.clone(), let_stmt.identifier.clone(), let_stmt.mutable != None, var_type.clone());
         
         if !var_type.same_type(&expr_type) {
             panic!("TODO: add error");
@@ -154,23 +158,37 @@ impl Checker {
         let original: Span<String> = assignment.original;
         self.check_if_unreachable_code(original.clone());
 
-
-
+        let expr_type: Type = self.get_expression_type(assignment.value, original.clone());
+        
         let (_, _, mut ass_var) = self.get_variable(assignment.identifier.get_fragment(), original.clone());
         if assignment.derefrenced != None {
             if !ass_var.r#type.borrow {
                 panic!("TODO: add error");
+            } else if !ass_var.r#type.mutable {
+                panic!("TODO: add error");
             }
             ass_var.r#type.borrow = false;
+            ass_var.r#type.mutable = false;
+        } else if ass_var.r#type.borrow {
+            match ass_var.r#type.ident {
+                Some(ident) => {
+                    if ass_var.r#type.mutable {
+                        self.remove_borrow_as_mut(ident);
+                    } else {
+                        self.remove_borrow(ident);
+                    }
+                },
+                Nonde => (),
+            };
+            ass_var.r#type.ident = expr_type.ident.clone();
+        
+            if !ass_var.mutable {
+                panic!("TODO add error");
+            }
         }
 
-        if !ass_var.mutable {
-            panic!("TODO add error");
-        }
-
-        let expr_type: Type = self.get_expression_type(assignment.value, original.clone());
         if !ass_var.r#type.same_type(&expr_type) {
-            panic!("TODO add type error");
+            panic!("TODO add type error \n {:#?} \n {:#?}", ass_var.r#type, expr_type);
         } 
     }
 
@@ -210,6 +228,8 @@ impl Checker {
         for statement in body.body.iter() {
             self.check_statement(statement.clone());
         } 
+
+        self.remove_all_used_in_current_env();
 
         self.current_env = current_env;
         if self.current_func == None {

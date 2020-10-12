@@ -175,5 +175,67 @@ impl Checker {
         self.current_env = 0;
         self.current_func = Option::Some(new_func);
     }
+
+
+    fn add_borrow_as_mut(&mut self, ident: String, original: Span<String>) -> () {
+        match self.module.add_borrow_as_mut(ident, self.current_func, self.current_env, self.current_mod_env) {
+            Ok(found) => {
+                if !found {
+                    panic!("TODO: Add error");
+                }
+            },
+            Err(var) => {
+                panic!("TODO: Add error");
+            },
+        };
+    }
+    
+    fn add_borrow(&mut self, ident: String, original: Span<String>) -> () {
+        match self.module.add_borrow(ident, self.current_func, self.current_env, self.current_mod_env) {
+            Ok(found) => {
+                if !found {
+                    panic!("TODO: Add error");
+                }
+            },
+            Err(var) => {
+                panic!("TODO: Add error");
+            },
+        };
+    }
+
+    fn remove_borrow_as_mut(&mut self, ident: String) -> () {
+        self.module.remove_borrow_as_mut(ident,
+                                         self.current_func,
+                                         self.current_env,
+                                         self.current_mod_env);
+    }
+    
+    fn remove_borrow(&mut self, ident: String) -> () {
+        self.module.remove_borrow(ident,
+                                         self.current_func,
+                                         self.current_env,
+                                         self.current_mod_env);
+    }
+
+
+    fn remove_all_used_in_current_env(&mut self) -> () {
+        let env = match self.current_func {
+            Some(id) => self.module.mod_funcs[id].environments.envs[self.current_env].clone(),
+            None => self.module.mod_envs.envs[self.current_env].clone(),
+        };
+        
+        for (_, var) in &env.variables {
+            match var.r#type.ident.clone() {
+                Some(ident) => {
+                    if var.r#type.borrow && var.r#type.mutable {
+                        self.remove_borrow_as_mut(ident);
+                    } else if var.r#type.borrow {
+                        self.remove_borrow(ident);
+                    }
+                },
+                None => (),
+            }
+        }
+    }
 }
 
