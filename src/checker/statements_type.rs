@@ -228,6 +228,14 @@ impl Checker {
                                       assignment.identifier.get_line(),
                                       assignment.identifier.get_offset());
             }
+        } else {
+            if !ass_var.mutable {
+                self.create_type_error(ErrorLevel::Error,
+                                      format!("Can't mutate none mutable borrowed value"),
+                                      original.clone(),
+                                      assignment.identifier.get_line(),
+                                      assignment.identifier.get_offset());
+            }
         }
 
         if !ass_var.r#type.same_type(&expr_type) {
