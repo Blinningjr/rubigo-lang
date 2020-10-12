@@ -141,8 +141,12 @@ impl Checker {
         let result: Option<TypeVariable> = self.get_environment().set_variable(type_var);
 
         match result {
-            Some(_var) => {
-                panic!("TODO: add error");
+            Some(var) => {
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Variable {} already deleared at line {}", ident.get_fragment(), var.ident.get_fragment()),
+                                       original,
+                                       ident.get_line(),
+                                       ident.get_offset());
             },
             None => (),
         }; 
@@ -178,27 +182,43 @@ impl Checker {
 
 
     fn add_borrow_as_mut(&mut self, ident: String, original: Span<String>) -> () {
-        match self.module.add_borrow_as_mut(ident, self.current_func, self.current_env, self.current_mod_env) {
+        match self.module.add_borrow_as_mut(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
             Ok(found) => {
                 if !found {
-                    panic!("TODO: Add error");
+                    self.create_type_error(ErrorLevel::Error,
+                                           format!("variable {} out of scope", ident),
+                                           original.clone(),
+                                           original.get_line(),
+                                           original.get_offset(),);
                 }
             },
-            Err(var) => {
-                panic!("TODO: Add error");
+            Err(_var) => {
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Can't borrow {} as mutable", ident),
+                                       original.clone(),
+                                       original.get_line(),
+                                       original.get_offset(),);
             },
         };
     }
     
     fn add_borrow(&mut self, ident: String, original: Span<String>) -> () {
-        match self.module.add_borrow(ident, self.current_func, self.current_env, self.current_mod_env) {
+        match self.module.add_borrow(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
             Ok(found) => {
                 if !found {
-                    panic!("TODO: Add error");
+                    self.create_type_error(ErrorLevel::Error,
+                                           format!("variable {} out of scope", ident),
+                                           original.clone(),
+                                           original.get_line(),
+                                           original.get_offset(),);
                 }
             },
-            Err(var) => {
-                panic!("TODO: Add error");
+            Err(_var) => {
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Can't borrow {}", ident),
+                                       original.clone(),
+                                       original.get_line(),
+                                       original.get_offset(),);
             },
         };
     }

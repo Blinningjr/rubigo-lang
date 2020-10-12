@@ -72,10 +72,20 @@ impl Checker {
     }
 
     fn get_parameter_type(&mut self, parameter: Parameter, original: Span<String>) -> (bool, Type) {
-        match self.get_type_dec_type(parameter.type_dec) {
+        match self.get_type_dec_type(parameter.type_dec.clone()) {
             Some(t) => return (parameter.mutable != None, t),
             None => {
-                panic!("TODO: Add type Error \n{:#?}", original);
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("{} is not a supported type", parameter.type_dec.r#type.get_fragment()),
+                                       original,
+                                       parameter.identifier.get_line(),
+                                       parameter.identifier.get_offset());
+                return (true, Type{
+                    ident: None,
+                    borrow: false,
+                    mutable: false,
+                    r#type: MyTypes::Any,
+                });
             },
         };
     }
@@ -88,11 +98,16 @@ impl Checker {
         let original: Span<String> = while_stmt.original;
         self.check_if_unreachable_code(original.clone());
 
-        let condition: Type = self.get_expression_type(while_stmt.condition, original.clone());
+        let condition: Type = self.get_expression_type(while_stmt.condition.clone(), original.clone());
         let expected: Type = Type::new(MyTypes::Bool);
         
         if !expected.same_type(& condition) {
-            panic!("TODO add error");
+            let (line, offset): (usize, usize) = self.get_expression_location(while_stmt.condition);
+            self.create_type_error(ErrorLevel::Error,
+                                  format!("Expected type {} got {}", expected.to_string(), condition.to_string()),
+                                  original.clone(),
+                                  line,
+                                  offset);
         }
 
         self.check_body(while_stmt.body, true);
@@ -102,11 +117,16 @@ impl Checker {
         let original: Span<String> = if_stmt.original;
         self.check_if_unreachable_code(original.clone());
 
-        let condition: Type = self.get_expression_type(if_stmt.condition, original.clone());
+        let condition: Type = self.get_expression_type(if_stmt.condition.clone(), original.clone());
         let expected: Type = Type::new(MyTypes::Bool);
         
         if !expected.same_type(& condition) {
-            panic!("TODO add error");
+            let (line, offset): (usize, usize) = self.get_expression_location(if_stmt.condition);
+            self.create_type_error(ErrorLevel::Error,
+                                  format!("Expected type {} got {}", expected.to_string(), condition.to_string()),
+                                  original.clone(),
+                                  line,
+                                  offset);
         }
 
         self.check_body(if_stmt.if_body, true);
@@ -123,13 +143,22 @@ impl Checker {
         let original: Span<String> = let_stmt.original.clone();
         self.check_if_unreachable_code(original.clone());
         
-        let mut var_type: Type;
+        let mut var_type: Type = Type{
+            ident: None,
+            borrow: false,
+            mutable: false,
+            r#type: MyTypes::Any,
+        };
         match Type::parse(&let_stmt.type_dec.r#type.get_fragment(),
                           let_stmt.type_dec.borrow,
                           let_stmt.type_dec.mutable) {
             Some(t) => var_type = t,
             None => {
-                panic!("TODO: Add type error");
+                self.create_type_error(ErrorLevel::Error,
+                                      format!("Type {} not supported", let_stmt.type_dec.r#type.get_fragment()),
+                                      original.clone(),
+                                      let_stmt.type_dec.r#type.get_line(),
+                                      let_stmt.type_dec.r#type.get_offset());
             },
         };
 
@@ -141,16 +170,15 @@ impl Checker {
         self.add_variable(original.clone(), let_stmt.identifier.clone(), let_stmt.mutable != None, var_type.clone());
         
         if !var_type.same_type(&expr_type) {
-            panic!("TODO: add error");
- //           let (line, offset): (usize, usize) = self.get_expression_location(let_statement.value);
- //           self.create_type_error(ErrorLevel::Error,
- //                                  format!("Variable {} is of type {} got {}",
- //                                          let_statement.identifier.get_fragment(),
- //                                          variable_type.to_string(),
- //                                          expression_type.to_string()),
- //                                  original,
- //                                  line,
- //                                  offset);
+            let (line, offset): (usize, usize) = self.get_expression_location(let_stmt.value);
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Variable {} is of type {} got {}",
+                                           let_stmt.identifier.get_fragment(),
+                                           var_type.to_string(),
+                                           expr_type.to_string()),
+                                   original,
+                                   line,
+                                   offset);
         }
     }
     
@@ -158,14 +186,22 @@ impl Checker {
         let original: Span<String> = assignment.original;
         self.check_if_unreachable_code(original.clone());
 
-        let expr_type: Type = self.get_expression_type(assignment.value, original.clone());
+        let expr_type: Type = self.get_expression_type(assignment.value.clone(), original.clone());
         
         let (_, _, mut ass_var) = self.get_variable(assignment.identifier.get_fragment(), original.clone());
         if assignment.derefrenced != None {
             if !ass_var.r#type.borrow {
-                panic!("TODO: add error");
+                self.create_type_error(ErrorLevel::Error,
+                                      format!("Can't derefrence none borrowed value"),
+                                      original.clone(),
+                                      assignment.derefrenced.clone().unwrap().get_line(),
+                                      assignment.derefrenced.unwrap().get_offset());
             } else if !ass_var.r#type.mutable {
-                panic!("TODO: add error");
+                self.create_type_error(ErrorLevel::Error,
+                                      format!("Can't mutate none mutable borrowed value"),
+                                      original.clone(),
+                                      assignment.identifier.get_line(),
+                                      assignment.identifier.get_offset());
             }
             ass_var.r#type.borrow = false;
             ass_var.r#type.mutable = false;
@@ -178,17 +214,29 @@ impl Checker {
                         self.remove_borrow(ident);
                     }
                 },
-                Nonde => (),
+                None => (),
             };
             ass_var.r#type.ident = expr_type.ident.clone();
         
             if !ass_var.mutable {
-                panic!("TODO add error");
+                self.create_type_error(ErrorLevel::Error,
+                                      format!("Can't mutate none mutable borrowed value"),
+                                      original.clone(),
+                                      assignment.identifier.get_line(),
+                                      assignment.identifier.get_offset());
             }
         }
 
         if !ass_var.r#type.same_type(&expr_type) {
-            panic!("TODO add type error \n {:#?} \n {:#?}", ass_var.r#type, expr_type);
+            let (line, offset): (usize, usize) = self.get_expression_location(assignment.value);
+            self.create_type_error(ErrorLevel::Error,
+                                   format!("Variable {} is of type {} got {}",
+                                           assignment.identifier.get_fragment(),
+                                           ass_var.r#type.to_string(),
+                                           expr_type.to_string()),
+                                   original,
+                                   line,
+                                   offset);
         } 
     }
 
@@ -202,17 +250,32 @@ impl Checker {
 
         match self.current_func {
             Some(id) => {
-                let func: &TypeFunction = &self.module.mod_funcs[id];
+                let func: TypeFunction = self.module.mod_funcs[id].clone();
                 if func.return_type == None { 
-                    // TODO: add type error
-                    return
+                    let (line, offset): (usize, usize) = self.get_expression_location(return_stmt.value);
+                    self.create_type_error(ErrorLevel::Error,
+                                           format!("Function {} dosen't return", func.og_func.identifier.get_fragment()),
+                                           original,
+                                           line,
+                                           offset);
+                    return;
                 }
                 if !func.return_type.clone().unwrap().same_type(& expr_type) {
-                    panic!("TODO add type error");
+                    let (line, offset): (usize, usize) = self.get_expression_location(return_stmt.value);
+                    self.create_type_error(ErrorLevel::Error,
+                                           format!("Expected type {} got {}", func.return_type.clone().unwrap().to_string(), expr_type.to_string()),
+                                           original,
+                                           line,
+                                           offset);
                 }
             },
             None => {
-                panic!("TODO add type error");
+                let (line, offset): (usize, usize) = self.get_expression_location(return_stmt.value);
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Can't return outside of function"),
+                                       original,
+                                       line,
+                                       offset);
             },
         };
 

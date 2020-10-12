@@ -27,11 +27,16 @@ impl Checker {
         let left_expr: Type = self.get_expression_type(binop.left_expression.clone(), original.clone());
         let right_expr: Type = self.get_expression_type(binop.right_expression.clone(), original.clone()); 
 
-        let mut r#type: Type = Type::new(MyTypes::I32); // TODO: Add a any type
-        match self.check_binop_type(left_expr.r#type, binop.bin_op.get_fragment(), right_expr.r#type) {
+        let mut r#type: Type = Type::new(MyTypes::Any);
+        match self.check_binop_type(left_expr.r#type.clone(), binop.bin_op.get_fragment(), right_expr.r#type.clone()) {
             Some(t) => r#type = t,
             None => {
-                panic!("TODO: Add type error");
+                let (line, offset): (usize, usize) = self.get_expression_location(binop.left_expression.clone());
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Binary operation {} {:#?} {} is not supported", left_expr.to_string(), binop.bin_op, right_expr.to_string()),
+                                       original,
+                                       line,
+                                       offset);
             },
         };
 
@@ -43,10 +48,15 @@ impl Checker {
         let expr: Type = self.get_expression_type(unop.expression.clone(), original.clone());
 
         let mut r#type: Type = Type::new(MyTypes::Any);
-        match self.check_unop_type(unop.un_op.get_fragment(), expr.r#type) {
+        match self.check_unop_type(unop.un_op.get_fragment(), expr.r#type.clone()) {
             Some(t) => r#type = t,
             None => {
-                panic!("TODO: Add type error");
+                let (line, offset): (usize, usize) = self.get_expression_location(unop.expression.clone());
+                self.create_type_error(ErrorLevel::Error,
+                                       format!("Unary operation {:#?} {} is not supported", unop.un_op, expr.to_string()),
+                                       original,
+                                       line,
+                                       offset);
             },
         };
 

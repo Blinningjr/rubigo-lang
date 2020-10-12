@@ -119,5 +119,26 @@ impl Type {
         }
         return false;
     }
+
+    pub fn to_string(& self) -> String {
+            let mut s = "".to_string();
+            if self.borrow { 
+                s = format!("{}&", s);
+            }
+
+            if self.mutable {
+                    s = format!("{}mut", s);
+            }
+
+            let t = match self.r#type {
+                MyTypes::I32 => "i32".to_string(),
+                MyTypes::F32 => "f32".to_string(),
+                MyTypes::Bool => "bool".to_string(),
+                MyTypes::Char => "char".to_string(),
+                MyTypes::String => "String".to_string(),
+                _ => panic!("fatal error"), 
+            };
+            return format!("{} {}", s, t);
+    }
 }
 
