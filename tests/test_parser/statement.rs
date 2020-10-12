@@ -5,6 +5,7 @@ use super::{
 
 use super::parser::statement::{
     Statement,
+    Parameter,
     Let,
     Assignment,
     If,
@@ -34,6 +35,7 @@ fn test_parse_let() {
         Statement::Let(Let {
             id: 0,
             original: Span::new(input.clone(), 1, 1),
+            mutable: None,
             identifier: Span::new("test".to_string(), 1, 5),
             type_dec: TypeDecleration {
                 borrow: false,
@@ -58,6 +60,7 @@ fn test_parse_assignment() {
         Statement::Assignment(Assignment {
             id: 0,
             original: Span::new(input.clone(), 1, 1),
+            derefrenced: None,
             identifier: Span::new("test".to_string(), 1, 1),
             value: Expression::Literal(Literal::I32(Span::new(10, 1, 8))), 
         })
@@ -101,6 +104,7 @@ fn test_parse_if() {
                 body: vec!(Statement::Assignment(Assignment {
                     id: 1,
                     original: Span::new("test = 10;".to_string(), 2, 1),
+                    derefrenced: None,
                     identifier: Span::new("test".to_string(), 2, 1),
                     value: Expression::Literal(Literal::I32(Span::new(10, 2, 8))), 
                 })),
@@ -129,6 +133,7 @@ fn test_parse_if_else() {
                 body: vec!(Statement::Assignment(Assignment {
                     id: 1,
                     original: Span::new("test = 10;".to_string(), 2, 1),
+                    derefrenced: None,
                     identifier: Span::new("test".to_string(), 2, 1),
                     value: Expression::Literal(Literal::I32(Span::new(10, 2, 8))), 
                 })),
@@ -161,6 +166,7 @@ fn test_parse_while() {
                 body: vec!(Statement::Assignment(Assignment {
                     id: 1,
                     original: Span::new("test = 10;".to_string(), 2, 1),
+                    derefrenced: None,
                     identifier: Span::new("test".to_string(), 2, 1),
                     value: Expression::Literal(Literal::I32(Span::new(10, 2, 8))), 
                 })),
@@ -184,6 +190,7 @@ fn test_parse_body() {
             body: vec!(Statement::Assignment(Assignment {
                 id: 1,
                 original: Span::new("test = 10;".to_string(), 2, 1),
+                derefrenced: None,
                 identifier: Span::new("test".to_string(), 2, 1),
                 value: Expression::Literal(Literal::I32(Span::new(10, 2, 8))), 
             })),    
@@ -204,13 +211,15 @@ fn test_parse_function() {
             id: 1,
             original: Span::new(input.clone(), 1, 1),
             identifier: Span::new("test".to_string(), 1, 4),
-            parameters: vec!((Span::new("t".to_string(), 1, 9),
-                TypeDecleration{
+            parameters: vec!(Parameter{
+                mutable: None,
+                identifier: Span::new("t".to_string(), 1, 9),
+                type_dec: TypeDecleration{
                     borrow: false,
                     mutable: false,
                     r#type: Span::new("i32".to_string(), 1, 12),
-                }
-            )),
+                },
+            }),
             return_type: TypeDecleration{
                 borrow: false,
                 mutable: false,
@@ -222,6 +231,7 @@ fn test_parse_function() {
                 body: vec!(Statement::Assignment(Assignment {
                     id: 0,
                     original: Span::new("test = 10;".to_string(), 2, 1),
+                    derefrenced: None,
                     identifier: Span::new("test".to_string(), 2, 1),
                     value: Expression::Literal(Literal::I32(Span::new(10, 2, 8))), 
                 })),
