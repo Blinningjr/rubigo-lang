@@ -3,6 +3,7 @@ mod span;
 mod lexer;
 mod parser;
 mod checker;
+mod interp;
 //mod type_checker;
 //mod interpreter;
 
@@ -13,6 +14,10 @@ use parser::{
 
 use checker::{
     Checker,
+};
+
+use interp::{
+    Interpreter,
 };
 
 //use type_checker::{
@@ -73,7 +78,8 @@ fn main() {
 
 fn command_run(filename: String, content: String) -> () {
     let mod_body: ModualBody = Parser::parse(filename, content, true);
-    Checker::check(mod_body, true);
+    Checker::check(mod_body.clone(), true);
+    Interpreter::interpret(mod_body);
     //let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
     //Interpreter::interpret(type_checker.modual);
 }
