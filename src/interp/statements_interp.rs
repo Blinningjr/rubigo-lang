@@ -7,6 +7,7 @@ pub use super::{
 //    TypeDecleration,
     Span,
     Literal,
+    Value,
 };
 
 
@@ -35,5 +36,13 @@ impl Interpreter {
             _ => panic!("Fatal Interpreter Error"),
         }; 
     }
+
+    pub fn interpret_let(&mut self, let_stmt: Let) -> () {
+        let name: Span<String> = let_stmt.identifier;
+        let value: Value = self.interpret_expression(let_stmt.value);
+
+        //self.store_variable(name.clone(), value);
+    }
+    
 }
 
