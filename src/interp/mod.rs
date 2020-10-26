@@ -61,8 +61,16 @@ impl Interpreter {
        return self.get_value(pointer); 
     }
 
+    fn store_variable(&mut self, name: String, value: Value) -> () {
+        self.module.store_variable(name, value);
+    }
+
     fn get_function(&mut self, ident: String) -> Function {
         return self.module.get_function(ident);
+    }
+
+    fn store_function(&mut self, func: Function) -> () {
+        self.module.store_function(func.identifier.get_fragment(), func);
     }
 
     fn get_current_func_id(& self) -> Option<usize> {
