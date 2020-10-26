@@ -150,6 +150,13 @@ impl InterpModule {
             n => return recursive_loc_search(self, identifier, n-1),
         };    
     }
+
+    pub fn get_value(&mut self, pointer: Pointer) -> Value {
+        return match pointer.func_id {
+            Some(f_id) => self.func_envs[f_id].envs[pointer.env_id].memory.get(&pointer.value_id).unwrap().clone(),
+            None => self.envs[pointer.env_id].memory.get(&pointer.value_id).unwrap().clone(),
+        };
+    }
 }
 
 
@@ -319,6 +326,20 @@ pub enum Value {
     String(String),
 
     Pointer(Pointer),
+}
+
+impl Value {
+    pub fn string(& self) -> String {
+        return match self {
+            Value::I32(val) => format!("{}", val),
+            Value::F32(val) => format!("{}", val),
+            Value::Bool(val) => format!("{}", val),
+            Value::Char(val) => format!("{}", val),
+            Value::String(val) => format!("{}", val),
+           
+            Value::Pointer(val) => format!("{:#?}", val),
+        };
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

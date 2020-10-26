@@ -15,6 +15,7 @@ pub use super::parser::{
     Literal,
     Statement,
     TypeDecleration,
+    statement::Function,
 };
 
 pub use module_interp::{
@@ -43,8 +44,26 @@ impl Interpreter {
         }
     }
 
+    fn get_pointer(&mut self, identifier: String) -> Value {
+        let (func_id, env_id, value_id) = self.module.search_value_location(identifier);
+        return Value::Pointer(Pointer{
+            func_id: func_id,
+            env_id: env_id,
+            value_id: value_id,
+        });
+    }
 
+    fn get_variable(&mut self, identifier: String) -> Value {
+        return self.module.get_variable(identifier);
+    }
 
+    fn get_value(&mut self, pointer: Pointer) -> Value {
+       return self.get_value(pointer); 
+    }
+
+    fn get_function(&mut self, ident: String) -> Function {
+        return self.module.get_function(ident);
+    }
 
     fn get_current_func_id(& self) -> Option<usize> {
         return match self.module.func_envs.len() {
