@@ -69,6 +69,15 @@ impl Interpreter {
         self.module.update_variable(name, value);
     }
 
+    fn update_value(&mut self, name: String, value: Value) -> () {
+        let pointer: Pointer = match self.get_variable(name) {
+            Value::Pointer(p) => p,
+            _ => panic!("Fatal Interpreter Error"),
+        }; 
+
+        self.module.update_value(pointer, value);
+    }
+
     fn get_function(&mut self, ident: String) -> Function {
         return self.module.get_function(ident);
     }

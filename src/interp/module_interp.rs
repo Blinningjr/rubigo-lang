@@ -52,7 +52,14 @@ impl InterpModule {
             },
             n => self.func_envs[n-1].drop_env(),
         };
-    } 
+    }
+
+    pub fn update_value(&mut self, pointer: Pointer, value: Value) -> () {
+        match pointer.func_id {
+            Some(f_id) => self.func_envs[f_id].envs[pointer.env_id].update_value(pointer.value_id, value),
+            None => self.envs[pointer.env_id].update_value(pointer.value_id, value),
+        };
+    }
 
     pub fn update_variable(&mut self, identifier: String, value: Value) -> () { 
         match self.func_envs.len() {
@@ -319,14 +326,18 @@ impl InterpEnv {
         };
     }
 
+    pub fn update_value(&mut self, location: usize, value: Value) -> () {
+        self.memory.remove(&location);
+        self.memory.insert(location, value);
+    }
+
     // returns true if it coulden't find the variable.
     pub fn update_variable(&mut self, identifier: String, value: Value) -> bool {
         let location: usize = match self.variables.get(&identifier) {
             Some(val) => val.clone(),
             None => return true,
         };
-        self.memory.remove(&location);
-        self.memory.insert(location, value);
+        self.update_value(location, value);
         return false;
     }
 

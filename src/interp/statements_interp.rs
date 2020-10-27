@@ -87,10 +87,13 @@ impl Interpreter {
     }
 
     fn interpret_assignment(&mut self, assignment: Assignment) -> () {
-       let name: String = assignment.identifier.get_fragment();
-       let value: Value = self.interpret_expression(assignment.value);
-
-       self.assign_variable(name, value);
+        let name: String = assignment.identifier.get_fragment();
+        let value: Value = self.interpret_expression(assignment.value);
+        
+        match assignment.derefrenced {
+            Some(_) => self.update_value(name, value),
+            None => self.assign_variable(name, value),
+        };
     }
     
     fn interpret_return(&mut self, return_statement: Return) -> Option<Value> {
