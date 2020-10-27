@@ -40,7 +40,7 @@ impl Interpreter {
 
     fn interpret_modual_body(&mut self, mod_body: ModualBody) -> () {
         for stmt in mod_body.body.iter() {
-            self.interpret_statement(stmt.clone())
+            self.interpret_statement(stmt.clone());
         }
     }
 
@@ -58,11 +58,15 @@ impl Interpreter {
     }
 
     fn get_value(&mut self, pointer: Pointer) -> Value {
-       return self.get_value(pointer); 
+       return self.module.get_value(pointer); 
     }
 
     fn store_variable(&mut self, name: String, value: Value) -> () {
         self.module.store_variable(name, value);
+    }
+
+    fn assign_variable(&mut self, name: String, value: Value) -> () {
+        self.module.update_variable(name, value);
     }
 
     fn get_function(&mut self, ident: String) -> Function {
@@ -82,6 +86,22 @@ impl Interpreter {
 
     fn get_current_env_id(& self) -> usize {
         return self.module.envs.len();
+    }
+
+    fn create_env(&mut self) -> () {
+        self.module.create_env();
+    }
+    
+    fn drop_env(&mut self) -> () {
+        self.module.drop_env();
+    }
+
+    fn create_func_env(&mut self, ident: Span<String>) -> () {
+        self.module.create_func_env(ident);
+    }
+    
+    fn drop_func_env(&mut self) -> () {
+        self.module.drop_func_env();
     }
 }
 

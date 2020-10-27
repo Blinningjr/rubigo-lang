@@ -24,6 +24,36 @@ impl InterpModule {
        }; 
     }
 
+    pub fn create_func_env(&mut self, ident: Span<String>) -> () {
+        self.func_envs.push(InterpFuncEnv::new(ident));        
+    }
+
+    pub fn drop_func_env(&mut self) -> () {
+        match self.func_envs.pop() {
+            Some(_) => (),
+            None => panic!("Fatal Interpreter Error"),
+        };
+    }
+
+    pub fn create_env(&mut self) -> () {
+        match self.func_envs.len() {
+            0 => self.envs.push(InterpEnv::new()), 
+            n => self.func_envs[n-1].create_env(),
+        };
+    }
+ 
+    pub fn drop_env(&mut self) -> () {
+        match self.func_envs.len() {
+            0 => {
+                match self.envs.pop() {
+                    Some(_) => (),
+                    None => panic!("fatal intepreter error"),
+                };
+            },
+            n => self.func_envs[n-1].drop_env(),
+        };
+    } 
+
     pub fn update_variable(&mut self, identifier: String, value: Value) -> () { 
         match self.func_envs.len() {
             0 => (),
@@ -173,6 +203,14 @@ impl InterpFuncEnv {
             envs: vec!(InterpEnv::new()),
         };
     }
+    
+    pub fn create_env(&mut self) -> () {
+        self.envs.push(InterpEnv::new());
+    } 
+    
+    pub fn drop_env(&mut self) -> () {
+        self.envs.pop();
+    } 
 
     // returns true if it diden't find the variable.
     pub fn update_variable(&mut self, identifier: String, value: Value) -> bool {
@@ -299,7 +337,10 @@ impl InterpEnv {
     }
 
     pub fn get_variable(&mut self, identifier: String) -> Option<&Value> {
-        let location: &usize = self.variables.get(&identifier).unwrap();
+        let location: &usize = match self.variables.get(&identifier) {
+            Some(l) => l,
+            None => return None,
+        };
         return self.memory.get(location).clone();
     }
     

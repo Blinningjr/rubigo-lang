@@ -27,25 +27,25 @@ impl Interpreter {
             Expression::DeRefrence(expr) => self.interpret_derefrence(*expr),
             Expression::Mutable(expr) => self.interpret_expression(*expr),
             Expression::Dummy => panic!("Parser failed! Dummy expression in type checker."),
-            _ => panic!("Fatal Interpreter Error"),
+            //_ => panic!("Fatal Interpreter Error"),
         };
     }
 
-    fn interpret_function_call(&mut self, func_call: FunctionCall) -> Option<Value> {
-        let function: Function = self.get_function(func_call.identifier.get_fragment());
-        
-        if function.identifier.get_fragment() == "print" {
-            let val: Value = self.interpret_expression(func_call.parameters[0]);
+    pub fn interpret_function_call(&mut self, func_call: FunctionCall) -> Option<Value> {
+        if func_call.identifier.get_fragment() == "print" {
+            let val: Value = self.interpret_expression(func_call.parameters[0].clone());
             println!("{}", val.string());
             return None;
         } 
-
+        
+        let function: Function = self.get_function(func_call.identifier.get_fragment());
+        
         let mut values: Vec<Value> = vec!();
         for expr in func_call.parameters {
             values.push(self.interpret_expression(expr));
         }
 
-        return Some(self.interpret_function(function, values));
+        return self.interpret_function(function, values);
     }
 
     fn interpret_variable(&mut self, var: Variable) -> Value {
