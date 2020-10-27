@@ -73,7 +73,7 @@ impl Parser {
                 let _end: Token = self.next_token();
                 return ("".to_string(), start.clone());
             },
-            _ => panic!("Fatal error!!!"),
+            _ => return ("".to_string(), start.clone()),
         }
     }
 }

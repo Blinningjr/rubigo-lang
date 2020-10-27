@@ -1,4 +1,4 @@
-fn testfn(apa: i32, te: i32) -> i32 {
+fn testfn(apa: , te: i32) -> i32 {
 	let mut test: i32 = 2 * (123 - 122);
 	let test_c: char = " asd asd "
 	if a  == apa(123) {
