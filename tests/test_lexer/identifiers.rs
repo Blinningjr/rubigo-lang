@@ -3,7 +3,6 @@ use super::tokenize_string;
 use super::lexer::{
     Token, 
     TokenType,
-    Lexer,
 };
 
 
