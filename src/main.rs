@@ -2,23 +2,24 @@ mod error;
 mod span;
 mod lexer;
 mod parser;
-mod type_checker;
-mod interpreter;
+mod checker;
+mod interp;
 
 use parser::{
     Parser,
     ModualBody,
 };
 
-use type_checker::{
-    TypeChecker,
+use checker::{
+    Checker,
 };
 
-use interpreter::{
+use interp::{
     Interpreter,
 };
 
 use structopt::StructOpt;
+
 
 #[derive(Debug, Clone, PartialEq, StructOpt)]
 /// A simple rust-like compiler
@@ -65,21 +66,20 @@ fn main() {
     };
 }
 
-
 fn command_run(filename: String, content: String) -> () {
     let mod_body: ModualBody = Parser::parse(filename, content, true);
-    let type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
-    //Interpreter::interpret(type_checker.modual);
+    Checker::check(mod_body.clone(), true);
+    Interpreter::interpret(mod_body);
 }
 
 fn command_build(filename: String, content: String) -> () {
-    let mod_body: ModualBody = Parser::parse(filename.clone(), content, true);
-    let _type_checker: TypeChecker = TypeChecker::type_check(mod_body, true); 
+    let mod_body: ModualBody = Parser::parse(filename, content, true);
+    Checker::check(mod_body.clone(), true);
     // TODO llvm
 }
 
 fn command_check(filename: String, content: String) -> () {
-    let mod_body: ModualBody = Parser::parse(filename.clone(), content, true);
-    let _type_checker: TypeChecker = TypeChecker::type_check(mod_body, true);
+    let mod_body: ModualBody = Parser::parse(filename, content, true);
+    Checker::check(mod_body.clone(), true);
 }
 
