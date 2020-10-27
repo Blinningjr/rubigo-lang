@@ -62,6 +62,7 @@ pub struct TypeEnvironment {
     pub variables: HashMap<String, TypeVariable>, 
 
     pub returns: bool,
+    pub if_body: bool,
 }
 
 
@@ -75,6 +76,7 @@ impl TypeEnvironment {
             variables: HashMap::new(),
 
             returns: false,
+            if_body: false,
         };
     }
 
@@ -218,6 +220,63 @@ impl TypeFunction {
         let new_id: usize = self.environments.envs.len();
         self.environments.envs.push(TypeEnvironment::new(new_id, Some(id)));
         return new_id;
+    }
+
+    pub fn check_if_all_bodies_return(&mut self) -> bool {
+        return match self.return_type {
+            Some(_) => self.check_if_all_returns(0),
+            None => true,
+        };
+    }
+    
+    fn check_if_all_returns(& self, env_id: usize) -> bool {
+        if self.environments.envs[env_id].returns {
+            return true;
+        } 
+
+        let (_if_children, non_if_children): (Vec<usize>, Vec<usize>) = self.separate_if_env(self.find_childrens_ids(env_id));
+        
+        if non_if_children.len() == 0 {
+            return false;
+        } else {
+            for id in non_if_children {
+                if self.check_if_all_returns(id) {
+                    return true;
+                }
+            } 
+            return false; 
+        }
+    }
+
+    fn find_childrens_ids(& self, parent_id: usize) -> Vec<usize> {
+        let mut childrens_ids: Vec<usize> = vec!();
+        for env in self.environments.envs.iter() {
+            match env.prev_id {
+                Some(id) => {
+                    if id == parent_id {
+                        childrens_ids.push(env.id); 
+                    }
+                },
+                None => (),
+            };
+        }
+        return childrens_ids;
+    }
+
+    /*
+     * Returns (if_envs, non_if_envs)
+     */
+    fn separate_if_env(& self, envs: Vec<usize>) -> (Vec<usize>, Vec<usize>) {
+        let mut if_children: Vec<usize> = vec!();
+        let mut non_if_children: Vec<usize> = vec!();
+        for id in envs {
+            if self.environments.envs[id].if_body {
+                if_children.push(id);
+            } else {
+                non_if_children.push(id);
+            }
+        }
+        return (if_children, non_if_children);
     }
 }
 

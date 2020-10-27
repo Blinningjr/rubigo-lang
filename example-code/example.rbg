@@ -16,6 +16,7 @@ fn foo(bar: i32) -> bool {
             		return false;
         	}
     	}
+	return false;
 }
 
 print(foo(10));

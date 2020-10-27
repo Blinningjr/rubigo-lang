@@ -271,5 +271,32 @@ impl Checker {
             }
         }
     }
+
+    fn check_if_all_bodies_return(&mut self) -> () {
+        match self.current_func {
+            Some(id) => {
+                if !self.module.mod_funcs[id].check_if_all_bodies_return() {
+                    let function: Function = self.module.mod_funcs[id].og_func.clone();
+                    self.create_type_error(ErrorLevel::Error, 
+                                           format!("Function {} dosen't return value in every branch",
+                                                   function.identifier.get_fragment()),
+                                           function.original,
+                                           function.identifier.get_line(),
+                                           function.identifier.get_offset());
+                }
+            },
+            None => panic!("Fatal error in type checker!!!"),
+        }; 
+    }
+
+    fn set_is_if_body(&mut self) -> () {
+        match self.current_func {
+            Some(id) => {
+                let env_id: usize = self.module.mod_funcs[id].environments.envs.len() - 1;
+                self.module.mod_funcs[id].environments.envs[env_id].if_body = true;
+            },
+            None => (),
+        };
+    }
 }
 

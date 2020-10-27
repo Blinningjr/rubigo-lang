@@ -65,7 +65,7 @@ impl Checker {
 
         self.check_body(function.body, false);
 
-        //self.check_if_all_bodies_return();
+        self.check_if_all_bodies_return();
 
         self.current_env = current_env;
         self.current_func = current_func;
@@ -131,10 +131,13 @@ impl Checker {
 
         self.check_body(if_stmt.if_body, true);
 
-        // TODO: Set that this is a if body in the environment.
+        self.set_is_if_body();
         
         match if_stmt.else_body {
-            Some(body) => self.check_body(body, true),
+            Some(body) => {
+                self.check_body(body, true);
+                self.set_is_if_body();
+            },
             None => (),
         };
     }
