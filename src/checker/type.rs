@@ -12,6 +12,8 @@ pub struct Type {
     pub borrow: bool,
     pub mutable: bool,
 
+    pub location: (Option<usize>, usize),
+
     pub r#type: MyTypes,
 }
 
@@ -29,64 +31,74 @@ pub enum MyTypes {
 impl Type {
 
 
-    pub fn new(mytype: MyTypes) -> Type {
+    pub fn new(mytype: MyTypes, location: (Option<usize>, usize)) -> Type {
         return Type{
             ident: None,
 
             borrow: false,
             mutable:false,
+
+            location: location,
             r#type: mytype,
         };
     }
 
-    pub fn parse(r#type: &str, borrow: bool, mutable: bool) -> Option<Type> {
+    pub fn parse(r#type: &str, borrow: bool, mutable: bool, location: (Option<usize>, usize)) -> Option<Type> {
         return match r#type {
             "i32" => Some(Type{
                 ident: None,
                 borrow: borrow,
                 mutable: mutable,
+                location: location,
                 r#type: MyTypes::I32,
             }),
             "f32" => Some(Type{
                 ident: None,
                 borrow: borrow,
                 mutable: mutable,
+                location: location,
                 r#type: MyTypes::F32,
             }),
             "bool" => Some(Type{
                 ident: None,
                 borrow: borrow,
                 mutable: mutable,
+                location: location,
                 r#type: MyTypes::Bool,
             }),
             "char" => Some(Type{
                 ident: None,
                 borrow: borrow,
                 mutable: mutable,
+                location: location,
                 r#type: MyTypes::Char,
             }),
             "String" => Some(Type{
                 ident: None,
                 borrow: borrow,
                 mutable: mutable,
+                location: location,
                 r#type: MyTypes::String,
             }),
             " ANY" => Some(Type{
                 ident: None,
                 borrow: borrow,
                 mutable: mutable,
+                location: location,
                 r#type: MyTypes::Any,
             }),
             _ => None,
         };
     }
 
-    pub fn get_literal_type(literal: Literal) -> Type {
+    pub fn get_literal_type(literal: Literal, location: (Option<usize>, usize)) -> Type {
         return Type{
             ident: None,
 
             borrow: false,
             mutable: false,
+            
+            location: location,
 
             r#type: match literal {
                 Literal::I32(_) => MyTypes::I32,

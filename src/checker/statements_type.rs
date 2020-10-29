@@ -84,6 +84,7 @@ impl Checker {
                     ident: None,
                     borrow: false,
                     mutable: false,
+                    location: self.get_location(),
                     r#type: MyTypes::Any,
                 });
             },
@@ -91,7 +92,7 @@ impl Checker {
     }
 
     fn get_type_dec_type(&mut self, type_dec: TypeDecleration) -> Option<Type> {
-       return Type::parse(&type_dec.r#type.get_fragment(), type_dec.borrow, type_dec.mutable);
+       return Type::parse(&type_dec.r#type.get_fragment(), type_dec.borrow, type_dec.mutable, self.get_location());
     }
 
     fn check_while(&mut self, while_stmt: While) -> () {
@@ -99,7 +100,7 @@ impl Checker {
         self.check_if_unreachable_code(original.clone());
 
         let condition: Type = self.get_expression_type(while_stmt.condition.clone(), original.clone());
-        let expected: Type = Type::new(MyTypes::Bool);
+        let expected: Type = Type::new(MyTypes::Bool, self.get_location());
         
         if !expected.same_type(& condition) {
             let (line, offset): (usize, usize) = self.get_expression_location(while_stmt.condition);
@@ -118,7 +119,7 @@ impl Checker {
         self.check_if_unreachable_code(original.clone());
 
         let condition: Type = self.get_expression_type(if_stmt.condition.clone(), original.clone());
-        let expected: Type = Type::new(MyTypes::Bool);
+        let expected: Type = Type::new(MyTypes::Bool, self.get_location());
         
         if !expected.same_type(& condition) {
             let (line, offset): (usize, usize) = self.get_expression_location(if_stmt.condition);
@@ -150,11 +151,13 @@ impl Checker {
             ident: None,
             borrow: false,
             mutable: false,
+            location: self.get_location(),
             r#type: MyTypes::Any,
         };
         match Type::parse(&let_stmt.type_dec.r#type.get_fragment(),
                           let_stmt.type_dec.borrow,
-                          let_stmt.type_dec.mutable) {
+                          let_stmt.type_dec.mutable,
+                          self.get_location()) {
             Some(t) => var_type = t,
             None => {
                 self.create_type_error(ErrorLevel::Error,

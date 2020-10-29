@@ -298,5 +298,9 @@ impl Checker {
             None => (),
         };
     }
+
+    fn get_location(& self) -> (Option<usize>, usize) {
+        return (self.current_func, self.current_env);
+    }
 }
 

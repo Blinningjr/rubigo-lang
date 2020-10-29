@@ -36,12 +36,12 @@ impl Checker {
                                                function_call.identifier.get_line(),
                                                function_call.identifier.get_offset());
 
-                        return Type::new(MyTypes::Any);
+                        return Type::new(MyTypes::Any, self.get_location());
                     },
                 };
             },
             Expression::Variable(variable) => self.get_variable_type(variable, original),
-            Expression::Literal(literal) => Type::get_literal_type(literal),
+            Expression::Literal(literal) => Type::get_literal_type(literal, self.get_location()),
             Expression::Borrow(expr) => {
                 let mut expr_type: Type = self.get_expression_type(*expr.clone(), original.clone());
                 if expr_type.borrow {
@@ -101,7 +101,7 @@ impl Checker {
     fn get_variable_type(&mut self, var: Variable, original: Span<String>) -> Type {
         let (_, _, mut t) = match self.get_variable(var.identifier.get_fragment(), original) {
             Some(val) => val,
-            None => return Type::new(MyTypes::Any), 
+            None => return Type::new(MyTypes::Any, self.get_location()), 
         };
         t.r#type.ident = Some(var.identifier.get_fragment()); 
         return t.r#type;

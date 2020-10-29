@@ -1,0 +1,10 @@
+let tval: String = "tval";
+let mut test_s: & String = &tval;
+
+fn test() -> () {
+	let tval2: String = "tval2";
+	test_s = &tval2;
+}
+
+test();
+print(*test_s);
