@@ -302,5 +302,9 @@ impl Checker {
     fn get_location(& self) -> (Option<usize>, usize) {
         return (self.current_func, self.current_env);
     }
+
+    fn check_borrow_scope(&mut self, let_location: (Option<usize>, usize), borrow_location: (Option<usize>, usize)) -> () {
+       //TODO 
+    }
 }
 

@@ -171,6 +171,7 @@ impl Checker {
         let expr_type: Type = self.get_expression_type(let_stmt.value.clone(), original.clone()); 
         if var_type.borrow {
             var_type.ident = expr_type.ident.clone();
+            self.check_borrow_scope(var_type.location, expr_type.location);
         }
 
         self.add_variable(original.clone(), let_stmt.identifier.clone(), let_stmt.mutable != None, var_type.clone());
