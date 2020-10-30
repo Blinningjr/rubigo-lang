@@ -5,19 +5,13 @@ let b: &mut i32 = & mut a;
 print(*b);
 print(a);
 
-let tval: String = "tval";
-let mut test_s: & String = &tval;
-
 let mut c: i32 = 20;
 
 fn test(input: &mut i32, mut tal: i32) -> () {
 	*input = *input / 2;
 	tal = 2;
-
-	let tval2: String = "tval2";
-	test_s = &tval2;
 }
 
 test(&mut c, 213);
 print(c);
-print(*test_s);
+

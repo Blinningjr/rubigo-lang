@@ -303,8 +303,37 @@ impl Checker {
         return (self.current_func, self.current_env);
     }
 
-    fn check_borrow_scope(&mut self, let_location: (Option<usize>, usize), borrow_location: (Option<usize>, usize)) -> () {
-       //TODO 
+    fn check_borrow_scope(&mut self, let_location: (Option<usize>, usize), borrow_location: (Option<usize>, usize), ident: Span<String>, original: Span<String>) -> () {
+        if self.check_borrow_func_scope(let_location.0, borrow_location.0, ident.clone(), original.clone()) {
+            if let_location.1 > borrow_location.1 {
+                self.create_type_error(ErrorLevel::Error, 
+                                       format!("Variable {} lives longer then borrowed value.",
+                                               ident.get_fragment()),
+                                       original,
+                                       ident.get_line(),
+                                       ident.get_offset());   
+            }
+        }
+    }
+
+    // Returns true if let_func is a function in a later or equal function env then borrow_func.
+    fn check_borrow_func_scope(&mut self, let_func: Option<usize>, borrow_func: Option<usize>, ident: Span<String>, original: Span<String>) -> bool {
+        match (let_func, borrow_func) {
+            (Some(f_val), Some(b_val)) => {
+                if f_val == b_val {
+                    return true;
+                }
+            },
+            (None, None) => return true,
+            _ => (),
+        };
+        self.create_type_error(ErrorLevel::Error, 
+                               format!("Variable {} lives longer then borrowed value.",
+                                       ident.get_fragment()),
+                               original,
+                               ident.get_line(),
+                               ident.get_offset());
+        return false;
     }
 }
 

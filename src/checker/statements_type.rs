@@ -171,7 +171,7 @@ impl Checker {
         let expr_type: Type = self.get_expression_type(let_stmt.value.clone(), original.clone()); 
         if var_type.borrow {
             var_type.ident = expr_type.ident.clone();
-            self.check_borrow_scope(var_type.location, expr_type.location);
+            self.check_borrow_scope(var_type.location, expr_type.location, let_stmt.identifier.clone(), original.clone());
         }
 
         self.add_variable(original.clone(), let_stmt.identifier.clone(), let_stmt.mutable != None, var_type.clone());
@@ -216,6 +216,7 @@ impl Checker {
             ass_var.r#type.borrow = false;
             ass_var.r#type.mutable = false;
         } else if ass_var.r#type.borrow {
+            self.check_borrow_scope(ass_var.r#type.location, expr_type.location, assignment.identifier.clone(), original.clone());
             match ass_var.r#type.ident {
                 Some(ident) => {
                     if ass_var.r#type.mutable {
