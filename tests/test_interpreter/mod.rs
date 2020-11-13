@@ -41,10 +41,14 @@ pub use interpreter::{
 };
 
 
-pub fn interpret_statement(input: Statement) -> (Option<Value>, Interpreter) {
+pub fn interpret_string(input: String) -> (Vec<Option<Value>>, Interpreter) {
+    let ast: ModualBody = Parser::parse("TEST".to_string(), input, false);
+    let mut result: Vec<Option<Value>> = vec!();
     let mut interpreter: Interpreter = Interpreter{module: InterpModule::new()};
-    let value = interpreter.interpret_statement(input);
-    return (value, interpreter);
+    
+    for stmt in ast.body.iter() {
+        result.push(interpreter.interpret_statement(stmt.clone()));
+    }
+    return (result, interpreter);
 }
-
 

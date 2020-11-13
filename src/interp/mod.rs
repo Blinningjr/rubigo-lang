@@ -78,7 +78,7 @@ impl Interpreter {
         self.module.update_value(pointer, value);
     }
 
-    fn get_function(&mut self, ident: String) -> Function {
+    pub fn get_function(&mut self, ident: String) -> Function {
         return self.module.get_function(ident);
     }
 
