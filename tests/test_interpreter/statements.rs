@@ -48,7 +48,7 @@ fn test_interpret_assignment() {
 #[test]
 fn test_interpret_if() {
     let input: String = "if true {return 10;} else {return 20;}".to_string();
-    let (values, mut interpreter): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
+    let (values, _): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
     assert_eq!(values, vec!(Some(Value::I32(10))));
 }
 
@@ -58,7 +58,7 @@ fn test_interpret_if() {
 #[test]
 fn test_interpret_else() {
     let input: String = "if false {return 10;} else {return 20;}".to_string();
-    let (values, mut interpreter): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
+    let (values, _): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
     assert_eq!(values, vec!(Some(Value::I32(20))));
 }
 
@@ -82,7 +82,7 @@ fn test_interpret_while() {
 #[test]
 fn test_interpret_return() {
     let input: String = "return 10;".to_string();
-    let (values, mut interpreter): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
+    let (values, _): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
     assert_eq!(values, vec!(Some(Value::I32(10))));
 }
 
@@ -93,7 +93,7 @@ fn test_interpret_return() {
 #[test]
 fn test_interpret_body() {
     let input: String = "{let test: i32 = 10; return test;}".to_string();
-    let (values, mut interpreter): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
+    let (values, _): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
     assert_eq!(values, vec!(Some(Value::I32(10))));
 }
 
@@ -104,7 +104,7 @@ fn test_interpret_body() {
 #[test]
 fn test_interpret_function() {
     let input: String = "fn test() -> i32 {}".to_string();
-    let (values, mut interpreter): (Vec<Option<Value>>, Interpreter) = interpret_string(input.clone());
+    let (_, mut interpreter): (Vec<Option<Value>>, Interpreter) = interpret_string(input.clone());
     assert_eq!(interpreter.get_function("test".to_string()),
                Function{
                     original: Span::new(input, 1, 1),
@@ -131,7 +131,7 @@ fn test_interpret_function() {
 #[test]
 fn test_interpret_function_call() {
     let input: String = "fn duble(num: i32) -> i32 {return num * 2;} return duble(10);".to_string();
-    let (values, mut interpreter): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
+    let (values, _): (Vec<Option<Value>>, Interpreter) = interpret_string(input);
     assert_eq!(values, vec!(None, Some(Value::I32(20))));
 }
 

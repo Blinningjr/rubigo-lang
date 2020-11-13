@@ -19,7 +19,7 @@ pub mod checker;
 pub mod interpreter;
 
 mod statements;
-//mod operations;
+mod operations;
 
 pub use parser::{
     Parser, 
