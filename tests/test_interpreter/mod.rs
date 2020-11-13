@@ -12,10 +12,10 @@ mod lexer;
 #[path = "../../src/parser/mod.rs"]
 mod parser;
 
-#[path = "../../src/type_checker/mod.rs"]
-pub mod type_checker;
+#[path = "../../src/checker/mod.rs"]
+pub mod checker;
 
-#[path = "../../src/interpreter/mod.rs"]
+#[path = "../../src/interp/mod.rs"]
 pub mod interpreter;
 
 mod statements;
@@ -28,33 +28,27 @@ pub use parser::{
     statement::Statement,
     Span,
     statement,
+    Expression,
 };
 
-pub use type_checker::TypeChecker;
+pub use checker::Checker;
 pub use error::ErrorHandler;
 pub use interpreter::{
     Interpreter,
     InterpEnv,
+    InterpModule,
+    Value,
 };
 
 
-pub fn interpret_modual(input: String) -> (Literal, Interpreter) {
-    let mut interpreter: Interpreter = Interpreter{
-        error_handler: ErrorHandler::new(true),
-         
-        modual: TypeChecker::type_check(Parser::parse("TEST".to_string(), input, true), false).modual,
- 
-        envs: vec!(InterpEnv::new()),
-        func_envs: vec!(),
-    };
-    let ast: ModualBody = interpreter.modual.ast.clone();
-
-    let mut literal: Literal = Literal::Dummy;
+pub fn interpret_string(input: String) -> (Vec<Option<Value>>, Interpreter) {
+    let ast: ModualBody = Parser::parse("TEST".to_string(), input, false);
+    let mut result: Vec<Option<Value>> = vec!();
+    let mut interpreter: Interpreter = Interpreter{module: InterpModule::new()};
+    
     for stmt in ast.body.iter() {
-        literal = interpreter.interpret_statement(stmt.clone());
+        result.push(interpreter.interpret_statement(stmt.clone()));
     }
-
-    return (literal, interpreter);
+    return (result, interpreter);
 }
-
 

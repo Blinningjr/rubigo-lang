@@ -99,7 +99,7 @@ impl Checker {
     }
 
     fn get_variable_type(&mut self, var: Variable, original: Span<String>) -> Type {
-        let (func, env, mut t) = match self.get_variable(var.identifier.get_fragment(), original) {
+        let (_func, _env, mut t) = match self.get_variable(var.identifier.get_fragment(), original) {
             Some(val) => val,
             None => return Type::new(MyTypes::Any, self.get_location()), 
         };

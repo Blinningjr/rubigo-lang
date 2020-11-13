@@ -53,7 +53,7 @@ impl Interpreter {
         });
     }
 
-    fn get_variable(&mut self, identifier: String) -> Value {
+    pub fn get_variable(&mut self, identifier: String) -> Value {
         return self.module.get_variable(identifier);
     }
 
@@ -78,7 +78,7 @@ impl Interpreter {
         self.module.update_value(pointer, value);
     }
 
-    fn get_function(&mut self, ident: String) -> Function {
+    pub fn get_function(&mut self, ident: String) -> Function {
         return self.module.get_function(ident);
     }
 
