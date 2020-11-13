@@ -53,7 +53,7 @@ impl Interpreter {
         });
     }
 
-    fn get_variable(&mut self, identifier: String) -> Value {
+    pub fn get_variable(&mut self, identifier: String) -> Value {
         return self.module.get_variable(identifier);
     }
 
