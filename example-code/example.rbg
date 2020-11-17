@@ -8,7 +8,7 @@ fn foo(bar: i32) -> bool {
 	hello_world();
 	while true {
         	let a: f32 = 10.2 + c;
-		let b: & f32 = &a;
+		let b: & f32 = &c;
         	if bar == 21 {
 			return true;
         	} else {
