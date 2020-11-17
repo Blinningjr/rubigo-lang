@@ -16,6 +16,8 @@ mod parser;
 pub mod checker;
 
 mod type_errors;
+mod borrow_errors;
+mod borrow_checker;
 mod statement;
 mod operation;
 
@@ -26,7 +28,7 @@ pub use checker::Checker;
 /**
  * Runs Type check on string. 
  */
-pub fn type_check_string(input: String) -> Checker {
+pub fn check_string(input: String) -> Checker {
     return Checker::check(Parser::parse("TEST".to_string(), input, true), false);
 }
 

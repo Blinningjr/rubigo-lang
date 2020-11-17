@@ -1,6 +1,6 @@
 use super::{
     Checker,
-    type_check_string,
+    check_string,
     get_num_of_errors,
 };
 
@@ -11,12 +11,12 @@ use super::{
 #[test]
 fn test_type_check_let_error() {
     let input1: String = "let test: i32 = false;".to_string();
-    let type_checker1: Checker = type_check_string(input1);
-    assert_eq!(get_num_of_errors(type_checker1), 1);
+    let checker1: Checker = check_string(input1);
+    assert_eq!(get_num_of_errors(checker1), 1);
  
     let input2: String = "let test: bool = 20;".to_string();
-    let type_checker2: Checker = type_check_string(input2);
-    assert_eq!(get_num_of_errors(type_checker2), 1);
+    let checker2: Checker = check_string(input2);
+    assert_eq!(get_num_of_errors(checker2), 1);
 }
 
 
@@ -26,8 +26,8 @@ fn test_type_check_let_error() {
 #[test]
 fn test_type_check_assignment_error() {
     let input: String = "let mut test: bool = false; test = 10;".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 
 
@@ -37,8 +37,8 @@ fn test_type_check_assignment_error() {
 #[test]
 fn test_type_check_while_error() {
     let input: String = "fn test() -> () {while 10 {}}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 
 
@@ -48,8 +48,8 @@ fn test_type_check_while_error() {
 #[test]
 fn test_type_check_if_error() {
     let input: String = "fn test() -> () {if 10 {}}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 
 
@@ -59,12 +59,12 @@ fn test_type_check_if_error() {
 #[test]
 fn test_type_check_num_function_parameters() {
     let input1: String = "fn test(l: bool, r: i32) -> () {test();}".to_string();
-    let type_checker1: Checker = type_check_string(input1);
-    assert_eq!(get_num_of_errors(type_checker1), 1);
+    let checker1: Checker = check_string(input1);
+    assert_eq!(get_num_of_errors(checker1), 1);
 
     let input2: String = "fn test() -> () {test(10);}".to_string();
-    let type_checker2: Checker = type_check_string(input2);
-    assert_eq!(get_num_of_errors(type_checker2), 1);
+    let checker2: Checker = check_string(input2);
+    assert_eq!(get_num_of_errors(checker2), 1);
 }
 
 
@@ -74,12 +74,12 @@ fn test_type_check_num_function_parameters() {
 #[test]
 fn test_type_check_function_parameters() {
     let input1: String = "fn test(l: bool, r: i32) -> () {test(10, false);}".to_string();
-    let type_checker1: Checker = type_check_string(input1);
-    assert_eq!(get_num_of_errors(type_checker1), 2);
+    let checker1: Checker = check_string(input1);
+    assert_eq!(get_num_of_errors(checker1), 2);
 
     let input2: String = "fn test(l: bool, r: i32) -> () {test(10, 2);}".to_string();
-    let type_checker2: Checker = type_check_string(input2);
-    assert_eq!(get_num_of_errors(type_checker2), 1);
+    let checker2: Checker = check_string(input2);
+    assert_eq!(get_num_of_errors(checker2), 1);
 }
 
 /**
@@ -88,12 +88,12 @@ fn test_type_check_function_parameters() {
 #[test]
 fn test_type_check_return_type() {
     let input1: String = "fn test() -> i32 {return false;}".to_string();
-    let type_checker1: Checker = type_check_string(input1);
-    assert_eq!(get_num_of_errors(type_checker1), 1);
+    let checker1: Checker = check_string(input1);
+    assert_eq!(get_num_of_errors(checker1), 1);
 
     let input2: String = "fn test() -> bool {return 0;}".to_string();
-    let type_checker2: Checker = type_check_string(input2);
-    assert_eq!(get_num_of_errors(type_checker2), 1);
+    let checker2: Checker = check_string(input2);
+    assert_eq!(get_num_of_errors(checker2), 1);
 }
 
 /**
@@ -102,12 +102,12 @@ fn test_type_check_return_type() {
 #[test]
 fn test_type_check_function_return_branches() {
     let input1: String = "fn test() -> i32 {if true {return 2;}}".to_string();
-    let type_checker1: Checker = type_check_string(input1);
-    assert_eq!(get_num_of_errors(type_checker1), 1);
+    let checker1: Checker = check_string(input1);
+    assert_eq!(get_num_of_errors(checker1), 1);
 
     let input2: String = "fn test() -> i32 {if false {while false {return 2;}}}".to_string();
-    let type_checker2: Checker = type_check_string(input2);
-    assert_eq!(get_num_of_errors(type_checker2), 1);
+    let checker2: Checker = check_string(input2);
+    assert_eq!(get_num_of_errors(checker2), 1);
 }
 
 
@@ -117,8 +117,8 @@ fn test_type_check_function_return_branches() {
 #[test]
 fn test_type_check_undeclered_variable() {
     let input: String = "test = 10;".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 
 /**
@@ -127,8 +127,8 @@ fn test_type_check_undeclered_variable() {
 #[test]
 fn test_type_check_out_of_scope_variable() {
     let input: String = "fn test() -> () {if true {let a: i32 = 0;} a = 10;}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 
 
@@ -138,8 +138,8 @@ fn test_type_check_out_of_scope_variable() {
 #[test]
 fn test_type_check_undeclered_function() {
     let input: String = "test(10);".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 
 /**
@@ -148,8 +148,8 @@ fn test_type_check_undeclered_function() {
 #[test]
 fn test_type_check_out_of_scope_function() {
     let input: String = "fn test() -> () {if true {fn apa() -> () {}} apa();}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 
 
@@ -159,8 +159,8 @@ fn test_type_check_out_of_scope_function() {
 #[test]
 fn test_type_check_unreachable_code() {
     let input: String = "fn test() -> i32 {return 2; let a: i32 = 10; return a;}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 2);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 2);
 }
 
 /**
@@ -169,7 +169,7 @@ fn test_type_check_unreachable_code() {
 #[test]
 fn test_mutability_error() {
     let input: String = "let test: bool = false; test = true;".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert_eq!(get_num_of_errors(type_checker), 1);
+    let checker: Checker = check_string(input);
+    assert_eq!(get_num_of_errors(checker), 1);
 }
 

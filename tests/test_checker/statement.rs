@@ -1,6 +1,6 @@
 use super::{
     Checker,
-    type_check_string,
+    check_string,
     check_no_errors,
 };
 
@@ -11,8 +11,8 @@ use super::{
 #[test]
 fn test_type_check_let() {
     let input: String = "let test: i32 = 10;".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert!(check_no_errors(type_checker));
+    let checker: Checker = check_string(input);
+    assert!(check_no_errors(checker));
 }
 
 
@@ -22,8 +22,8 @@ fn test_type_check_let() {
 #[test]
 fn test_type_check_assignment() {
     let input: String = "let mut test: i32 = 10; test = 2;".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert!(check_no_errors(type_checker));
+    let checker: Checker = check_string(input);
+    assert!(check_no_errors(checker));
 }
 
 
@@ -33,8 +33,8 @@ fn test_type_check_assignment() {
 #[test]
 fn test_type_check_while_condition() {
     let input: String = "fn test() -> () {while false {}}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert!(check_no_errors(type_checker));
+    let checker: Checker = check_string(input);
+    assert!(check_no_errors(checker));
 }
 
 
@@ -44,8 +44,8 @@ fn test_type_check_while_condition() {
 #[test]
 fn test_type_check_if_condition() {
     let input: String = "fn test() -> () {if false {}}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert!(check_no_errors(type_checker));
+    let checker: Checker = check_string(input);
+    assert!(check_no_errors(checker));
 }
 
 
@@ -55,8 +55,8 @@ fn test_type_check_if_condition() {
 #[test]
 fn test_type_check_function() {
     let input: String = "fn test(l: i32, b: bool) -> () {test(1, false);}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert!(check_no_errors(type_checker));
+    let checker: Checker = check_string(input);
+    assert!(check_no_errors(checker));
 }
 
 
@@ -66,7 +66,7 @@ fn test_type_check_function() {
 #[test]
 fn test_type_check_return() {
     let input: String = "fn test(l: i32, b: bool) -> bool {return true;}".to_string();
-    let type_checker: Checker = type_check_string(input);
-    assert!(check_no_errors(type_checker));
+    let checker: Checker = check_string(input);
+    assert!(check_no_errors(checker));
 }
 
