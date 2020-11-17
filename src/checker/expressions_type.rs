@@ -46,7 +46,7 @@ impl Checker {
                 let mut expr_type: Type = self.get_expression_type(*expr.clone(), original.clone());
                 if expr_type.borrow {
                     let (line, offset): (usize, usize) = self.get_expression_location(*expr.clone());
-                    self.create_type_error(ErrorLevel::Error,
+                    self.create_borrow_error(ErrorLevel::Error,
                                            format!("Can't borrow already borrowed value"),
                                            original.clone(),
                                            line,
@@ -85,7 +85,7 @@ impl Checker {
                 let mut expr_type: Type = self.get_expression_type(*expr.clone(), original.clone());
                 if !expr_type.borrow {
                     let (line, offset): (usize, usize) = self.get_expression_location(*expr.clone());
-                    self.create_type_error(ErrorLevel::Error,
+                    self.create_borrow_error(ErrorLevel::Error,
                                            format!("Can't derefrence a none borrowed value"),
                                            original.clone(),
                                            line,

@@ -201,13 +201,13 @@ impl Checker {
         };
         if assignment.derefrenced != None {
             if !ass_var.r#type.borrow {
-                self.create_type_error(ErrorLevel::Error,
+                self.create_borrow_error(ErrorLevel::Error,
                                       format!("Can't derefrence none borrowed value"),
                                       original.clone(),
                                       assignment.derefrenced.clone().unwrap().get_line(),
                                       assignment.derefrenced.unwrap().get_offset());
             } else if !ass_var.r#type.mutable {
-                self.create_type_error(ErrorLevel::Error,
+                self.create_borrow_error(ErrorLevel::Error,
                                       format!("Can't mutate none mutable borrowed value"),
                                       original.clone(),
                                       assignment.identifier.get_line(),
@@ -230,7 +230,7 @@ impl Checker {
             ass_var.r#type.ident = expr_type.ident.clone();
         
             if !ass_var.mutable {
-                self.create_type_error(ErrorLevel::Error,
+                self.create_borrow_error(ErrorLevel::Error,
                                       format!("Can't mutate none mutable borrowed value"),
                                       original.clone(),
                                       assignment.identifier.get_line(),
@@ -238,7 +238,7 @@ impl Checker {
             }
         } else {
             if !ass_var.mutable {
-                self.create_type_error(ErrorLevel::Error,
+                self.create_borrow_error(ErrorLevel::Error,
                                       format!("Can't mutate none mutable borrowed value"),
                                       original.clone(),
                                       assignment.identifier.get_line(),

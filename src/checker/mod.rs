@@ -14,6 +14,7 @@ pub use super::error::{
     Error,
     ErrorHandler,
     TypeError,
+    BorrowError,
 };
 
 pub use super::parser::{
@@ -95,6 +96,19 @@ impl Checker {
 
     fn create_type_error(&mut self, level: ErrorLevel, message: String, code: Span<String>, line: usize, offset: usize) -> () {
         let error: Error = Error::TypeError(TypeError {
+            level: level,
+            message: message.clone(),
+            code: code,
+            line: line,
+            offset: offset,
+        });
+
+        self.error_handler.add(error);
+    }
+
+
+    fn create_borrow_error(&mut self, level: ErrorLevel, message: String, code: Span<String>, line: usize, offset: usize) -> () {
+        let error: Error = Error::BorrowError(BorrowError {
             level: level,
             message: message.clone(),
             code: code,
@@ -306,7 +320,7 @@ impl Checker {
     fn check_borrow_scope(&mut self, let_location: (Option<usize>, usize), borrow_location: (Option<usize>, usize), ident: Span<String>, original: Span<String>) -> () {
         if self.check_borrow_func_scope(let_location.0, borrow_location.0, ident.clone(), original.clone()) {
             if let_location.1 < borrow_location.1 {
-                self.create_type_error(ErrorLevel::Error, 
+                self.create_borrow_error(ErrorLevel::Error, 
                                        format!("Variable {} lives longer then borrowed value.",
                                                ident.get_fragment()),
                                        original,
@@ -330,7 +344,7 @@ impl Checker {
             (Some(_), None) => return false,
             _ => (),
         };
-        self.create_type_error(ErrorLevel::Error, 
+        self.create_borrow_error(ErrorLevel::Error, 
                                format!("Variable {} lives longer then borrowed value.",
                                        ident.get_fragment()),
                                original,

@@ -21,6 +21,7 @@ pub enum Error {
     Error(String),
     SyntaxError(SyntaxError),
     TypeError(TypeError),
+    BorrowError(BorrowError),
 }
 
 /**
@@ -40,6 +41,18 @@ pub struct SyntaxError {
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeError {
+    pub level: ErrorLevel,
+    pub message: String,
+    pub code: Span<String>,
+    pub line: usize,
+    pub offset: usize,
+}
+
+/**
+ * Defubes Borrow Error in Rubgio.
+ */
+#[derive(Debug, Clone, PartialEq)]
+pub struct BorrowError {
     pub level: ErrorLevel,
     pub message: String,
     pub code: Span<String>,
@@ -112,6 +125,7 @@ impl ErrorHandler {
             Error::Error(message) => println!("Error \n\t{:?}\n", message),
             Error::SyntaxError(err) => self.print_syntax_error(err),
             Error::TypeError(err) => self.print_type_error(err),
+            Error::BorrowError(err) => self.print_borrow_error(err),
         };
     }
 
@@ -153,7 +167,26 @@ impl ErrorHandler {
         let level: String; match &error.level {
             ErrorLevel::Critical => level = "Critical Type Error".to_string(),
             ErrorLevel::Error => level = "Type Error".to_string(),
-            ErrorLevel::Warning => level = "Warning".to_string(),
+            ErrorLevel::Warning => level = "Type Warning".to_string(),
+        };
+        
+        let mut location: String = format!(" at {:?}:{:?}", error.line, error.offset).to_string();
+        if error.line == 0 && error.offset == 0 {
+            location =  "".to_string();
+        }
+
+        println!("{}{}\n\t{}", level, location, error.message); 
+        println!("Line {}, Code :\n{:#}\n", error.code.get_line(), error.code.get_fragment());
+    }
+    
+    /**
+     * Print BorrowError.
+     */
+    fn print_borrow_error(&mut self, error: BorrowError) -> () {
+        let level: String; match &error.level {
+            ErrorLevel::Critical => level = "Critical Borrow Error".to_string(),
+            ErrorLevel::Error => level = "Borrow Error".to_string(),
+            ErrorLevel::Warning => level = "Borrow Warning".to_string(),
         };
         
         let mut location: String = format!(" at {:?}:{:?}", error.line, error.offset).to_string();
