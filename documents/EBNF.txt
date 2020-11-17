@@ -1,0 +1,64 @@
+(* General defenitions *)
+    digit excluding zero = r[1-9] ;
+    digit = "0" | digit excluding zero ;
+    natural number = digit excluding zero, { digit } ;
+    int = "0" | [ "-" ], natural number ;
+    letter = r[ a-ö ] ;
+    ident = letter, { letter } ;
+
+
+(* Defenition of MyType *)
+    Int32 = "i32" ;
+    Boolean = "bool" ;
+    NoType = ? white_space characters ? | [ "()" ] ;
+    ReturnType = MyType;
+    MyType = Int32 | Boolean |  NoType | ReturnType ;
+
+
+(* Defenition of Op *)
+    Add = "+" ;
+    Sub = "-" ;
+    Div = "/" ;
+    Multi = "*" ;
+    Mod = "%" ;
+    And = "&&" ;
+    Or = "||" ;
+    Not = "!" ;
+    Equal = "==" ;
+    NotEq = "!=" ;
+    LessThen = "<" ;
+    LargThen = ">" ;
+    LessEqThen = "<=" ;
+    LargEqThen = ">=" ;
+    Op = Add | Sub ¦ Div ¦ Multi | Mod | And | Or | Not | Equal 
+        | NotEq | LessThen |  LargThen | LessEqThen | LargEqThen ;
+
+(* Defenition of Prefix *)
+    Mut = "mut" ;
+    Borrow = "&" ;
+    BorrowMut = "&mut" ;
+    DeRef = "*", { "*" } ;
+    Prefix = Mut | Borrow | BorrowMut | DeRef | None ;
+
+
+(* Defenition of Expr *)
+    Num = int ;
+    Bool = "true" | "false" ;
+    Type = MyType ;
+    Prefixed = Prefix, (VarWithType | FuncCall | Type | Parentheses | Num | Bool | Var) ;
+    Var = ident ;
+    VarWithType = Var, ":", (Prefixed | Type) ;
+    UnOp = Op, Expr ;
+    BinOp = Expr, Op, Expr ;
+    Let = (Prefix | VarWithType), "=", Expr, ";" ;
+    Assign = (Prefixed | Var), "=",  Expr, ";" ;
+    If = "if", Expr, Body, [ "else", Body ] ; 
+    Body = "{", {Expr}, "}" ;
+    While = "while", Expr, Body ;
+    Func = "Fn", Var, "(", [ VarWithType, { ",", VarWithType } ], ")", [ "->", (Prefixed | MyType) ], Body ;
+    Return = "return", Expr, ";" ;
+    FuncCall = Var, "(", [ Expr, { ",", Expr } ], ")", [ ";" ] ;
+    Funcs =  { Func } ;
+    Parentheses = "(", Expr, ")" ;
+    Expr = Bool | Num | Var | VarWithType | UnOp | BinOp | Let | Assign 
+        | If | Body | While | Func | Return | FuncCall | Funcs | Parentheses;
