@@ -7,12 +7,19 @@
     ident = letter, { letter } ;
 
 
-(* Defenition of MyType *)
+(* Defenition of Type *)
     Int32 = "i32" ;
     Boolean = "bool" ;
-    NoType = ? white_space characters ? | [ "()" ] ;
-    ReturnType = MyType;
-    MyType = Int32 | Boolean |  NoType | ReturnType ;
+    Type = Int32 | Boolean ;
+
+
+(* Defenition of Literal *)
+    I32 = natural number ;
+    F32 = natural number, ".", natural number ;
+    Bool = True | False ;
+    Char = Letter ;
+    String = ( letter | "_" ), { letter | "_" | digit },
+    Literal = I32 | F32 | Bool | Char | String;
 
 
 (* Defenition of Op *)
@@ -33,32 +40,33 @@
     Op = Add | Sub ¦ Div ¦ Multi | Mod | And | Or | Not | Equal 
         | NotEq | LessThen |  LargThen | LessEqThen | LargEqThen ;
 
-(* Defenition of Prefix *)
+
+(* Defenition of TypeDecleration *)
     Mut = "mut" ;
     Borrow = "&" ;
-    BorrowMut = "&mut" ;
-    DeRef = "*", { "*" } ;
-    Prefix = Mut | Borrow | BorrowMut | DeRef | None ;
+    DeRef = "*" ;
+    TypeDecleration = [ Borrow ], [ mut ], Type ;
 
 
-(* Defenition of Expr *)
-    Num = int ;
-    Bool = "true" | "false" ;
-    Type = MyType ;
-    Prefixed = Prefix, (VarWithType | FuncCall | Type | Parentheses | Num | Bool | Var) ;
-    Var = ident ;
-    VarWithType = Var, ":", (Prefixed | Type) ;
-    UnOp = Op, Expr ;
-    BinOp = Expr, Op, Expr ;
-    Let = (Prefix | VarWithType), "=", Expr, ";" ;
-    Assign = (Prefixed | Var), "=",  Expr, ";" ;
-    If = "if", Expr, Body, [ "else", Body ] ; 
-    Body = "{", {Expr}, "}" ;
-    While = "while", Expr, Body ;
-    Func = "Fn", Var, "(", [ VarWithType, { ",", VarWithType } ], ")", [ "->", (Prefixed | MyType) ], Body ;
-    Return = "return", Expr, ";" ;
-    FuncCall = Var, "(", [ Expr, { ",", Expr } ], ")", [ ";" ] ;
-    Funcs =  { Func } ;
-    Parentheses = "(", Expr, ")" ;
-    Expr = Bool | Num | Var | VarWithType | UnOp | BinOp | Let | Assign 
-        | If | Body | While | Func | Return | FuncCall | Funcs | Parentheses;
+(* Defenition of Expresion *)
+    BinOp = Expresion, op, Expresion ;
+    UnOp = op, Expresion ;
+    FuncCall = [ DeRef ], Ident, "(", [ Expr, { ",", Expr } ], ")" ;
+    Variable = Ident ;
+    Borrowed = "&", Expresion ;
+    DeRefrenced = "*", Expresion ;
+    Mutable = "mut", Expresion ;
+    Expresion = BinOp | UnOp | FuncCall | Variable | Literal
+    	| Borrowed | DeRefrenced | Mutable ; 
+
+
+(* Defenition of Statement *)
+    Function = "fn", Ident, "(", [ Ident, ":", TypeDecleration ], ")", "->", TypeDecleration, "{", { Statement }, "}", ";" ;
+    While = "while", Expresion, "{", { Statement }, "}", ";" ;
+    If = "if", Expresion, "{", { Statement }, "}", [ "else", "{", { Statement }, "}" ], ";" ;
+    Let = "let", [ Mut ], Ident, ":", TypeDecleration, "=", Expresion, ";" ;
+    Assignment = [ DeRef ], Ident, "=", Expresion, ";" ;
+    Return = "return", Expresion, ";" ;
+    FunctionCall = FuncCall,  ";" ;
+    Statement = Function | While | If | Let | Assignment | Return | FunctionCall ;
+

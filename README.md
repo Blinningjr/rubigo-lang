@@ -19,7 +19,7 @@ There are some examples that you can run in the example directory.
 
 ## Documentation 
 
-The EBNF and SOS can be located in the documentation directory.
+The EBNF and SOS can be located in the documents directory.
 
 ## Lexer
 ![Rubigo Lexer fsm](https://github.com/Blinningjr/rubigo-lang/blob/master/images/lexer/rubigo_lexer_fsm.png)
