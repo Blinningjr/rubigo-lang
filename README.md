@@ -2,7 +2,7 @@
 ![Rubigo-lang](https://github.com/Blinningjr/rubigo-lang/blob/master/images/rubigo_lang.png)
 
 ## Running
-Download the binary file from the latest release and then runnit by calling the binary file.
+Download the binary file from the latest release and then run it by executing the binary file.
 
 ```
 ./rubigo
@@ -15,6 +15,11 @@ cargo run
 ```
 
 There are some examples that you can run in the example directory.
+
+
+## Documentation 
+
+The EBNF and SOS can be located in the documentation directory.
 
 ## Lexer
 ![Rubigo Lexer fsm](https://github.com/Blinningjr/rubigo-lang/blob/master/images/lexer/rubigo_lexer_fsm.png)
