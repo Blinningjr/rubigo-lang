@@ -1,28 +1,38 @@
-(* General defenitions *)
-    digit excluding zero = r[1-9] ;
-    digit = "0" | digit excluding zero ;
-    natural number = digit excluding zero, { digit } ;
-    int = "0" | [ "-" ], natural number ;
-    letter = r[ a-ö ] ;
-    ident = letter, { letter } ;
+(* General definitions *)
+    Digit_Excluding_zero = r[1-9] ;
+    Digit = "0" | Digit_Excluding_Zero ;
+    Natural_Number = Digit_Excluding_Zero, { Digit } ;
+    Integer = "0" | [ "-" ], Natural_Number ;
+    Letter = r[ a-ö ] ;
+    Symbol = "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
+       | "'" | '"' | "=" | "|" | "." | "," | ";" | "_" | "-" ;
+    Character = Letter | Symbol | " " ;
+    Identifier = ( Letter | "_" ), { Letter | "_" } ;
 
 
-(* Defenition of Type *)
-    Int32 = "i32" ;
-    Boolean = "bool" ;
-    Type = Int32 | Boolean ;
+(* Definition of Type (T stands for type) *)
+    T_Int32 = "i32" ;
+    T_Float32 = "f32" ;
+    T_Bool = "bool" ;
+    T_Char = "Char";
+    T_String = "String" ;  
+    Type = T_Int32 | T_Float32 | T_Boolean | T_Char | T_String ;
 
 
-(* Defenition of Literal *)
-    I32 = natural number ;
-    F32 = natural number, ".", natural number ;
-    Bool = True | False ;
-    Char = Letter ;
-    String = ( letter | "_" ), { letter | "_" | digit },
-    Literal = I32 | F32 | Bool | Char | String;
+(* Definition of Literal (L stands for literal) *)
+    L_I32 = Integer ;
+    L_F32 = Integer, ".", Natural_Number ;
+    L_Bool = True | False ;
+    L_Char = "'", Character, "'" ;
+    L_String = """, { Character }, """ ;  
+    Literal = L_I32 | L_F32 | L_Bool | L_Char | L_String;
 
+(* Definition of Unary Operator *)
+    Sub = "+" ;
+    Not = "!" ;
+    Unary_Operator = Sub | Not ;
 
-(* Defenition of Op *)
+(* Definition of Binary_Operator *)
     Add = "+" ;
     Sub = "-" ;
     Div = "/" ;
@@ -30,43 +40,46 @@
     Mod = "%" ;
     And = "&&" ;
     Or = "||" ;
-    Not = "!" ;
     Equal = "==" ;
-    NotEq = "!=" ;
-    LessThen = "<" ;
-    LargThen = ">" ;
-    LessEqThen = "<=" ;
-    LargEqThen = ">=" ;
-    Op = Add | Sub ¦ Div ¦ Multi | Mod | And | Or | Not | Equal 
-        | NotEq | LessThen |  LargThen | LessEqThen | LargEqThen ;
+    Not_Equal = "!=" ;
+    Less_Then = "<" ;
+    Larger_Then = ">" ;
+    Less_Equal_Then = "<=" ;
+    Larger_Equal_Then = ">=" ;
+    Binary_Operator = Add | Sub ¦ Div ¦ Multi | Mod | And | Or | Not | Equal 
+        | Not_Equal | Less_Then |  Larger_Then | Less_Equal_Then | Larger_Equal_Then ;
 
 
-(* Defenition of TypeDecleration *)
-    Mut = "mut" ;
+(* Definition of Type_Declaration *)
+    Mutable = "mut" ;
     Borrow = "&" ;
-    DeRef = "*" ;
-    TypeDecleration = [ Borrow ], [ mut ], Type ;
+    Dereference = "*" ;
+    Type_Declaration = [ Borrow ], [ Mutable ], Type ;
 
 
-(* Defenition of Expresion *)
-    BinOp = Expresion, op, Expresion ;
-    UnOp = op, Expresion ;
-    FuncCall = [ DeRef ], Ident, "(", [ Expr, { ",", Expr } ], ")" ;
-    Variable = Ident ;
-    Borrowed = "&", Expresion ;
-    DeRefrenced = "*", Expresion ;
-    Mutable = "mut", Expresion ;
-    Expresion = BinOp | UnOp | FuncCall | Variable | Literal
-    	| Borrowed | DeRefrenced | Mutable ; 
+(* Definition of Expression (E stands for expression) *)
+    E_Binary_Operation = Expression, Binary_Operator, Expression ;
+    E_Unary_Operation = Unary_Operator, Expression ;
+    E_Function_Call = Identifier, "(", [ Expression, { ",", Expression } ], ")" ;
+    E_Variable = Identifier ;
+    E_Borrowed = "&", Expression ;
+    E_Dereferenced = "*", Expression ;
+    E_Mutable = Mutable, Expression ;
+    Expression = E_Binary_Operation | E_Unary_Operation | E_Function_Call | E_Variable | Literal
+    	| E_Borrowed | E_Dereferenced | E_Mutable ; 
 
 
-(* Defenition of Statement *)
-    Function = "fn", Ident, "(", [ Ident, ":", TypeDecleration ], ")", "->", TypeDecleration, "{", { Statement }, "}", ";" ;
-    While = "while", Expresion, "{", { Statement }, "}", ";" ;
-    If = "if", Expresion, "{", { Statement }, "}", [ "else", "{", { Statement }, "}" ], ";" ;
-    Let = "let", [ Mut ], Ident, ":", TypeDecleration, "=", Expresion, ";" ;
-    Assignment = [ DeRef ], Ident, "=", Expresion, ";" ;
-    Return = "return", Expresion, ";" ;
-    FunctionCall = FuncCall,  ";" ;
-    Statement = Function | While | If | Let | Assignment | Return | FunctionCall ;
+(* Definition of Statement *)
+    Function = "fn", Identifier, "(", [ Identifier, ":", Type_Declaration, { ",", Identifier, ":", Type_Declaration } ], ")", "->", Type_Declaration, "{", { Statement }, "}" ;
+    While = "while", Expression, "{", { Statement }, "}" ;
+    If = "if", Expression, "{", { Statement }, "}", [ "else", "{", { Statement }, "}" ] ;
+    Let = "let", [ Mutable ], Identifier, ":", Type_Declaration, "=", Expression, ";" ;
+    Assignment = [ Dereference ], Identifier, "=", Expression, ";" ;
+    Return = "return", Expression, ";" ;
+    Function_Call = E_Function_Call,  ";" ;
+    Statement = Function | While | If | Let | Assignment | Return | Function_Call ;
+
+
+(* Definition of Module *)
+Module = "{", { Statement }, "}" ;
 
