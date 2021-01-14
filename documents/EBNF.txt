@@ -81,5 +81,5 @@
 
 
 (* Definition of Module *)
-Module = "{", { Statement }, "}" ;
+Module = { Statement } ;
 
