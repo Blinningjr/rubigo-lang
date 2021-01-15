@@ -9,6 +9,7 @@
 \usepackage{hyperref}
 \usepackage{apacite}
 \usepackage{fancyhdr}
+\usepackage{amsmath}
 
 
 \pagestyle{fancy}
@@ -18,7 +19,7 @@
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
 
-\title{Structural Operational Semantics}
+\title{Rubigo-lang Structural Operational Semantics}
 \author{Niklas Lundberg \\ inaule-6@student.ltu.se}
 \date{\today}
 
@@ -26,186 +27,158 @@
 
     \maketitle
     \newpage
-    \section{SOS} 
-        \subsection{i32}
-                \begin{equation}
-                    \langle e, \sigma \rangle\Downarrow n
-                \end{equation}
-                
-            \subsection{bool}
-                \begin{equation} 
-                    \langle e, \sigma \rangle\Downarrow b
-                \end{equation}   
-                
-            \subsection{Unop}
-                \subsubsection{Not}
-                    \begin{equation}  
-                        \frac{\langle b, \sigma \rangle\Downarrow false}
-                        {\langle !b, \sigma \rangle\Downarrow true }
-                    \end{equation}
-                    \begin{equation}
-                        \frac{\langle b, \sigma \rangle\Downarrow true}
-                        {\langle !b, \sigma \rangle\Downarrow false }
-                    \end{equation}
-                    
-                \subsubsection{Sub}
-                    \begin{equation}  
-                        \frac{\langle e, \sigma \rangle\Downarrow n}
-                        {\langle -e, \sigma \rangle\Downarrow - n }
-                    \end{equation}
-                    
-            \subsection{Binop}
-                \subsubsection{Add}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 + e2, \sigma \rangle\Downarrow n1 + n2}
-                    \end{equation}
-                    
-                \subsubsection{Sub}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 - e2, \sigma \rangle\Downarrow n1 - n2}
-                    \end{equation}
-                    
-                \subsubsection{Div}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 / e2, \sigma \rangle\Downarrow n1 / n2}
-                    \end{equation}
-                    
-                \subsubsection{Multiplication}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 * e2, \sigma \rangle\Downarrow n1 * n2}
-                    \end{equation}
-                
-                \subsubsection{Mod}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 \% e2, \sigma \rangle\Downarrow n1 \% n2}
-                    \end{equation}
-                    
-                \subsubsection{And}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow false \: \langle b2, \sigma \rangle\Downarrow false}
-                        {\langle e1 \&\& e2, \sigma \rangle\Downarrow false}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow true \: \langle b2, \sigma \rangle\Downarrow false}
-                        {\langle e1 \&\& e2, \sigma \rangle\Downarrow false}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow false \: \langle b2, \sigma \rangle\Downarrow true}
-                        {\langle e1 \&\& e2, \sigma \rangle\Downarrow false}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow true \: \langle b2, \sigma \rangle\Downarrow true}
-                        {\langle e1 \&\& e2, \sigma \rangle\Downarrow true}
-                    \end{equation}
-                    
-                \subsubsection{Or}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow false \: \langle b2, \sigma \rangle\Downarrow false}
-                        {\langle e1 || e2, \sigma \rangle\Downarrow false}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow true \: \langle b2, \sigma \rangle\Downarrow false}
-                        {\langle e1 || e2, \sigma \rangle\Downarrow true}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow false \: \langle b2, \sigma \rangle\Downarrow true}
-                        {\langle e1 || e2, \sigma \rangle\Downarrow true}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle b1, \sigma \rangle\Downarrow true \: \langle b2, \sigma \rangle\Downarrow true}
-                        {\langle e1 || e2, \sigma \rangle\Downarrow true}
-                    \end{equation}
-                    
-                \subsubsection{Not equal}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 != e2, \sigma \rangle\Downarrow true}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n \: \langle e2, \sigma \rangle\Downarrow n}
-                        {\langle e1 != e2, \sigma \rangle\Downarrow false}
-                    \end{equation}
-                    
-                \subsubsection{Equal}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 == e2, \sigma \rangle\Downarrow false}
-                    \end{equation}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n \: \langle e2, \sigma \rangle\Downarrow n}
-                        {\langle e1 == e2, \sigma \rangle\Downarrow true}
-                    \end{equation}
-                    
-                \subsubsection{Less or equal then}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 <= e2, \sigma \rangle\Downarrow n1 <= n2}
-                    \end{equation}
-                    
-                \subsubsection{Larger or equal then}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 >= e2, \sigma \rangle\Downarrow n1 >= n2}
-                    \end{equation}
-            
-                \subsubsection{Less then}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 < e2, \sigma \rangle\Downarrow n1 < n2}
-                    \end{equation}
-                    
-                \subsubsection{Larger then}
-                    \begin{equation}  
-                        \frac{\langle e1, \sigma \rangle\Downarrow n1 \: \langle e2, \sigma \rangle\Downarrow n2}
-                        {\langle e1 > e2, \sigma \rangle\Downarrow n1 > n2}
-                    \end{equation}
-                    
-            \subsection{Assigment}
-                \begin{equation}  
-                        \frac{}
-                        {\langle x := n, \sigma \rangle\Downarrow \sigma [ x := n ]}
-                \end{equation}
-                
-            \subsection{Variable}
-                \begin{equation}  
-                        \sigma [ x := n ] = n
-                \end{equation}
-                
-            \subsection{If}
-                \begin{equation}  
-                    \frac{\langle b, \sigma \rangle\Downarrow true \: \langle c1, \sigma \rangle\Downarrow \sigma'}
-                    {\langle \textbf{if } b \textbf{ then } c1 \textbf{ else } c2, \sigma \rangle\Downarrow \sigma'}
-                \end{equation}
-                \begin{equation}  
-                    \frac{\langle b, \sigma \rangle\Downarrow false \: \langle c2, \sigma \rangle\Downarrow \sigma''}
-                    {\langle \textbf{if } b \textbf{ then } c1 \textbf{ else } c2, \sigma \rangle\Downarrow \sigma''}
-                \end{equation}
-                
-            \subsection{While}
-                \begin{equation}  
-                    \frac{\langle b, \sigma \rangle\Downarrow false }
-                    {\langle \textbf{while } b \textbf{ do } c, \sigma \rangle\Downarrow \sigma}
-                \end{equation}
-                \begin{equation}  
-                    \frac{\langle b, \sigma \rangle\Downarrow true \: \langle c, \sigma \rangle\Downarrow \sigma' \langle \textbf{while } b \textbf{ do } c, \sigma' \rangle\Downarrow \sigma'' }
-                    {\langle \textbf{while } b \textbf{ do } c, \sigma \rangle\Downarrow \sigma''}
-                \end{equation}
-                
-            \subsection{Function call}
-                \begin{equation}  
-                    \frac{\langle c, \sigma \rangle\Downarrow \sigma' }
-                    {\langle \textbf{call } c, \sigma \rangle\Downarrow \sigma'}
-                \end{equation}
-                
-            \subsection{Return}
-                \begin{equation}  
-                    \frac{\langle c, \sigma \rangle\Downarrow \sigma' }
-                    {\langle \textbf{return } c, \sigma \rangle\Downarrow \sigma'}
-                \end{equation}
-    
+
+
+    \section{Structural Operational Semantics}
+	General Defenitions:
+    	\begin{align*}
+		i &= \text{Integer} \\
+		f &= \text{Float} \\
+		n &\in \{i, f\} \\
+		b &= \text{Boolean} \\
+		v &\in \{n, b\} \\
+		uop &= \text{Unary Operator} \\
+		bop &= \text{Binary Operator} \\
+		x &= \text{Variable} \\
+		p &= \text{Pointer} \\
+		e &= \text{Expression} \\
+		stmt &= \text{Statement} \\
+		\sigma &= \text{State/Memory} \\
+		fc &= \text{Function Call} \\
+	\end{align*}
+
+	Program:
+	\begin{align*}
+		\frac{\langle stmt_1, \sigma \rangle\Downarrow \langle void, \sigma' \rangle}
+		{\langle stmt_1;stmt_2;\cdots;stmt_n, \sigma \rangle\Downarrow \langle stmt_2;\cdots;stmt_n, \sigma' \rangle}
+	\end{align*}
+
+	Block:
+	\begin{align*}
+		\frac{\langle stmt_1, \sigma \rangle\Downarrow \langle void, \sigma' \rangle}
+		{\langle stmt_1;stmt_2;\cdots;stmt_n, \sigma \rangle\Downarrow \langle stmt_2;\cdots;stmt_n, \sigma' \rangle}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle stmt_1, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		{\langle stmt_1;stmt_2;\cdots;stmt_n, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+	\end{align*}
+
+	Statement:
+	\begin{align*}
+		\frac{\langle stmt, \sigma \rangle\Downarrow \langle \textbf{void}, \sigma' \rangle}
+		{\langle stmt, \sigma \rangle\Downarrow \sigma'}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle stmt, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		{\langle stmt, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+	\end{align*}
+
+	
+	While:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{true}, \sigma' \rangle \ \
+		\langle block, \sigma' \rangle\Downarrow \sigma''}
+		{\langle \textbf{while } e \textbf{ do } block, \sigma \rangle\Downarrow \langle \textbf{while } e \textbf{ do } block, \sigma'' \rangle}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{false}, \sigma' \rangle}
+		{\langle \textbf{while } e \textbf{ do } block, \sigma \rangle\Downarrow \sigma'}
+	\end{align*}
+
+	If:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{true}, \sigma' \rangle \ \
+		\langle block_1, \sigma' \rangle\Downarrow \sigma''}
+		{\langle \textbf{if } e \textbf{ then } block_1 \textbf{ else } block_2, \sigma \rangle\Downarrow \sigma''}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{false}, \sigma' \rangle \ \
+		\langle block_2, \sigma' \rangle\Downarrow \sigma''}
+		{\langle \textbf{if } e \textbf{ then } block_1 \textbf{ else } block_2, \sigma \rangle\Downarrow \sigma''}
+	\end{align*}
+
+	Return:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		{\langle \textbf{return}\ e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+	\end{align*}
+
+	Let/Assignment:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := v] \rangle}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
+		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := p] \rangle}
+	\end{align*}
+
+	Function Call:
+	\begin{align*}
+		\frac{\langle fc, \sigma \rangle\Downarrow \langle \textbf{void}, \sigma' \rangle}
+		{\langle fc, \sigma \rangle\Downarrow \sigma'}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle fc, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		{\langle fc, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+	\end{align*}
+
+	Expression:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
+		{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
+	\end{align*}
+
+	Binary Operations:
+	\begin{align*}
+		\frac{\langle e_1, \sigma \rangle\Downarrow \langle v_1, \sigma' \rangle \ \
+		\langle e_2, \sigma' \rangle\Downarrow \langle v_2, \sigma'' \rangle \ \
+		\langle v_1\ \textbf{bop}\ v_2, \sigma'' \rangle\Downarrow \langle v_3, \sigma'' \rangle}
+		{\langle e_1\ \textbf{bop}\ e_2, \sigma \rangle\Downarrow \langle v_3, \sigma'' \rangle}
+	\end{align*}
+	
+	Unary Operations:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle \ \
+		\langle uop\ v, \sigma' \rangle\Downarrow \langle v', \sigma' \rangle}
+		{\langle uop\ e, \sigma \rangle\Downarrow \langle v', \sigma' \rangle}
+	\end{align*}
+
+	Borrow Variable:
+	\begin{align*}
+		\frac{}
+		{\langle \&x, \sigma \rangle\Downarrow \langle p, \sigma \rangle}
+	\end{align*}
+
+	Dereference Pointer:
+	\begin{align*}
+		\frac{\langle \*p, \sigma \rangle\Downarrow \langle p', \sigma \rangle}
+		{\langle \*p, \sigma \rangle\Downarrow \langle p', \sigma \rangle}
+	\end{align*}
+
+	\begin{align*}
+		\frac{\langle \*p, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
+		{\langle \*p, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
+	\end{align*}	
+
+	Variable:
+	\begin{align*}
+		\frac{}
+		{\langle x, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
+	\end{align*}
+
+	Value:
+	\begin{align*}
+		\frac{}
+		{\langle v, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
+	\end{align*}
+
+    \section{Example Explination}
+	
+
 \end{document}
+
