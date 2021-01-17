@@ -303,7 +303,132 @@ Module = { Statement } ;
 
     \section{Rubigo-lang Type Checker}	
     	\subsection{Type Checking Rules}
- 		TODO
+	General Defenitions:
+    	\begin{align*}
+		i &= \text{32 bit Integer Type} \\
+		f &= \text{32 bit Float Type} \\
+		n &\in \{i, f\} \\
+		b &= \text{Boolean Type} \\
+		uop &= \text{Unary Operator} \\
+		bop &= \text{Binary Operator} \\
+		x &= \text{Variable} \\
+		e &= \text{Expression} \\
+		\sigma &= \text{State/Memory} \\
+	\end{align*}
+
+	While:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
+		{\langle \textbf{while } e \textbf{ do } block, \sigma \rangle}
+	\end{align*}
+
+	If:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
+		{\langle \textbf{if } e \textbf{ then } block_1 \textbf{ else } block_2, \sigma \rangle}
+	\end{align*}
+
+	Let/Assignment:
+	\begin{align*}
+		\frac{
+			\langle x, \sigma \rangle\Downarrow \langle n, \sigma \rangle \ \ 
+			\langle e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle
+		}
+		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := n] \rangle}
+	\end{align*}
+
+	\begin{align*}
+		\frac{
+			\langle x, \sigma \rangle\Downarrow \langle b, \sigma \rangle \ \ 
+			\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle
+		}
+		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := b] \rangle}
+	\end{align*}
+
+
+	Arithmetic Binary Operation:
+	\begin{align*}
+		\frac{
+		\langle e_1, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
+		\langle e_2, \sigma' \rangle\Downarrow \langle n, \sigma'' \rangle \ \ 
+		\frac{
+			\langle bop, \sigma \rangle\Downarrow \langle op \in \{+. -, *, /, \%\} , \sigma \rangle
+		}{
+			\langle n\ op\ n, \sigma'' \rangle\Downarrow \langle n, \sigma''' \rangle \ \ 
+		}}
+		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle n, \sigma''' \rangle}
+	\end{align*}
+
+
+	Boolean Binary Operation:
+	\begin{align*}
+		\frac{
+		\langle e_1, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
+		\langle e_2, \sigma' \rangle\Downarrow \langle b, \sigma'' \rangle \ \ 
+		\frac{
+			\langle bop, \sigma \rangle\Downarrow \langle op \in \{\&\&, ||\} , \sigma \rangle
+		}{
+			\langle b\ op\ b, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle \ \ 
+		}}
+		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
+	\end{align*}
+
+
+	Comparison Binary Operation:
+	\begin{align*}
+		\frac{
+		\langle e_1, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
+		\langle e_2, \sigma' \rangle\Downarrow \langle n, \sigma'' \rangle \ \
+		\frac{
+			\langle bop, \sigma \rangle\Downarrow \langle op \in \{==, !=, <=, >=, <, >\} , \sigma \rangle
+		}{
+			\langle n\ bop\ n, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle
+		}}
+		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
+	\end{align*}
+	
+	\begin{align*}
+		\frac{
+		\langle e_1, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
+		\langle e_2, \sigma' \rangle\Downarrow \langle b, \sigma'' \rangle \ \
+		\frac{
+			\langle bop, \sigma \rangle\Downarrow \langle op \in \{==, !=\} , \sigma \rangle
+		}{
+			\langle b\ bop\ b, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle
+		}}
+		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
+	\end{align*}
+
+
+	Arithmetic Unary Operation:
+	\begin{align*}
+		\frac{
+		\langle e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
+		\frac{
+			\langle uop, \sigma \rangle\Downarrow \langle -, \sigma \rangle
+		}{
+			\langle uop\ n, \sigma' \rangle\Downarrow \langle n, \sigma' \rangle
+		}}
+		{\langle uop\ e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle}
+	\end{align*}
+
+
+	Boolean Unary Operation:
+	\begin{align*}
+		\frac{
+		\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
+		\frac{
+			\langle uop, \sigma \rangle\Downarrow \langle !, \sigma \rangle
+		}{
+			\langle uop\ b, \sigma' \rangle\Downarrow \langle b, \sigma' \rangle
+		}}
+		{\langle uop\ e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
+	\end{align*}
+
+	
+
+		
+
 
 	\subsection{Example explination}
  		TODO
