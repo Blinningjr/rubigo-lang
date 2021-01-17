@@ -246,6 +246,12 @@ print_n_prime(&mut number);
 		{\langle \textbf{if } e \textbf{ then } block_1 \textbf{ else } block_2, \sigma \rangle\Downarrow \sigma''}
 	\end{align*}
 
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{false}, \sigma' \rangle}
+		{\langle \textbf{if } e \textbf{ then } block, \sigma \rangle\Downarrow \sigma'}
+	\end{align*}
+
+
 	Return:
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
@@ -326,9 +332,59 @@ print_n_prime(&mut number);
 		{\langle v, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
 	\end{align*}
 
+
     \subsection{Example explanation}
-    	TODO
-    
+	Running the rubigo-lang interpreter on the example code above will result in the following:
+
+	First the two functions statements \emph{is\_prime} and \emph{print\_n\_prime} will stored in memory, so that they can be called and interpreted later. Then the mutable variable \emph{number} will be assigned a i32 value of 10. This relates to the following SOS rule.
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle 10, \sigma' \rangle}
+		{\langle number := e, \sigma \rangle\Downarrow \langle \sigma' [number := 10] \rangle}
+	\end{align*}
+
+	Next the function \emph{print\_n\_prime} is called with the pointer to the variable \emph{number}.
+	\begin{align*}
+		\frac{\langle fc, \sigma \rangle\Downarrow \langle \textbf{void}, \sigma' \rangle}
+		{\langle fc, \sigma \rangle\Downarrow \sigma'}
+	\end{align*}
+
+	Next the interpreter jumps in to the function \emph{print\_n\_prime} and stores the argument \emph{n} in the memory. After that the mutable variable count is set to 1.
+
+	Next the interpreter starts by evaluating the condition in the while statement, which evaluates to \emph{true}. This makes the interpreter interpret the code in the while loop.
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{true}, \sigma' \rangle \ \
+		\langle block, \sigma' \rangle\Downarrow \sigma''}
+		{\langle \textbf{while } e \textbf{ do } block, \sigma \rangle\Downarrow \langle \textbf{while } e \textbf{ do } block, \sigma'' \rangle}
+	\end{align*}
+
+	Next the condition in the if statement is interpreted and it is evaluated to false. The condition expression is a function call to the function \emph{is\_prime}. Thus the interpreter will jump into that function, but there is nothing interesting to explain in there. Thus I will skip explaining it.
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{false}, \sigma' \rangle}
+		{\langle \textbf{if } e \textbf{ then } block, \sigma \rangle\Downarrow \sigma'}
+	\end{align*}
+
+	After the if statement the variable \emph{count} is increased by one. Then the condition in the while loop is evaluated again with the updated variables. The condition holds true again and the condition in the if statement is evaluated. This time the if condition will be evaluated to true and the interpreter will jump into the if statement code.
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{true}, \sigma' \rangle \ \
+		\langle block, \sigma' \rangle\Downarrow \sigma''}
+		{\langle \textbf{if } e \textbf{ then } block, \sigma \rangle\Downarrow \sigma''}
+	\end{align*}
+
+	Next the \emph{print} function is called, the \emph{print} function is hard coded into the interpreter and will print the argument to the console. After that the variable \emph{number} is decreased by one. This is done by dereferencing the pointer \emph{n} and adding one.
+	\begin{align*}
+		\frac{\langle \*p, \sigma \rangle\Downarrow \langle 10, \sigma \rangle}
+		{\langle \*p, \sigma \rangle\Downarrow \langle 10, \sigma \rangle}
+	\end{align*}
+	
+	Then the program will continue as it has done until 10 prime numbers are printed and thus the condition in the while loop will be false.
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{false}, \sigma' \rangle}
+		{\langle \textbf{while } e \textbf{ do } block, \sigma \rangle\Downarrow \sigma'}
+	\end{align*}
+
+	Next the interpreter will jump back out of the function \emph{print\_n\_prime} and terminate because there is no more statements to interpret.
+   
+
     \subsection{Solution compared to requirements}
  	TODO
 
