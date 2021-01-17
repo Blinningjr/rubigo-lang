@@ -135,16 +135,51 @@ Module = { Statement } ;
     Identifier = ( Letter | "_" ), { Letter | "_" } ;
 	\end{verbatim}
 
-    \subsection{Example explination}
- 	TODO
+    \subsection{Example Code}
+    Code example of a rubigo-lang program that prints the 10 first prime numbers.
+	\begin{verbatim}
+fn is_prime(num: &i32) -> bool {
+    if *num < 2 {
+        return false;
+    }
+    let half: i32 = *num/2;
+    let mut count: i32 = 2;
+
+    while count <= half {
+        if (*num % count) == 0 {
+            return false;
+        }
+        count = count + 1;
+    }
+    return true;
+}
+
+
+fn print_n_prime(n: &mut i32) -> () {
+    let mut count: i32 = 1;
+    while *n > 0 {
+        if is_prime(&count) {
+            print(count);
+            *n = *n - 1;
+        }
+        count = count + 1;
+    }
+}
+
+
+let mut number: i32 = 10;
+print_n_prime(&mut number);
+
+	\end{verbatim}
+
 
     \subsection{Solution compared to requirements}
- 	TODO
+ 	My lexer and parser is implemented using only the standard rust library and has some advance features like having location information in the error messages. It also has a very basic error recovery system which enables the parser to keep going and find more error in the code. My parser implementation also fulfills all the requirements like parenthesized sub expressions. Thus compared to the requirements my parser is a little bit more advance.
 
 
     \section{Rubigo-lang Semantics}
     \subsection{SOS}
-	General Defenitions:
+	General Definitions:
     	\begin{align*}
 		i &= \text{Integer} \\
 		f &= \text{Float} \\
@@ -291,7 +326,7 @@ Module = { Statement } ;
 		{\langle v, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
 	\end{align*}
 
-    \subsection{Example explination}
+    \subsection{Example explanation}
     	TODO
     
     \subsection{Solution compared to requirements}
@@ -303,7 +338,7 @@ Module = { Statement } ;
 
     \section{Rubigo-lang Type Checker}	
     	\subsection{Type Checking Rules}
-	General Defenitions:
+	General Definitions:
     	\begin{align*}
 		i &= \text{32 bit Integer Type} \\
 		f &= \text{32 bit Float Type} \\
@@ -430,7 +465,7 @@ Module = { Statement } ;
 		
 
 
-	\subsection{Example explination}
+	\subsection{Example explanation}
  		TODO
     	
 	\subsection{Solution compared to requirements}
@@ -444,7 +479,7 @@ Module = { Statement } ;
     	\subsection{Borrow Checking Rules}
  		TODO
 
-	\subsection{Example explination}
+	\subsection{Example explanation}
  		TODO
     	
 	\subsection{Solution compared to requirements}
@@ -460,7 +495,7 @@ Module = { Statement } ;
     \section{Overall course goals and learning outcomes}
     	I have learnt a lot from implementing a parser and EBNF because I encountered a lot of problems when doing so. I learnt a lot about lexical analysis from those problems, like the order the tokens are parsed is very important. And a good way to order them is by longest parser first. I didn't learn as much about syntax analysis because my compiler doesn't support context free grammar.
 
-	From implementing the type checker I feel i haven't learnt a lot, execpt how complicated it can be to organize the symbol table and keep track of all the identifiers. But I have definitely learnt a lot from making the borrow checker because it was very hard to implement and I have never used Rust before. So I learnt a lot about pointers and how Rust borrow rules work.
+	From implementing the type checker I feel i haven't learnt a lot, except how complicated it can be to organize the symbol table and keep track of all the identifiers. But I have definitely learnt a lot from making the borrow checker because it was very hard to implement and I have never used Rust before. So I learnt a lot about pointers and how Rust borrow rules work.
 
 	The interpreter also made me learn a lot because of how hard it can be to keep track of all the scopes, variables and functions. It made me think of how i could improve my parser, typechecker and borrowchecker so that it could interpret more complex features like pointers.
 
