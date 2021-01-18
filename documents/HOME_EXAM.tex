@@ -174,7 +174,7 @@ print_n_prime(&mut number);
 
 
     \subsection{Solution compared to requirements}
- 	My lexer and parser is implemented using only the standard rust library and has some advance features like having location information in the error messages. It also has a very basic error recovery system which enables the parser to keep going and find more error in the code. My parser implementation also fulfills all the requirements like parenthesized sub expressions. Thus compared to the requirements my parser is a little bit more advance.
+ 	My implementation of a lexer and parser is implemented using only the standard rust library and has some advance features like having location information in the error messages. It also has a very basic error recovery system which enables the parser to keep going and find more error in the code. My parser implementation also fulfills all the requirements like parenthesized sub expressions. Thus compared to the requirements my parser is a little bit more advance.
 
 
     \section{Rubigo-lang Semantics}
@@ -383,12 +383,11 @@ print_n_prime(&mut number);
 	\end{align*}
 
 	Next the interpreter will jump back out of the function \emph{print\_n\_prime} and terminate because there is no more statements to interpret.
-   
+
+
 
     \subsection{Solution compared to requirements}
- 	TODO
-
-
+	I have implemented the whole interpreter from scratch and follows all the SOS rules above. If the interpreter encounters a problem it will panic with a appropriate message. 
 
 
 
@@ -516,18 +515,69 @@ print_n_prime(&mut number);
 		{\langle uop\ e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
 	\end{align*}
 
-	
-
-		
-
 
 	\subsection{Example explanation}
- 		TODO
-    	
-	\subsection{Solution compared to requirements}
- 		TODO
-    
+	Here is an example showing the type checking rule for while loops.
+    	\begin{verbatim}
+let mut i: i32 = 1;
+while i < 10 {
+    i = i + 1;
+}
+    	\end{verbatim}
+	The rule says that the condition expression of the while loop must evaluate into a boolean. In this example the expression $i < 10$ will evaluate into a boolean.
 
+	The type checking rule for if statements are the same as for while loops in that the condition expression needs to evaluate into a boolean. 
+    	\begin{verbatim}
+if 1 + 10 {
+    \\ Code Block
+}
+    	\end{verbatim}
+	In this example the condition expression $1 + 10$ in the if statement will evaluate into a i32 of value 11. Thus it does not satisfy the type rule and is not valid if statement.
+
+	For let and assignment statements the type rule is a little bit more advanced. The rule for these statements is that the variable and the value stored must be of the same type, but they can be of any type or even a pointer.
+    	\begin{verbatim}
+let var: bool = false;
+var = 1;
+    	\end{verbatim}
+	In this example the let statement has a variable and value of type bool, thus it satisfies the rule. But the assignment statement has a variable of type bool and a value of type i32, thus it dose not satisfy the rule. A valid assignment in this case can look like this $var = true;$.
+
+
+	The rules for arithmetic binary operation is that both the expressions evaluate to the same type and that type needs to be a i32 or f32. The result of the operation will also be the same type as the two expressions.
+    	\begin{verbatim}
+let var: f32 = 10.2 / 2;
+    	\end{verbatim}
+	This example shows a valid arithmetic binary operation.
+
+	For boolean binary operation the rules are very similar in that both the expressions needs to be of the type boolean. The resulting value will also be a boolean.
+    	\begin{verbatim}
+let var: bool = true || false;
+    	\end{verbatim}
+	This example shows a valid boolean binary operation.
+
+	Comparison binary operation rule also results in a boolean value and the two expressions needs to be of the same type. There is also a special case here were if the expressions are of boolean type then only two of the operators are valid.
+    	\begin{verbatim}
+let var: bool = 10 != 2;
+    	\end{verbatim}
+	This example shows a valid comparison binary operation.
+	
+
+	The rule for arithmetic unary operation is that the expression evaluates into a i32 or f32 type. Then the result of the operation will be the same type as the expressions type.
+    	\begin{verbatim}
+let var: f32 = -10.2;
+    	\end{verbatim}
+	This example shows a valid arithmetic unary operation.
+
+	Lastly the rule for boolean unary operation is that the expression must evaluate to a boolean type and then the result will also evaluate into a boolean type.
+    	\begin{verbatim}
+let var: bool = !true;
+    	\end{verbatim}
+	This example shows a valid boolean unary operation.
+
+
+	\subsection{Solution compared to requirements}
+		My type checker rejects all programs that doesn't follow the type rules above. It also has some advanced features like having location information in the error messages and multiple error messages, but it does not have type inference. Thus my type checker is a bit more advanced then the required one, but it does not have all the suggested advanced features.
+
+		I have implemented the whole type checker by my self.
 
 
 
@@ -535,9 +585,11 @@ print_n_prime(&mut number);
     	\subsection{Borrow Checking Rules}
  		TODO
 
+
 	\subsection{Example explanation}
  		TODO
-    	
+
+
 	\subsection{Solution compared to requirements}
  		TODO
 
@@ -553,7 +605,7 @@ print_n_prime(&mut number);
 
 	From implementing the type checker I feel i haven't learnt a lot, except how complicated it can be to organize the symbol table and keep track of all the identifiers. But I have definitely learnt a lot from making the borrow checker because it was very hard to implement and I have never used Rust before. So I learnt a lot about pointers and how Rust borrow rules work.
 
-	The interpreter also made me learn a lot because of how hard it can be to keep track of all the scopes, variables and functions. It made me think of how i could improve my parser, typechecker and borrowchecker so that it could interpret more complex features like pointers.
+	The interpreter also made me learn a lot because of how hard it can be to keep track of all the scopes, variables and functions. It made me think of how i could improve my parser, type checker and borrow checker so that it could interpret more complex features like pointers.
 
 	Overall I think I have learnt a lot about what not to do when designing a compiler and what the challenges are. But I fell that I haven't learned a lot about the theory and solutions to those hard and complex problems. I have also learnt a lot about Rust and how borrowing works.
 
