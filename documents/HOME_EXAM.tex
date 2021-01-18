@@ -583,16 +583,59 @@ let var: bool = !true;
 
     \section{Rubigo-lang Borrow Checker}	
     	\subsection{Borrow Checking Rules}
- 		TODO
+ 		My borrow chcker only checks the number of borrow of a variable and the number of mutable borrows. The rule is that a variable can be borrowed any number of times as long as it is not borrowed as mutable at the same time. It is similar with mutable borrows where a variable can be borrowed as mutable as long as no one else is borrowing the variable. Here is a example of whell formed borrows.
+	\begin{verbatim}
+let mut a: i32 = 10;
+let b: &mut i32 = &mut a;
+*b = 5;
+a = 7;
+
+let c: f32 = 10.2;
+let d: &f32 = &c;
+let e: &f32 = &c;
+    	\end{verbatim}
+
+		My borrow checker doesn't keep track of who is owning the value right now. An example of a error that can occur in my borrow checker is the following.
+
+	\begin{verbatim}
+let mut a: i32 = 10;
+let b: &mut i32 = &mut a;
+a = 7;
+*b = 5;
+    	\end{verbatim}
+
+	In this example the assigning of \emph{a = 7} should cause an error because the variable \emph{b} owns the value.
 
 
-	\subsection{Example explanation}
- 		TODO
+
+	\subsection{Example of ill formed borrows that rubigo-lang catches}
+		One of the ill formed borrows my borrow checker catches is when a variable is borrowed and borrowed as mutable.
+	\begin{verbatim}
+let mut a: i32 = 10;
+let b: &mut i32 = &mut a;
+let c: &i32 = &a; \\ Error
+    	\end{verbatim}
+
+	Another case it catches ill formed borrows is when there are multiple mutable borrows of the same variable.
+	\begin{verbatim}
+let mut a: i32 = 10;
+let b: &mut i32 = &mut a;
+let c: &mut i32 = &mut a; \\ Error
+    	\end{verbatim}
+
+	The last type of ill formed borrows that it catches is when borrowing a variable that lives shorter then the variable storing the borrow.
+	\begin{verbatim}
+let a: i32 = 10;
+let mut b: & i32 = & a;
+if true {
+    let c: i32 = 20;
+    b = &c; \\ Error
+}
+    	\end{verbatim}
 
 
 	\subsection{Solution compared to requirements}
- 		TODO
-
+		My borrow checker is very basic and lacks some of the core functionality of a borrow checker, thus it dose not fulfill all the requirements. I have implemented the whole borrow checker my self.  
 
 
     \section{Rubigo-lang LLVM backend}	
