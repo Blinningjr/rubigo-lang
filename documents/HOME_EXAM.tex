@@ -644,14 +644,15 @@ if true {
 
 
     \section{Overall course goals and learning outcomes}
-    	I have learnt a lot from implementing a parser and EBNF because I encountered a lot of problems when doing so. I learnt a lot about lexical analysis from those problems, like the order the tokens are parsed is very important. And a good way to order them is by longest parser first. I didn't learn as much about syntax analysis because my compiler doesn't support context free grammar.
+	I have learnt a lot about lexical analysis from defining a EBNF and implementing my own lexer.	It also made me understand how important it is to tokenize the input before doing the syntax analysis. Implementing the parser also thought me a lot about how important it is to have a well defined abstract syntax tree and that the result can be different depending on the order the parsers are tried.
 
-	From implementing the type checker I feel i haven't learnt a lot, except how complicated it can be to organize the symbol table and keep track of all the identifiers. But I have definitely learnt a lot from making the borrow checker because it was very hard to implement and I have never used Rust before. So I learnt a lot about pointers and how Rust borrow rules work.
+	From implementing the type checker I feel i haven't learnt a lot, except how complicated it can be to organize the symbol table and keep track of all the identifiers. But I have definitely learnt a lot from trying to make a borrow checker because it was very hard to do and I have never used Rust before. So I learnt a lot about pointers and how Rust borrow rules work.
 
 	The interpreter also made me learn a lot because of how hard it can be to keep track of all the scopes, variables and functions. It made me think of how i could improve my parser, type checker and borrow checker so that it could interpret more complex features like pointers.
 
-	Overall I think I have learnt a lot about what not to do when designing a compiler and what the challenges are. But I fell that I haven't learned a lot about the theory and solutions to those hard and complex problems. I have also learnt a lot about Rust and how borrowing works.
+	Overall I think I have learnt a lot about what not to do when designing a compiler and what the challenges are. I have also learnt a lot about Rust and how borrowing works.
 
-	
+
+
 \end{document}
 
