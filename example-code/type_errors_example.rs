@@ -5,9 +5,15 @@ a = true;
 a = c;
 
 fn func(fds: i32, asfa: bool) -> i32 {
-	if false {	
-		return false;
-	} 
+    while true {
+        return 2;
+    }
+
+    if false {	
+        return false;
+    } else {
+        let a: i32 = 1;
+    }
 }
 
 func(a);

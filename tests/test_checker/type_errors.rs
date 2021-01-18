@@ -101,13 +101,21 @@ fn test_type_check_return_type() {
  */
 #[test]
 fn test_type_check_function_return_branches() {
-    let input1: String = "fn test() -> i32 {if true {return 2;}}".to_string();
+    let input1: String = "fn test() -> i32 {if true {return 2;} else {let a: i32 = 1;}}".to_string();
     let checker1: Checker = check_string(input1);
     assert_eq!(get_num_of_errors(checker1), 1);
 
-    let input2: String = "fn test() -> i32 {if false {while false {return 2;}}}".to_string();
+    let input2: String = "fn test() -> i32 {while false {return 1;}}".to_string();
     let checker2: Checker = check_string(input2);
     assert_eq!(get_num_of_errors(checker2), 1);
+    
+    let input3: String = "fn test() -> i32 {if true {let a: i32 = 1;} else {return 2;}}".to_string();
+    let checker3: Checker = check_string(input3);
+    assert_eq!(get_num_of_errors(checker3), 1);
+
+    let input4: String = "fn test() -> i32 {if true {return 2;} else {return 2;}}".to_string();
+    let checker4: Checker = check_string(input4);
+    assert_eq!(get_num_of_errors(checker4), 0);
 }
 
 

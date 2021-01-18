@@ -63,6 +63,7 @@ pub struct TypeEnvironment {
 
     pub returns: bool,
     pub if_body: bool,
+    pub else_body: bool,
 }
 
 
@@ -77,6 +78,7 @@ impl TypeEnvironment {
 
             returns: false,
             if_body: false,
+            else_body: false,
         };
     }
 
@@ -234,18 +236,18 @@ impl TypeFunction {
             return true;
         } 
 
-        let (_if_children, non_if_children): (Vec<usize>, Vec<usize>) = self.separate_if_env(self.find_childrens_ids(env_id));
+        let (if_children, _non_if_children): (Vec<usize>, Vec<usize>) = self.separate_if_env(self.find_childrens_ids(env_id));
         
-        if non_if_children.len() == 0 {
-            return false;
-        } else {
-            for id in non_if_children {
-                if self.check_if_all_returns(id) {
+        
+        for i in 0..if_children.len() {
+            if self.environments.envs[if_children[i]].else_body {
+                if self.check_if_all_returns(if_children[i - 1]) &&
+                    self.check_if_all_returns(if_children[i]) {
                     return true;
-                }
-            } 
-            return false; 
-        }
+                }   
+            }
+        } 
+        return false;
     }
 
     fn find_childrens_ids(& self, parent_id: usize) -> Vec<usize> {
@@ -270,7 +272,7 @@ impl TypeFunction {
         let mut if_children: Vec<usize> = vec!();
         let mut non_if_children: Vec<usize> = vec!();
         for id in envs {
-            if self.environments.envs[id].if_body {
+            if self.environments.envs[id].if_body || self.environments.envs[id].else_body {
                 if_children.push(id);
             } else {
                 non_if_children.push(id);

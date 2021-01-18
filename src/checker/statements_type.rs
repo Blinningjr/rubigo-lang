@@ -131,13 +131,12 @@ impl Checker {
         }
 
         self.check_body(if_stmt.if_body, true);
-
         self.set_is_if_body();
         
         match if_stmt.else_body {
             Some(body) => {
                 self.check_body(body, true);
-                self.set_is_if_body();
+                self.set_is_else_body();
             },
             None => (),
         };
