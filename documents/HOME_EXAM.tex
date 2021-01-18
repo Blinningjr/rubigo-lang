@@ -245,6 +245,12 @@ print_n_prime(&mut number);
 		\langle block_2, \sigma' \rangle\Downarrow \sigma''}
 		{\langle \textbf{if } e \textbf{ then } block_1 \textbf{ else } block_2, \sigma \rangle\Downarrow \sigma''}
 	\end{align*}
+	
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{true}, \sigma' \rangle \ \ 
+		\langle block, \sigma' \rangle\Downarrow \sigma''}
+		{\langle \textbf{if } e \textbf{ then } block, \sigma \rangle\Downarrow \sigma''}
+	\end{align*}
 
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle \textbf{false}, \sigma' \rangle}
@@ -319,18 +325,6 @@ print_n_prime(&mut number);
 		\frac{\langle \*p, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
 		{\langle \*p, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
 	\end{align*}	
-
-	Variable:
-	\begin{align*}
-		\frac{}
-		{\langle x, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
-	\end{align*}
-
-	Value:
-	\begin{align*}
-		\frac{}
-		{\langle v, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
-	\end{align*}
 
 
     \subsection{Example explanation}
