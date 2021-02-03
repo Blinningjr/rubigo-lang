@@ -116,7 +116,7 @@ impl Checker {
             offset: offset,
         });
 
-        self.error_handler.add(error);
+//        self.error_handler.add(error);  TODO: Remove all the borrow checking 
     }
     
     fn get_function(&mut self, ident: String, original: Span<String>) -> Option<TypeFunction> {

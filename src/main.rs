@@ -3,6 +3,7 @@ mod span;
 mod lexer;
 mod parser;
 mod checker;
+mod borrow_checker;
 mod interp;
 
 use parser::{
@@ -12,6 +13,10 @@ use parser::{
 
 use checker::{
     Checker,
+};
+
+use borrow_checker::{
+    BorrowChecker,
 };
 
 use interp::{
@@ -69,17 +74,20 @@ fn main() {
 fn command_run(filename: String, content: String) -> () {
     let mod_body: ModualBody = Parser::parse(filename, content, true);
     Checker::check(mod_body.clone(), true);
+    BorrowChecker::check(mod_body.clone(), true);
     Interpreter::interpret(mod_body);
 }
 
 fn command_build(filename: String, content: String) -> () {
     let mod_body: ModualBody = Parser::parse(filename, content, true);
     Checker::check(mod_body.clone(), true);
+    BorrowChecker::check(mod_body.clone(), true);
     // TODO llvm
 }
 
 fn command_check(filename: String, content: String) -> () {
     let mod_body: ModualBody = Parser::parse(filename, content, true);
     Checker::check(mod_body.clone(), true);
+    BorrowChecker::check(mod_body.clone(), true);
 }
 
