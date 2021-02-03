@@ -193,18 +193,18 @@ print_n_prime(&mut number);
 		e &= \text{Expression} \\
 		stmt &= \text{Statement} \\
 		\sigma &= \text{State/Memory} \\
-		fc &= \text{Function Call} \\
+		f &= \text{Function} \\
 	\end{align*}
 
 	Program:
 	\begin{align*}
-		\frac{\langle stmt_1, \sigma \rangle\Downarrow \langle void, \sigma' \rangle}
+		\frac{\langle stmt_1, \sigma \rangle\Downarrow \sigma'}
 		{\langle stmt_1;stmt_2;\cdots;stmt_n, \sigma \rangle\Downarrow \langle stmt_2;\cdots;stmt_n, \sigma' \rangle}
 	\end{align*}
 
 	Block:
 	\begin{align*}
-		\frac{\langle stmt_1, \sigma \rangle\Downarrow \langle void, \sigma' \rangle}
+		\frac{\langle stmt_1, \sigma \rangle\Downarrow \sigma'}
 		{\langle stmt_1;stmt_2;\cdots;stmt_n, \sigma \rangle\Downarrow \langle stmt_2;\cdots;stmt_n, \sigma' \rangle}
 	\end{align*}
 	\begin{align*}
@@ -212,15 +212,15 @@ print_n_prime(&mut number);
 		{\langle stmt_1;stmt_2;\cdots;stmt_n, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
 	\end{align*}
 
-	Statement:
-	\begin{align*}
-		\frac{\langle stmt, \sigma \rangle\Downarrow \langle \textbf{void}, \sigma' \rangle}
-		{\langle stmt, \sigma \rangle\Downarrow \sigma'}
-	\end{align*}
-	\begin{align*}
-		\frac{\langle stmt, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-		{\langle stmt, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-	\end{align*}
+%	Statement:
+%	\begin{align*}
+%		\frac{\langle stmt, \sigma \rangle\Downarrow \sigma'}
+%		{\langle stmt, \sigma \rangle\Downarrow \sigma'}
+%	\end{align*}
+%	\begin{align*}
+%		\frac{\langle stmt, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+%		{\langle stmt, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+%	\end{align*}
 
 	
 	While:
@@ -264,66 +264,94 @@ print_n_prime(&mut number);
 		{\langle \textbf{return}\ e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
 	\end{align*}
 
-	Let/Assignment:
+	Let:
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := v] \rangle}
+		{\langle \textbf{let } x = e, \sigma \rangle\Downarrow \langle \sigma' [x := v] \rangle}
 	\end{align*}
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
-		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := p] \rangle}
+		{\langle \textbf{let } x = e, \sigma \rangle\Downarrow \langle \sigma' [x := p] \rangle}
+	\end{align*}
+
+	Assignment:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		{\langle x = e, \sigma \rangle\Downarrow \langle \sigma' [x := v] \rangle}
+	\end{align*}
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
+		{\langle x = e, \sigma \rangle\Downarrow \langle \sigma' [x := p] \rangle}
 	\end{align*}
 
 	Function Call:
 	\begin{align*}
-		\frac{\langle fc, \sigma \rangle\Downarrow \langle \textbf{void}, \sigma' \rangle}
-		{\langle fc, \sigma \rangle\Downarrow \sigma'}
+		\frac{
+			\frac{i = 0..n}
+			{\langle x_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
+		}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \sigma_n}
 	\end{align*}
 	\begin{align*}
-		\frac{\langle fc, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-		{\langle fc, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+		\frac{
+			\frac{i = 0..n}
+			{\langle x_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
+		}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \langle v, \sigma_n \rangle}
 	\end{align*}
 
-	Expression:
-	\begin{align*}
-		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-		{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-	\end{align*}
-	\begin{align*}
-		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
-		{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
-	\end{align*}
+%	Expression:
+%	\begin{align*}
+%		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+%		{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
+%	\end{align*}
+%	\begin{align*}
+%		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
+%		{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
+%	\end{align*}
 
 	Binary Operations:
 	\begin{align*}
 		\frac{\langle e_1, \sigma \rangle\Downarrow \langle v_1, \sigma' \rangle \ \
-		\langle e_2, \sigma' \rangle\Downarrow \langle v_2, \sigma'' \rangle \ \
-		\langle v_1\ \textbf{bop}\ v_2, \sigma'' \rangle\Downarrow \langle v_3, \sigma'' \rangle}
+		\langle e_2, \sigma' \rangle\Downarrow \langle v_2, \sigma'' \rangle}
 		{\langle e_1\ \textbf{bop}\ e_2, \sigma \rangle\Downarrow \langle v_3, \sigma'' \rangle}
 	\end{align*}
 	
 	Unary Operations:
 	\begin{align*}
-		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle \ \
-		\langle uop\ v, \sigma' \rangle\Downarrow \langle v', \sigma' \rangle}
-		{\langle uop\ e, \sigma \rangle\Downarrow \langle v', \sigma' \rangle}
+		\frac{\langle e, \sigma \rangle\Downarrow \langle v_1, \sigma' \rangle}
+		{\langle \textbf{uop}\ e, \sigma \rangle\Downarrow \langle v_2, \sigma' \rangle}
 	\end{align*}
 
-	Borrow Variable:
+	Variable:
 	\begin{align*}
-		\frac{}
-		{\langle \&x, \sigma \rangle\Downarrow \langle p, \sigma \rangle}
+		\frac{\sigma(x) = v}
+		{\langle x, \sigma \rangle\Downarrow v}
+	\end{align*}
+	\begin{align*}
+		\frac{\sigma(x) = p}
+		{\langle x, \sigma \rangle\Downarrow p}
+	\end{align*}
+
+	Borrow:
+	\begin{align*}
+		\frac{\sigma(p) = x}
+		{\langle \&x, \sigma \rangle\Downarrow p}
+	\end{align*}
+	\begin{align*}
+		\frac{\sigma(p') = p}
+		{\langle \&p, \sigma \rangle\Downarrow p'}
 	\end{align*}
 
 	Dereference Pointer:
 	\begin{align*}
-		\frac{\langle \*p, \sigma \rangle\Downarrow \langle p', \sigma \rangle}
-		{\langle \*p, \sigma \rangle\Downarrow \langle p', \sigma \rangle}
+		\frac{\sigma(p) = v}
+		{\langle *p, \sigma \rangle\Downarrow v}
 	\end{align*}
 
 	\begin{align*}
-		\frac{\langle \*p, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
-		{\langle \*p, \sigma \rangle\Downarrow \langle v, \sigma \rangle}
+		\frac{\sigma(p) = p'}
+		{\langle *p, \sigma \rangle\Downarrow p'}
 	\end{align*}	
 
 
