@@ -267,37 +267,37 @@ print_n_prime(&mut number);
 	Let:
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-		{\langle \textbf{let } x = e, \sigma \rangle\Downarrow \langle \sigma' [x := v] \rangle}
+		{\langle \textbf{let } x = e, \sigma \rangle\Downarrow \sigma' [x := v]}
 	\end{align*}
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
-		{\langle \textbf{let } x = e, \sigma \rangle\Downarrow \langle \sigma' [x := p] \rangle}
+		{\langle \textbf{let } x = e, \sigma \rangle\Downarrow \sigma' [x := p]}
 	\end{align*}
 
 	Assignment:
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle v, \sigma' \rangle}
-		{\langle x = e, \sigma \rangle\Downarrow \langle \sigma' [x := v] \rangle}
+		{\langle x = e, \sigma \rangle\Downarrow \sigma' [x := v]}
 	\end{align*}
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow \langle p, \sigma' \rangle}
-		{\langle x = e, \sigma \rangle\Downarrow \langle \sigma' [x := p] \rangle}
+		{\langle x = e, \sigma \rangle\Downarrow \sigma' [x := p]}
 	\end{align*}
 
 	Function Call:
 	\begin{align*}
 		\frac{
-			\frac{i = 0..n}
-			{\langle x_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
+			\frac{i = 1..n}
+			{\langle e_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
 		}
-		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \sigma_n}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \sigma_{n + 1}}
 	\end{align*}
 	\begin{align*}
 		\frac{
-			\frac{i = 0..n}
-			{\langle x_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
+			\frac{i = 1..n}
+			{\langle e_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
 		}
-		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \langle v, \sigma_n \rangle}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \langle v, \sigma_{n + 1} \rangle}
 	\end{align*}
 
 %	Expression:
@@ -361,7 +361,7 @@ print_n_prime(&mut number);
 	First the two functions statements \emph{is\_prime} and \emph{print\_n\_prime} will stored in memory, so that they can be called and interpreted later. Then the mutable variable \emph{number} will be assigned a i32 value of 10. This relates to the following SOS rule.
 	\begin{align*}
 		\frac{\langle e, \sigma \rangle\Downarrow 10}
-		{\langle  \textbf{let } number = e, \sigma \rangle\Downarrow \langle \sigma [number := 10] \rangle}
+		{\langle  \textbf{let } number = e, \sigma \rangle\Downarrow \sigma [number := 10]}
 	\end{align*}
 
 	Next the function \emph{print\_n\_prime} is called with the pointer to the variable \emph{number}.
@@ -430,112 +430,164 @@ print_n_prime(&mut number);
 
 	While:
 	\begin{align*}
-		\frac{\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
-		{\langle \textbf{while } e \textbf{ do } block, \sigma \rangle}
+		\frac{\langle e, \sigma \rangle\Downarrow b}
+		{\langle \textbf{while } e \textbf{ do } block, \sigma \rangle\Downarrow \sigma}
 	\end{align*}
 
 	If:
 	\begin{align*}
-		\frac{\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
-		{\langle \textbf{if } e \textbf{ then } block_1 \textbf{ else } block_2, \sigma \rangle}
+		\frac{\langle e, \sigma \rangle\Downarrow b}
+		{\langle \textbf{if } e \textbf{ then } block_1 \textbf{ else } block_2, \sigma \rangle\Downarrow \sigma}
 	\end{align*}
 
-	Let/Assignment:
+	Let:
+	\begin{align*}
+		\frac{\langle e, \sigma \rangle\Downarrow t}
+		{\langle \textbf{let } x: t = e, \sigma \rangle\Downarrow \sigma [x := t]}
+	\end{align*}
+
+	Assignment:
+	\begin{align*}
+		\frac{ \sigma[x] = t \ \ 
+			\langle e, \sigma \rangle\Downarrow t}
+		{\langle x = e, \sigma \rangle\Downarrow \sigma}
+	\end{align*}
+
+	Function Call: 
 	\begin{align*}
 		\frac{
-			\langle x, \sigma \rangle\Downarrow \langle n, \sigma \rangle \ \ 
-			\langle e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle
+			\frac{i = 1..n}
+			{\langle e_i, \sigma \rangle\Downarrow t_i} \ \ 
+			\frac{f(x_1, x_2, \cdots, x_n)}
+			{\langle x_i, \sigma \rangle\Downarrow t_i}
 		}
-		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := n] \rangle}
-	\end{align*}
-
-	\begin{align*}
-		\frac{
-			\langle x, \sigma \rangle\Downarrow \langle b, \sigma \rangle \ \ 
-			\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle
+		{
+			\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow t
 		}
-		{\langle x := e, \sigma \rangle\Downarrow \langle \sigma' [x := b] \rangle}
-	\end{align*}
-
-
-	Arithmetic Binary Operation:
-	\begin{align*}
-		\frac{
-		\langle e_1, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
-		\langle e_2, \sigma' \rangle\Downarrow \langle n, \sigma'' \rangle \ \ 
-		\frac{
-			\langle bop, \sigma \rangle\Downarrow \langle op \in \{+. -, *, /, \%\} , \sigma \rangle
-		}{
-			\langle n\ op\ n, \sigma'' \rangle\Downarrow \langle n, \sigma''' \rangle \ \ 
-		}}
-		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle n, \sigma''' \rangle}
-	\end{align*}
-
-
-	Boolean Binary Operation:
-	\begin{align*}
-		\frac{
-		\langle e_1, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
-		\langle e_2, \sigma' \rangle\Downarrow \langle b, \sigma'' \rangle \ \ 
-		\frac{
-			\langle bop, \sigma \rangle\Downarrow \langle op \in \{\&\&, ||\} , \sigma \rangle
-		}{
-			\langle b\ op\ b, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle \ \ 
-		}}
-		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
-	\end{align*}
-
-
-	Comparison Binary Operation:
-	\begin{align*}
-		\frac{
-		\langle e_1, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
-		\langle e_2, \sigma' \rangle\Downarrow \langle n, \sigma'' \rangle \ \
-		\frac{
-			\langle bop, \sigma \rangle\Downarrow \langle op \in \{==, !=, <=, >=, <, >\} , \sigma \rangle
-		}{
-			\langle n\ bop\ n, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle
-		}}
-		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
 	\end{align*}
 	
+
+
+	Binary Operation:
 	\begin{align*}
 		\frac{
-		\langle e_1, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
-		\langle e_2, \sigma' \rangle\Downarrow \langle b, \sigma'' \rangle \ \
+			\langle e_1, \sigma \rangle\Downarrow t_1 \ \
+			\langle e_2, \sigma \rangle\Downarrow t_1 \ \
+		}
+		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow t_2}
+	\end{align*}
+	
+	Unary Operation:
+	\begin{align*}
 		\frac{
-			\langle bop, \sigma \rangle\Downarrow \langle op \in \{==, !=\} , \sigma \rangle
-		}{
-			\langle b\ bop\ b, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle
-		}}
-		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
+			\langle e, \sigma \rangle\Downarrow t_1
+		}
+		{\langle uop\ e, \sigma \rangle\Downarrow t_2}
+	\end{align*}
+
+	Variable: 
+	\begin{align*}
+		\frac{
+			\sigma(x) = t
+		}
+		{\langle x, \sigma \rangle\Downarrow t}
+	\end{align*}
+	
+	Borrow:
+	\begin{align*}
+		\frac{
+			\sigma(x) = t
+		}
+		{\langle \&x, \sigma \rangle\Downarrow \&t}
+	\end{align*}
+	
+	Dereference Pointer:
+	\begin{align*}
+		\frac{
+			\sigma(p) = t
+		}
+		{\langle *p, \sigma \rangle\Downarrow t}
 	\end{align*}
 
 
-	Arithmetic Unary Operation:
-	\begin{align*}
-		\frac{
-		\langle e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
-		\frac{
-			\langle uop, \sigma \rangle\Downarrow \langle -, \sigma \rangle
-		}{
-			\langle uop\ n, \sigma' \rangle\Downarrow \langle n, \sigma' \rangle
-		}}
-		{\langle uop\ e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle}
-	\end{align*}
-
-
-	Boolean Unary Operation:
-	\begin{align*}
-		\frac{
-		\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
-		\frac{
-			\langle uop, \sigma \rangle\Downarrow \langle !, \sigma \rangle
-		}{
-			\langle uop\ b, \sigma' \rangle\Downarrow \langle b, \sigma' \rangle
-		}}
-		{\langle uop\ e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
-	\end{align*}
+%	Arithmetic Binary Operation:
+%	\begin{align*}
+%		\frac{
+%		\langle e_1, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
+%		\langle e_2, \sigma' \rangle\Downarrow \langle n, \sigma'' \rangle \ \ 
+%		\frac{
+%			\langle bop, \sigma \rangle\Downarrow \langle op \in \{+. -, *, /, \%\} , \sigma \rangle
+%		}{
+%			\langle n\ op\ n, \sigma'' \rangle\Downarrow \langle n, \sigma''' \rangle \ \ 
+%		}}
+%		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle n, \sigma''' \rangle}
+%	\end{align*}
+%
+%
+%	Boolean Binary Operation:
+%	\begin{align*}
+%		\frac{
+%		\langle e_1, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
+%		\langle e_2, \sigma' \rangle\Downarrow \langle b, \sigma'' \rangle \ \ 
+%		\frac{
+%			\langle bop, \sigma \rangle\Downarrow \langle op \in \{\&\&, ||\} , \sigma \rangle
+%		}{
+%			\langle b\ op\ b, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle \ \ 
+%		}}
+%		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
+%	\end{align*}
+%
+%
+%	Comparison Binary Operation:
+%	\begin{align*}
+%		\frac{
+%		\langle e_1, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
+%		\langle e_2, \sigma' \rangle\Downarrow \langle n, \sigma'' \rangle \ \
+%		\frac{
+%			\langle bop, \sigma \rangle\Downarrow \langle op \in \{==, !=, <=, >=, <, >\} , \sigma \rangle
+%		}{
+%			\langle n\ bop\ n, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle
+%		}}
+%		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
+%	\end{align*}
+%	
+%	\begin{align*}
+%		\frac{
+%		\langle e_1, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
+%		\langle e_2, \sigma' \rangle\Downarrow \langle b, \sigma'' \rangle \ \
+%		\frac{
+%			\langle bop, \sigma \rangle\Downarrow \langle op \in \{==, !=\} , \sigma \rangle
+%		}{
+%			\langle b\ bop\ b, \sigma'' \rangle\Downarrow \langle b, \sigma'' \rangle
+%		}}
+%		{\langle e_1\ bop\ e_2, \sigma \rangle\Downarrow \langle b, \sigma'' \rangle}
+%	\end{align*}
+%
+%
+%	Arithmetic Unary Operation:
+%	\begin{align*}
+%		\frac{
+%		\langle e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle \ \ 
+%		\frac{
+%			\langle uop, \sigma \rangle\Downarrow \langle -, \sigma \rangle
+%		}{
+%			\langle uop\ n, \sigma' \rangle\Downarrow \langle n, \sigma' \rangle
+%		}}
+%		{\langle uop\ e, \sigma \rangle\Downarrow \langle n, \sigma' \rangle}
+%	\end{align*}
+%
+%
+%	Boolean Unary Operation:
+%	\begin{align*}
+%		\frac{
+%		\langle e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle \ \ 
+%		\frac{
+%			\langle uop, \sigma \rangle\Downarrow \langle !, \sigma \rangle
+%		}{
+%			\langle uop\ b, \sigma' \rangle\Downarrow \langle b, \sigma' \rangle
+%		}}
+%		{\langle uop\ e, \sigma \rangle\Downarrow \langle b, \sigma' \rangle}
+%	\end{align*}
 
 
 	\subsection{Example explanation}
