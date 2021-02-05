@@ -31,6 +31,8 @@ pub use super::parser::{
     },
 };
 
+pub use value_borrow::BorrowValue;
+
 pub use module_borrow::BorrowModule;
 
 pub use environment_borrow::{
@@ -104,32 +106,41 @@ impl BorrowChecker {
         self.error_handler.add(error);
     }
     
-//    fn get_environment(&mut self) -> &mut BorrowEnvironment {
-//        return match self.current_func {
-//            Some(id) => &mut self.module.mod_funcs[id].environments.envs[self.current_env],
-//            None => &mut self.module.mod_envs.envs[self.current_env],
-//        };
-//    }
-//
-//    fn get_variable(&mut self, ident: String, original: Span<String>) -> Option<(Option<usize>, usize, BorrowVariable)> { 
-//        match self.module.get_variable(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
-//            Some((func_id, env_id, val)) => return Some((func_id, env_id, val.clone())),
-//            None => return None,
-//        };
-//    }
-//
-//    fn add_variable(&mut self, original: Span<String>, ident: Span<String>, mutable: bool, r#type: Type) -> () {
-//        let type_var: BorrowVariable = BorrowVariable{
-//            original: original.clone(),
-//            ident: ident.clone(),
-//
-//            mutable: mutable,
-//            r#type: r#type.clone(),
-//        };
-//
-//        let result: Option<BorrowVariable> = self.get_environment().set_variable(type_var);
-//    }
-//    
+    fn get_environment(&mut self) -> &mut BorrowEnvironment {
+        return match self.current_func {
+            Some(id) => &mut self.module.mod_funcs[id].environments.envs[self.current_env],
+            None => &mut self.module.mod_envs.envs[self.current_env],
+        };
+    }
+
+    fn get_variable(&mut self, ident: String, original: Span<String>) -> Option<(Option<usize>, usize, BorrowVariable)> { 
+        match self.module.get_variable(ident.clone(), self.current_func, self.current_env, self.current_mod_env) {
+            Some((func_id, env_id, val)) => return Some((func_id, env_id, val.clone())),
+            None => return None,
+        };
+    }
+
+    fn add_variable(&mut self, original: Span<String>, ident: Span<String>, mutable: bool, pointer: (usize, usize)) -> () {
+        let borrow_var: BorrowVariable = BorrowVariable{
+            original: original.clone(),
+            ident: ident.clone(),
+
+            pointer: pointer,
+            mutable: mutable,
+        };
+
+        let result: Option<BorrowVariable> = self.get_environment().set_variable(borrow_var);
+    }
+
+    fn update_variable(&mut self, ident: String, deref: bool, value: BorrowValue) {
+        self.
+    }
+
+
+    fn store_value(&mut self, value: BorrowValue, mutable: bool) -> (usize, usize) {
+        self.get_environment().set_value(value, mutable)
+    }
+    
 
     fn create_body(&mut self) -> () {
         match self.current_func {

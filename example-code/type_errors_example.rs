@@ -12,7 +12,7 @@ fn func(fds: i32, asfa: bool) -> i32 {
     if false {	
         return false;
     } else {
-        let a: i32 = 1;
+        let a: &mut i32 = & 1;
     }
 }
 

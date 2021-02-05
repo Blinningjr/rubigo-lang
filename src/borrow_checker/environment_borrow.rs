@@ -6,6 +6,7 @@ pub use super::{
         Function,
         Let,
     },
+    value_borrow::BorrowValue,
 };
 
 use std::collections::HashMap;
@@ -45,6 +46,7 @@ pub struct BorrowEnvironment {
     pub prev_id: Option<usize>,
 
     pub variables: HashMap<String, BorrowVariable>, 
+    pub stack: Vec<BorrowStack>, 
 }
 
 
@@ -55,6 +57,7 @@ impl BorrowEnvironment {
             prev_id: prev_id,
 
             variables: HashMap::new(),
+            stack: Vec::new(),
         };
     }
 
@@ -75,6 +78,56 @@ impl BorrowEnvironment {
             },
         };
     }    
+
+
+    pub fn set_value(&mut self, value: BorrowValue, mutable: bool) -> (usize, usize) {
+        let stack = BorrowStack{
+            value: value.clone(),
+            stack: vec!(mutable),
+        };
+        self.stack.push(stack);
+        return (self.stack.len() - 1, 0);
+    }    
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct BorrowStack {
+    value: BorrowValue,
+    stack: Vec<bool>, // true if unique aka borrow mute and false if shared aka borrow.
+}
+
+impl BorrowStack {
+    pub fn add(&mut self, mutable: bool) -> usize {
+        self.stack.push(mutable);
+        return self.stack.len() - 1;
+    }
+
+    fn r#use(&mut self, id: usize) -> Option<String> {
+        if id >= self.stack.len() {
+            return Some("Lifetime had expired".to_string());
+        }
+        if self.stack[id] {
+            while id < self.stack.len() - 1 {
+                self.stack.pop();
+            }
+        }
+        return None;
+    }
+
+    pub fn update_value(&mut self, value: BorrowValue, id: usize) -> Option<String> {
+        if let Some(err) = self.r#use(id) {
+            return Some(err);
+        }
+        if !self.stack[id] {
+            panic!("Fatal error: Implementeation is not correct");
+        }
+        self.value = value;
+        return None;
+    }
+
+    pub fn get_value(&mut self, id: usize) -> (BorrowValue, Option<String>) {
+        return (self.value.clone(), self.r#use(id));
+    }
 }
 
 
@@ -118,6 +171,7 @@ pub struct BorrowVariable {
     pub original: Span<String>,
     pub ident: Span<String>,
 
+    pub pointer: (usize, usize),
     pub mutable: bool,
 }
 

@@ -39,8 +39,6 @@ impl BorrowChecker {
         for expr in func_call.parameters.iter() {
             self.check_expression(expr.clone());
         }
-        // TODO: If it returns a pointer how do i know which stack it should be in?
-        // DO i even allow pointers in as return values?
         return BorrowValue::Literal(false);
     }
 

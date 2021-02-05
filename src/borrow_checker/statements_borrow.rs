@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-
 pub use super::{
     BorrowChecker,
     expressions::Expression,
@@ -59,12 +58,24 @@ impl BorrowChecker {
 
     fn check_let(&mut self, let_stmt: Let) -> () {
         let value = self.check_expression(let_stmt.value);
-        // self.add_variable(); \\TODO: Add varaible to mem
+        let mutable = let_stmt.mutable != None;
+        let pointer = self.store_value(value, mutable);
+        self.add_variable(
+                let_stmt.original.clone(),
+                let_stmt.identifier,
+                mutable,
+                pointer,
+            );
     }
     
     fn check_assignment(&mut self, assignment: Assignment) -> () {
         let value = self.check_expression(assignment.value);
-        // self.set_variable(); \\TODO: set varaible in mem. remove old pointer?
+        self.update_variable(
+            assignment.identifier.fragment,
+            assignment.derefrenced != None,
+            value
+            );
+        // self.set_variable(); \\TODO: update varaible in mem. remove old pointer?
     }
 
     fn check_return(&mut self, return_stmt: Return) -> () {
@@ -82,7 +93,7 @@ impl BorrowChecker {
             self.check_statement(statement.clone());
         } 
 
-        // TODO: Remove all variables added in this scope.
+        // TODO: Remove all variables added in this scope. This is not nedded i think?
 
         self.current_env = current_env;
         if self.current_func == None {
@@ -90,5 +101,4 @@ impl BorrowChecker {
         }
     }
 }
-
 
