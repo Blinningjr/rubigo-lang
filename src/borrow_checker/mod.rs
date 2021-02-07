@@ -133,7 +133,7 @@ impl BorrowChecker {
     }
 
     fn update_variable(&mut self, ident: String, deref: bool, value: BorrowValue) {
-        self.
+    
     }
 
 
