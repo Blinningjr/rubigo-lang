@@ -48,9 +48,19 @@ impl BorrowEnvironments {
             let id = env.id;
             match env.get_variable(&ident) {
                 Some(var) => {
+                    match value {
+                        BorrowValue::Pointer(_, env_id, _, _) => {
+                            if id < env_id {
+                                return Some("borrowed value does not live long enough".to_string());
+                            }
+                        },
+                        _ => (),
+                    };
+
                     let stack_p = var.pointer.0;
                     let stack_b = var.pointer.1;
-                    return self.envs[id].stack[stack_p].update_value(value, stack_b);
+                    let len = self.envs.len() - 1;
+                    return self.envs[id].stack[stack_p].update_value(value, stack_b, len);
                 },
                 None => (),
             };
@@ -60,18 +70,20 @@ impl BorrowEnvironments {
     }
 
     pub fn update_value(&mut self, value: BorrowValue, env_id: usize, stack_id: usize, borrow_id: usize) -> Option<String> {
-        self.envs[env_id].stack[stack_id].update_value(value, borrow_id)
+        let len = self.envs.len() - 1;
+        self.envs[env_id].stack[stack_id].update_value(value, borrow_id, len)
     }
 
 
 
     pub fn create_pointer(&mut self, ident: String, mutable: bool) -> BorrowValue {
+        let len = self.envs.len() - 1;
         for env in self.envs.iter().rev() {
             let id = env.id;
             match env.get_variable(&ident) {
                 Some(var) => {
                     let stack_p = var.pointer.0;
-                    let bstack = self.envs[id].stack[stack_p].add(mutable);
+                    let bstack = self.envs[id].stack[stack_p].add(mutable, len);
                     return BorrowValue::Pointer(mutable, id, stack_p, bstack);
                 },
                 None => (),
@@ -130,7 +142,7 @@ impl BorrowEnvironment {
                 let id = self.stack.len();
                 let stack = BorrowStack{
                     value: val.clone(),
-                    stack: vec!(true),
+                    stack: vec!((true, self.id)),
                 };
                 self.stack.push(stack); 
                 self.stack[var.pointer.0].value = BorrowValue::Pointer(true, self.id, id, 0);
@@ -159,7 +171,7 @@ impl BorrowEnvironment {
     pub fn add_value(&mut self, value: BorrowValue, mutable: bool) -> (usize, usize) {
         let stack = BorrowStack{
             value: value.clone(),
-            stack: vec!(mutable),
+            stack: vec!((mutable, self.id)),
         };
         self.stack.push(stack);
         return (self.stack.len() - 1, 0);
@@ -169,32 +181,37 @@ impl BorrowEnvironment {
 #[derive(Debug, Clone, PartialEq)]
 pub struct BorrowStack {
     value: BorrowValue,
-    stack: Vec<bool>, // true if unique aka borrow mute and false if shared aka borrow.
+    stack: Vec<(bool, usize)>, // (true if unique aka borrow mute and false if shared aka borrow, the environment id)
 }
 
 impl BorrowStack {
-    pub fn add(&mut self, mutable: bool) -> usize {
-        self.stack.push(mutable);
+    pub fn add(&mut self, mutable: bool, id: usize) -> usize {
+        self.stack.push((mutable, id));
         return self.stack.len() - 1;
     }
 
-    fn r#use(&mut self, id: usize) -> Option<String> {
+    fn r#use(&mut self, id: usize, cenv: usize) -> Option<String> {
         if id >= self.stack.len() {
             return Some("Lifetime had expired".to_string());
         }
-        if self.stack[id] {
+
+        if self.stack[id].0 {
             while id < self.stack.len() - 1 {
-                self.stack.pop();
+                if let Some((_, env)) = self.stack.pop() {
+                    if env < cenv {
+                        return Some("ilegal borrow usage".to_string());
+                    }
+                }
             }
         }
         return None;
     }
 
-    pub fn update_value(&mut self, value: BorrowValue, id: usize) -> Option<String> {
-        if let Some(err) = self.r#use(id) {
+    pub fn update_value(&mut self, value: BorrowValue, id: usize, cenv: usize) -> Option<String> {
+        if let Some(err) = self.r#use(id, cenv) {
             return Some(err);
         }
-        if !self.stack[id] {
+        if !self.stack[id].0 {
             return Some(format!("ilegal borrow use. Try borrowing as mutable"));
             //panic!("Fatal error: Implementeation is not correct\n\n{:#?}\nid: {:?}", self, id);
         }

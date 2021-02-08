@@ -101,10 +101,9 @@ impl BorrowChecker {
                 _ => panic!("Fatal type checker error"),
             };
         } else {
-            envs.update_variable(
-                    ident,
-                    value
-                );
+            if let Some(msg) = envs.update_variable(ident, value) {
+                self.create_error(msg); 
+            }
         }
         
         //TODO: update varaible in mem. remove old pointer?
