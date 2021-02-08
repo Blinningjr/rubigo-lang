@@ -118,7 +118,7 @@ impl Type {
             _ => (),
         };
         if self.borrow == other.borrow {
-            if self.mutable == other.mutable {
+            if self.mutable == other.mutable || !self.borrow {
                 return match (&self.r#type, &other.r#type) {
                     (MyTypes::I32, MyTypes::I32) => true,
                     (MyTypes::F32, MyTypes::F32) => true,

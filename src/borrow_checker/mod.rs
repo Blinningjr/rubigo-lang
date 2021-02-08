@@ -97,10 +97,10 @@ impl BorrowChecker {
         self.funcs.push(function);    
     }
 
-//    fn create_error(&mut self, message: String) -> () {
-//        let error: Error = Error::Error(message.clone()); self.error_handler.add(error);
-//    }
-//
+    fn create_error(&mut self, message: String) -> () {
+        let error: Error = Error::Error(message.clone()); self.error_handler.add(error);
+    }
+
 //    fn create_borrow_error(&mut self, level: ErrorLevel, message: String, code: Span<String>, line: usize, offset: usize) -> () {
 //        let error: Error = Error::BorrowError(BorrowError {
 //            level: level,

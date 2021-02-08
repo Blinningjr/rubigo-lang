@@ -108,7 +108,7 @@ impl Checker {
 
 
     fn create_borrow_error(&mut self, level: ErrorLevel, message: String, code: Span<String>, line: usize, offset: usize) -> () {
-        let error: Error = Error::BorrowError(BorrowError {
+        let _error: Error = Error::BorrowError(BorrowError {
             level: level,
             message: message.clone(),
             code: code,
@@ -221,11 +221,11 @@ impl Checker {
                 }
             },
             Err(_var) => {
-                self.create_type_error(ErrorLevel::Error,
-                                       format!("Can't borrow {} as mutable", ident),
-                                       original.clone(),
-                                       original.get_line(),
-                                       original.get_offset(),);
+               // self.create_type_error(ErrorLevel::Error,
+               //                        format!("Can't borrow {} as mutable", ident),
+               //                        original.clone(),
+               //                        original.get_line(),
+               //                        original.get_offset(),);
             },
         };
     }
@@ -242,11 +242,11 @@ impl Checker {
                 }
             },
             Err(_var) => {
-                self.create_type_error(ErrorLevel::Error,
-                                       format!("Can't borrow {}", ident),
-                                       original.clone(),
-                                       original.get_line(),
-                                       original.get_offset(),);
+                //self.create_type_error(ErrorLevel::Error,
+                //                       format!("Can't borrow {}", ident),
+                //                       original.clone(),
+                //                       original.get_line(),
+                //                       original.get_offset(),);
             },
         };
     }
