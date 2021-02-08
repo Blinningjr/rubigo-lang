@@ -14,7 +14,7 @@ pub struct Token {
 
 
 /**
- * Implments Token functions.
+ * Implements Token functions.
  */
 impl Token {
     /**
@@ -55,7 +55,7 @@ impl Token {
 
 
     /**
-     * Returns the offset from the begining of the line to the token value.
+     * Returns the offset from the beginning of the line to the token value.
      */
     pub fn get_offset(&self) -> usize {
         return self.offset;

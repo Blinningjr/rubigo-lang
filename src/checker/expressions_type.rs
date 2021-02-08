@@ -86,7 +86,7 @@ impl Checker {
                 if !expr_type.borrow {
                     let (line, offset): (usize, usize) = self.get_expression_location(*expr.clone());
                     self.create_borrow_error(ErrorLevel::Error,
-                                           format!("Can't derefrence a none borrowed value"),
+                                           format!("Can't dereference a none borrowed value"),
                                            original.clone(),
                                            line,
                                            offset);
@@ -120,7 +120,7 @@ impl Checker {
 
         if input_type.len() != func.parameters.len() {
             self.create_type_error(ErrorLevel::Error,
-                                   format!("Expected {} paramters got {}", func.parameters.len(), input_type.len()),
+                                   format!("Expected {} parameters got {}", func.parameters.len(), input_type.len()),
                                    original.clone(),
                                    func_call.identifier.get_line(),
                                    func_call.identifier.get_offset());

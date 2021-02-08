@@ -58,7 +58,7 @@ impl Checker {
             error_handler: ErrorHandler::new(true),
             module: TypeModule::new(),
            
-            current_mod_env: 0, // The current env id of the modual envs.
+            current_mod_env: 0, // The current env id of the module envs.
             current_env: 0,
             current_func: None,
         };
@@ -171,7 +171,7 @@ impl Checker {
         match result {
             Some(var) => {
                 self.create_type_error(ErrorLevel::Error,
-                                       format!("Variable {} already deleared at line {}", ident.get_fragment(), var.ident.get_fragment()),
+                                       format!("Variable {} already declared at line {}", ident.get_fragment(), var.ident.get_fragment()),
                                        original,
                                        ident.get_line(),
                                        ident.get_offset());

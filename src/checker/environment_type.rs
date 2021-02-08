@@ -88,7 +88,7 @@ impl TypeEnvironment {
    
 
     /**
-     * Retruns Typevariable if it already is declared and None if it isen't.
+     * Returns Type variable if it already is declared and None if it isn't.
      */
     pub fn set_variable(&mut self, variable: TypeVariable) -> Option<TypeVariable> {
         match self.get_variable(&variable.get_ident()) {
@@ -110,7 +110,7 @@ impl TypeEnvironment {
    
 
     /**
-     * Retruns TypeFunciton if it already is declared and None if it isen't.
+     * Returns Type Function if it already is declared and None if it isn't.
      */
     pub fn set_function(&mut self, function: TypeFunction) -> Option<usize> {
         match self.get_function_id(&function.get_ident()) {

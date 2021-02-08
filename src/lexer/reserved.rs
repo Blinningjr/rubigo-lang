@@ -31,7 +31,7 @@ pub fn check_reserved_idents(ident: &str) -> TokenType {
 
 
 /**
- * Checks if input is two reserved symboles.
+ * Checks if input is two reserved symbols.
  * Returns token type or error.
  */
 pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static str> {
@@ -58,7 +58,7 @@ pub fn check_symbols(ch: char, look_a_head: char) -> Result<TokenType, &'static 
 
 
 /**
- * Cheacks if symbole is reserved.
+ * Checks if symbol is reserved.
  * Returns token type or error.
  */
 pub fn check_symbol(ch: char) -> Result<TokenType, &'static str> {

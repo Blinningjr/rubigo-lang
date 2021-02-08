@@ -201,7 +201,7 @@ impl Checker {
         if assignment.derefrenced != None {
             if !ass_var.r#type.borrow {
                 self.create_borrow_error(ErrorLevel::Error,
-                                      format!("Can't derefrence none borrowed value"),
+                                      format!("Can't dereference none borrowed value"),
                                       original.clone(),
                                       assignment.derefrenced.clone().unwrap().get_line(),
                                       assignment.derefrenced.unwrap().get_offset());
@@ -272,7 +272,7 @@ impl Checker {
                 if func.return_type == None { 
                     let (line, offset): (usize, usize) = self.get_expression_location(return_stmt.value);
                     self.create_type_error(ErrorLevel::Error,
-                                           format!("Function {} dosen't return", func.og_func.identifier.get_fragment()),
+                                           format!("Function {} doesn't return", func.og_func.identifier.get_fragment()),
                                            original,
                                            line,
                                            offset);

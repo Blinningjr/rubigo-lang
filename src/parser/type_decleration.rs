@@ -8,7 +8,7 @@ use super::{
 
 
 /**
- * Defines Type Decleration in Rubigo.
+ * Defines Type Declaration in Rubigo.
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeDecleration {
@@ -20,7 +20,7 @@ pub struct TypeDecleration {
 
 impl Parser {
     /**
-     * Parse Type Decleration.
+     * Parse Type Declaration.
      */
     pub(super) fn parse_type_decleration(&mut self) -> TypeDecleration {
         let mut borrow: bool = false;
