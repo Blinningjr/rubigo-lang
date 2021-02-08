@@ -20,42 +20,47 @@ pub struct BorrowEnvironments {
 impl BorrowEnvironments {
     pub fn new() -> BorrowEnvironments {
         return BorrowEnvironments {
-            envs: vec!(BorrowEnvironment::new(0, None)), 
-        }; } 
-    pub fn get_func(&mut self, id: usize) -> &mut BorrowEnvironment {
-        return &mut self.envs[id];
+            envs: vec!(BorrowEnvironment::new()), 
+        }; 
+    } 
+
+    pub fn create_env(&mut self) {
+        self.envs.push(BorrowEnvironment::new());
     }
 
-    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &BorrowVariable)> {
-        match self.envs[env_id].get_variable(&ident) {
-            Some(var) => return Some((env_id, var)),
-            None => {
-                match self.envs[env_id].prev_id {
-                    Some(id) => return self.get_variable(ident, id),
-                    None => return None,
-                };
-            },
-        };
+    pub fn pop_env(&mut self) {
+        self.envs.pop();
     }
+
+    pub fn add_variable(&mut self, ident: Span<String>, mutable: bool, original: Span<String>) -> Option<(Span<String>, Span<String>)> {
+        //TODO
+        None
+    }
+
+//    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &BorrowVariable)> {
+//        match self.envs[env_id].get_variable(&ident) {
+//            Some(var) => return Some((env_id, var)),
+//            None => {
+//                match self.envs[env_id].prev_id {
+//                    Some(id) => return self.get_variable(ident, id),
+//                    None => return None,
+//                };
+//            },
+//        };
+//    }
 }
 
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct BorrowEnvironment {
-    pub id: usize,
-    pub prev_id: Option<usize>,
-
     pub variables: HashMap<String, BorrowVariable>, 
     pub stack: Vec<BorrowStack>, 
 }
 
 
 impl BorrowEnvironment {
-    pub fn new(id: usize, prev_id: Option<usize>) -> BorrowEnvironment {
+    pub fn new() -> BorrowEnvironment {
         return BorrowEnvironment{
-            id: id,
-            prev_id: prev_id,
-
             variables: HashMap::new(),
             stack: Vec::new(),
         };
@@ -128,41 +133,6 @@ impl BorrowStack {
     pub fn get_value(&mut self, id: usize) -> (BorrowValue, Option<String>) {
         return (self.value.clone(), self.r#use(id));
     }
-}
-
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct BorrowFunction {
-    pub og_func: Function, 
-
-    pub environments: BorrowEnvironments,
-}
-
-impl BorrowFunction {
-    pub fn new(func: Function) -> BorrowFunction {
-        return BorrowFunction{
-            og_func: func,
-            environments: BorrowEnvironments::new(),
-        };
-    }
-
-    pub fn get_ident(& self) -> String {
-        return self.og_func.identifier.get_fragment();
-    }
-    
-    pub fn get_id(& self) -> usize {
-        return self.og_func.id;
-    }
-
-    pub fn get_variable(& self, ident: String, env_id: usize) -> Option<(usize, &BorrowVariable)> {
-        return self.environments.get_variable(ident, env_id)
-    }
-   
-    pub fn create_env(&mut self, id: usize) -> usize {
-        let new_id: usize = self.environments.envs.len();
-        self.environments.envs.push(BorrowEnvironment::new(new_id, Some(id)));
-        return new_id;
-    }    
 }
 
 

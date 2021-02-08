@@ -5,7 +5,6 @@ pub use super::{
     literal::Literal,
     Span,
     ErrorLevel,
-    environment_borrow::BorrowFunction,
     operations::UnOperator,
 };
 
