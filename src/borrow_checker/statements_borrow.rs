@@ -36,7 +36,12 @@ impl BorrowChecker {
             Statement::Assignment(assignment) => self.check_assignment(envs, assignment),
             Statement::Return(r#return) => self.check_return(envs, r#return),
             Statement::Body(body) => self.check_body(envs.clone(), *body),
-            Statement::Expression(expression) => {self.check_expression(envs, expression);}, // TODO: Check Expressions.
+            Statement::Expression(expression) => {
+                match expression {
+                    Expression::FunctionCall(func) => self.check_function_call(envs, (*func).clone(), &func.original),
+                    _ => panic!("Fatal type checker error"),
+                };
+            }, // TODO: Check Expressions.
             _ => panic!("Not implemented!"),
         };
     }
@@ -59,12 +64,12 @@ impl BorrowChecker {
     }
 
     fn check_while(&mut self, envs: &mut BorrowEnvironments, while_stmt: While) -> () {
-        self.check_expression(envs, while_stmt.condition);
+        self.check_expression(envs, while_stmt.condition, &while_stmt.original);
         self.check_body(envs.clone(), while_stmt.body);
     }
 
     fn check_if(&mut self, envs: &mut BorrowEnvironments, if_stmt: If) -> () {
-        self.check_expression(envs, if_stmt.condition);
+        self.check_expression(envs, if_stmt.condition, &if_stmt.original);
         self.check_body(envs.clone(), if_stmt.if_body);
         if let Some(body) = if_stmt.else_body {
             self.check_body(envs.clone(), body);
@@ -72,7 +77,7 @@ impl BorrowChecker {
     }
 
     fn check_let(&mut self, envs: &mut BorrowEnvironments, let_stmt: Let) -> () {
-        let value = self.check_expression(envs, let_stmt.value);
+        let value = self.check_expression(envs, let_stmt.value, &let_stmt.original);
 
         let mutable = let_stmt.mutable != None;
         let pointer = envs.add_value(value, true);
@@ -85,7 +90,7 @@ impl BorrowChecker {
     }
     
     fn check_assignment(&mut self, envs: &mut BorrowEnvironments, assignment: Assignment) -> () {
-        let value = self.check_expression(envs, assignment.value);
+        let value = self.check_expression(envs, assignment.value.clone(), &assignment.original);
 
 
         let ident = assignment.identifier.get_fragment();
@@ -94,7 +99,7 @@ impl BorrowChecker {
             match val {
                 BorrowValue::Pointer(_, env_id, stack_id, borrow_id) => {
                     if let Some(msg) = envs.update_value(value, env_id, stack_id, borrow_id) {
-                        self.create_error(msg);
+                        self.create_borrow_error(ErrorLevel::Error, msg, assignment.original.clone(), assignment.identifier.get_line(), assignment.identifier.get_offset());
                     }
                 },
                 BorrowValue::UnknownPointer => panic!("Fatal borrow checker Error"),
@@ -102,15 +107,16 @@ impl BorrowChecker {
             };
         } else {
             if let Some(msg) = envs.update_variable(ident, value) {
-                self.create_error(msg); 
+                let (line, offset) = self.get_expression_location(assignment.value);
+                self.create_borrow_error(ErrorLevel::Error, msg, assignment.original.clone(), line, offset);
             }
         }
         
-        //TODO: update varaible in mem. remove old pointer?
+        //TODO: update variable in mem. Remove old pointer?
     }
 
     fn check_return(&mut self, envs: &mut BorrowEnvironments, return_stmt: Return) -> () {
-        let _value = self.check_expression(envs, return_stmt.value);
+        let _value = self.check_expression(envs, return_stmt.value, &return_stmt.original);
     }
 
     fn check_body(&mut self, mut envs: BorrowEnvironments, body: Body) -> () {

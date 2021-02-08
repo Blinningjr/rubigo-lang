@@ -9,4 +9,5 @@ if false {
 }
 
 let d: i32 = 4 + *c;
+let e: i32 = *d;
 

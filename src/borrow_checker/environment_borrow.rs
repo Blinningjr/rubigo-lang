@@ -92,15 +92,6 @@ impl BorrowEnvironments {
         panic!("Fatal type checker error"); 
     }
 
-//    pub fn get_variable(& self, ident: String) -> Option<&BorrowVariable> {
-//        for env in self.envs.iter().rev() {
-//            match env.get_variable(&ident) {
-//                Some(val) => return Some(val),
-//                None => (),
-//            };
-//        } 
-//        return None;
-//    }
     pub fn get_value(&mut self, ident: String) -> Option<(BorrowValue, Option<String>)> {
         for env in self.envs.iter_mut().rev() {
             match env.get_value(&ident) {
@@ -155,7 +146,7 @@ impl BorrowEnvironment {
    
 
     /**
-     * Retruns Borrowvariable if it already is declared and None if it isen't.
+     * Returns Borrow variable if it already is declared and None if it isn't.
      */
     pub fn add_variable(&mut self, variable: BorrowVariable) -> Option<BorrowVariable> {
         match self.get_variable(&variable.get_ident()) {
@@ -199,7 +190,7 @@ impl BorrowStack {
             while id < self.stack.len() - 1 {
                 if let Some((_, env)) = self.stack.pop() {
                     if env < cenv {
-                        return Some("ilegal borrow usage".to_string());
+                        return Some("illegal borrow usage".to_string());
                     }
                 }
             }
@@ -212,8 +203,7 @@ impl BorrowStack {
             return Some(err);
         }
         if !self.stack[id].0 {
-            return Some(format!("ilegal borrow use. Try borrowing as mutable"));
-            //panic!("Fatal error: Implementeation is not correct\n\n{:#?}\nid: {:?}", self, id);
+            return Some(format!("illegal borrow use. Try borrowing as mutable"));
         }
         self.value = value;
         return None;
@@ -222,7 +212,7 @@ impl BorrowStack {
     pub fn get_value(& self, id: usize) -> (BorrowValue, Option<String>) {
         let mut message = None;
         if id >= self.stack.len() {
-            message = Some("ilegal use of borrow".to_string());
+            message = Some("illegal use of borrow".to_string());
         } 
         return (self.value.clone(), message);
     }

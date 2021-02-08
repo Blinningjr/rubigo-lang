@@ -37,7 +37,7 @@ pub struct SyntaxError {
 }
 
 /**
- * Defubes Type Error in Rubgio.
+ * Defines Type Error in Rubgio.
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeError {
@@ -49,7 +49,7 @@ pub struct TypeError {
 }
 
 /**
- * Defubes Borrow Error in Rubgio.
+ * Defines Borrow Error in Rubgio.
  */
 #[derive(Debug, Clone, PartialEq)]
 pub struct BorrowError {
@@ -72,7 +72,7 @@ pub struct ErrorHandler {
 
 impl ErrorHandler {
     /**
-     * Creates a new ErrorHandler.
+     * Creates a new Error Handler.
      */
     pub fn new(verbose: bool) -> ErrorHandler {
         return ErrorHandler {
@@ -131,7 +131,7 @@ impl ErrorHandler {
 
 
     /**
-     * Print SyntaxError.
+     * Print Syntax Error.
      */
     fn print_syntax_error(&mut self, error: SyntaxError) -> () {
         let level: String; match &error.level {
@@ -161,7 +161,7 @@ impl ErrorHandler {
 
 
     /**
-     * Print TypeError.
+     * Print Type Error.
      */
     fn print_type_error(&mut self, error: TypeError) -> () {
         let level: String; match &error.level {
@@ -180,7 +180,7 @@ impl ErrorHandler {
     }
     
     /**
-     * Print BorrowError.
+     * Print Borrow Error.
      */
     fn print_borrow_error(&mut self, error: BorrowError) -> () {
         let level: String; match &error.level {

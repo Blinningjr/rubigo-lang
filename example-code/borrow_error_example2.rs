@@ -6,5 +6,5 @@ fn example(x: &mut i32, y: &mut i32) -> mut i32 {
 
 let mut local: i32 = 5;
 let pointer: &mut i32 = &mut local;
-
 let result: i32 = example(pointer, pointer);
+
