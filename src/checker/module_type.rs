@@ -28,13 +28,14 @@ impl TypeModule {
                    None => (),
                 };
             },
-            None => (),
+            None => {
+                return match self.mod_envs.get_variable(ident, mod_env_id) {
+                    Some((env_id, var)) => Some((None, env_id, var)),
+                    None => None,
+                };
+            },
        }; 
-
-        return match self.mod_envs.get_variable(ident, mod_env_id) {
-            Some((env_id, var)) => Some((None, env_id, var)),
-            None => None,
-        };
+        return None;
     }
     
     pub fn get_function_id(& self, ident: String, func_id: Option<usize>, env_id: usize, mod_env_id: usize) -> Option<usize> {
@@ -47,7 +48,7 @@ impl TypeModule {
             },
             None => (),
        }; 
-
+        
         return self.mod_envs.get_function_id(ident, mod_env_id);
     }
 

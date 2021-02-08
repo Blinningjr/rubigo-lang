@@ -4,10 +4,13 @@ let mut test_s: & String = &tval;
 let dubbor: & String = &test_s;
 
 fn test() -> () {
-	let tval2: String = "tval2";
-	let mut debor: String = *tval2;
-	debor = *tval2;
-	test_s = &tval2;
+    let mut scope: &String = &"hello";
+    {
+	    let tval2: String = "tval2";
+	    let mut debor: String = *tval2;
+	    debor = *tval2;
+	    scope = &tval2;
+    }
 }
 
 test();

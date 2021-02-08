@@ -100,7 +100,9 @@ impl InterpModule {
             n => {
                 match self.func_envs[n-1].get_variable(identifier.clone()) {
                     Some(val) => return val,
-                    None => (),
+                    None => {
+                        panic!("Fatal Interpreter Error");
+                    },
                 };
             },
         }

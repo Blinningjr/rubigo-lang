@@ -4,7 +4,7 @@ fn hello_world() -> () {
 
 let c: f32 = 22.2;
 
-fn foo(bar: i32) -> bool {
+fn foo(bar: i32, c: f32) -> bool {
 	hello_world();
 	while true {
         	let a: f32 = 10.2 + c;
@@ -12,12 +12,12 @@ fn foo(bar: i32) -> bool {
         	if bar == 21 {
 			return true;
         	} else {
-			foo(21);
+			foo(21, c);
             		return false;
         	}
     	}
 	return false;
 }
 
-print(foo(10));
+print(foo(10, c));
 
