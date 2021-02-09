@@ -183,14 +183,14 @@ impl BorrowStack {
 
     fn r#use(&mut self, id: usize, cenv: usize) -> Option<String> {
         if id >= self.stack.len() {
-            return Some("Lifetime had expired".to_string());
+            return Some("Lifetime has expired".to_string());
         }
 
         if self.stack[id].0 {
             while id < self.stack.len() - 1 {
                 if let Some((_, env)) = self.stack.pop() {
                     if env < cenv {
-                        return Some("illegal borrow usage".to_string());
+                        return Some("Invalidates other borrows which are possible in use".to_string());
                     }
                 }
             }
@@ -203,7 +203,7 @@ impl BorrowStack {
             return Some(err);
         }
         if !self.stack[id].0 {
-            return Some(format!("illegal borrow use. Try borrowing as mutable"));
+            return Some(format!("Can't mutate value using non mutable borrow"));
         }
         self.value = value;
         return None;
@@ -212,7 +212,7 @@ impl BorrowStack {
     pub fn get_value(& self, id: usize) -> (BorrowValue, Option<String>) {
         let mut message = None;
         if id >= self.stack.len() {
-            message = Some("illegal use of borrow".to_string());
+            message = Some("Lifetime has expired".to_string());
         } 
         return (self.value.clone(), message);
     }
