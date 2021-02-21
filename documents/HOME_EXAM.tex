@@ -288,16 +288,34 @@ print_n_prime(&mut number);
 	\begin{align*}
 		\frac{
 			\frac{i = 1..n}
-			{\langle e_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
+			{
+				\langle e_i, \sigma^{i - 1} \rangle\Downarrow
+				\langle v_i, \sigma^i \rangle
+			}
+			\Downarrow
+			\frac{i = 1..n}
+			{
+				\langle v_i, \sigma^{n + 1} \rangle\Downarrow
+				\sigma^{n + 1}[x_i := v_i]
+			}
 		}
-		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \sigma_{n + 1}}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma^0 \rangle\Downarrow \sigma^{n + 2}}
 	\end{align*}
 	\begin{align*}
 		\frac{
 			\frac{i = 1..n}
-			{\langle e_i, \sigma_{i-1} \rangle\Downarrow \langle v_i, \sigma_i \rangle}
+			{
+				\langle e_i, \sigma^{i - 1} \rangle\Downarrow
+				\langle v_i, \sigma^i \rangle
+			}
+			\Downarrow
+			\frac{i = 1..n}
+			{
+				\langle v_i, \sigma^{n + 1} \rangle\Downarrow
+				\sigma^{n + 1}[x_i := v_i]
+			}
 		}
-		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow \langle v, \sigma_{n + 1} \rangle}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma^0 \rangle\Downarrow \langle v, \sigma^{n + 2} \rangle}
 	\end{align*}
 
 %	Expression:
