@@ -690,62 +690,52 @@ let var: bool = !true;
 		I have implemented the whole type checker by my self.
 
 
-
     \section{Rubigo-lang Borrow Checker}	
-    	\subsection{Borrow Checking Rules}
- 		My borrow chcker only checks the number of borrow of a variable and the number of mutable borrows. The rule is that a variable can be borrowed any number of times as long as it is not borrowed as mutable at the same time. It is similar with mutable borrows where a variable can be borrowed as mutable as long as no one else is borrowing the variable. Here is a example of whell formed borrows.
-	\begin{verbatim}
-let mut a: i32 = 10;
-let b: &mut i32 = &mut a;
-*b = 5;
-a = 7;
+    	\subsection{Borrow Checking Rules And Examples of ill formed borrows}
+	I have implemented a stack borrow checker that works by having a stack of borrows for each variable. The stack contains two types of borrows, mutable borrows and normal borrow. If one of borrows are used the borrow checker then checks that the borrow is still present in the borrow stack, if it is not present then the borrow checker will give a error. Changing the value of a variable using a mutable borrow then all the above borrows in the borrow stack will be removed. Here is an example of when this rule will give an error.
 
-let c: f32 = 10.2;
-let d: &f32 = &c;
-let e: &f32 = &c;
+    	\begin{verbatim}
+let mut local: i32 = 42;
+let x: &mut i32 = &mut local;
+let shared1: &i32 = &local;
+let shared2: &i32 = &local;
+let mut val: i32 = *x;
+val = *shared1;
+val = *shared2;
+*x = 17 + *x;
+val = *shared1;  // Error
     	\end{verbatim}
 
-		My borrow checker doesn't keep track of who is owning the value right now. An example of a error that can occur in my borrow checker is the following.
-
-	\begin{verbatim}
-let mut a: i32 = 10;
-let b: &mut i32 = &mut a;
-a = 7;
-*b = 5;
-    	\end{verbatim}
-
-	In this example the assigning of \emph{a = 7} should cause an error because the variable \emph{b} owns the value.
-
-
+	The stack borrow doesn't cover all the cases thus I added some more rules. One of them is that a variable can't borrow another variable that has a shorter life span. This makes sure that a borrow value doesn't disappear before the pointer, here is an example of where this rule finds an error.
 
 	\subsection{Example of ill formed borrows that rubigo-lang catches}
-		One of the ill formed borrows my borrow checker catches is when a variable is borrowed and borrowed as mutable.
-	\begin{verbatim}
-let mut a: i32 = 10;
-let b: &mut i32 = &mut a;
-let c: &i32 = &a; \\ Error
-    	\end{verbatim}
-
-	Another case it catches ill formed borrows is when there are multiple mutable borrows of the same variable.
-	\begin{verbatim}
-let mut a: i32 = 10;
-let b: &mut i32 = &mut a;
-let c: &mut i32 = &mut a; \\ Error
-    	\end{verbatim}
-
-	The last type of ill formed borrows that it catches is when borrowing a variable that lives shorter then the variable storing the borrow.
-	\begin{verbatim}
-let a: i32 = 10;
-let mut b: & i32 = & a;
-if true {
-    let c: i32 = 20;
-    b = &c; \\ Error
+    	\begin{verbatim}
+let a: i32 = 3;
+let mut b: & i32 = &a;
+{
+    let c: i32 = 4;
+    b = &c;  // Error
 }
+print(*b);
+    	\end{verbatim}
+
+	The last rule is that multiple pointers that point to the same variable can't be used in function calls. The reason for this is that it makes it much more complicated to borrow check and it doesn't really limit what you can do with it. Here is an example of were this rule finds an error.
+
+    	\begin{verbatim}
+fn example(x: &mut i32, y: &mut i32) -> mut i32 {
+    *x = 42;
+    *y = 14;
+    return *x;
+}
+
+let mut local: i32 = 5;
+let pointer: &mut i32 = &mut local;
+let result: i32 = example(pointer, pointer);  // Error
     	\end{verbatim}
 
 
 	\subsection{Solution compared to requirements}
-		My borrow checker is very basic and lacks some of the core functionality of a borrow checker, thus it dose not fulfill all the requirements. I have implemented the whole borrow checker my self.  
+	My solution fulfills the requirements of rejecting ill formed borrows for lexical scoping lifetimes but it does not work for non lexical lifetimes. I have implemented the whole borrow checker by my self using the paper on stack borrows.
 
 
     \section{Rubigo-lang LLVM backend}	
