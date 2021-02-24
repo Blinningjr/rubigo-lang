@@ -285,38 +285,39 @@ print_n_prime(&mut number);
 	\end{align*}
 
 	Function Call:
+	{\small
+  	\setlength{\abovedisplayskip}{6pt}
+  	\setlength{\belowdisplayskip}{\abovedisplayskip}
+  	\setlength{\abovedisplayshortskip}{0pt}
+  	\setlength{\belowdisplayshortskip}{3pt}
 	\begin{align*}
 		\frac{
-			\frac{i = 1..n}
-			{
-				\langle e_i, \sigma^{i - 1} \rangle\Downarrow
-				\langle v_i, \sigma^i \rangle
-			}
-			\Downarrow
-			\frac{i = 1..n}
-			{
-				\langle v_i, \sigma^{n + 1} \rangle\Downarrow
-				\sigma^{n + 1}[x_i := v_i]
-			}
+			\langle e_1, \sigma^0 \rangle\Downarrow \langle v_1, \sigma^1 \rangle
+			\cdots
+			\langle e_n, \sigma^{n-1} \rangle\Downarrow \langle v_n, \sigma^n \rangle,
+			\sigma^{n + 1}[a_1 := v_1, \cdots, a_n := v_n],
+			\langle f_c, \sigma^{n+1}\rangle\Downarrow\langle r, \sigma^{n + 2}\rangle
 		}
-		{\langle f(e_1, e_2, \cdots, e_n), \sigma^0 \rangle\Downarrow \sigma^{n + 2}}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma^0 \rangle\Downarrow\langle r, \sigma^{n + 2}\rangle}
 	\end{align*}
-	\begin{align*}
-		\frac{
-			\frac{i = 1..n}
-			{
-				\langle e_i, \sigma^{i - 1} \rangle\Downarrow
-				\langle v_i, \sigma^i \rangle
-			}
-			\Downarrow
-			\frac{i = 1..n}
-			{
-				\langle v_i, \sigma^{n + 1} \rangle\Downarrow
-				\sigma^{n + 1}[x_i := v_i]
-			}
-		}
-		{\langle f(e_1, e_2, \cdots, e_n), \sigma^0 \rangle\Downarrow \langle v, \sigma^{n + 2} \rangle}
-	\end{align*}
+	}%
+	
+	%\begin{align*}
+	%	\frac{
+	%		\frac{i = 1..n}
+	%		{
+	%			\langle e_i, \sigma^{i - 1} \rangle\Downarrow
+	%			\langle v_i, \sigma^i \rangle
+	%		}
+	%		\Downarrow
+	%		\frac{i = 1..n}
+	%		{
+	%			\langle v_i, \sigma^{n + 1} \rangle\Downarrow
+	%			\sigma^{n + 1}[x_i := v_i]
+	%		}
+	%	}
+	%	{\langle f(e_1, e_2, \cdots, e_n), \sigma^0 \rangle\Downarrow \langle v, \sigma^{n + 2} \rangle}
+	%\end{align*}
 
 %	Expression:
 %	\begin{align*}
@@ -472,17 +473,34 @@ print_n_prime(&mut number);
 	\end{align*}
 
 	Function Call: 
+	{\small
+  	\setlength{\abovedisplayskip}{6pt}
+  	\setlength{\belowdisplayskip}{\abovedisplayskip}
+  	\setlength{\abovedisplayshortskip}{0pt}
+  	\setlength{\belowdisplayshortskip}{3pt}
 	\begin{align*}
 		\frac{
-			\frac{i = 1..n}
-			{\langle e_i, \sigma \rangle\Downarrow t_i} \ \ 
-			\frac{f(x_1, x_2, \cdots, x_n)}
-			{\langle x_i, \sigma \rangle\Downarrow t_i}
+			\langle e_1, \sigma \rangle\Downarrow t_1
+			\cdots
+			\langle e_n, \sigma \rangle\Downarrow t_n,
+			\langle a_1, \sigma \rangle\Downarrow t_1
+			\cdots
+			\langle a_n, \sigma \rangle\Downarrow t_n
 		}
-		{
-			\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow t
-		}
+		{\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow t}
 	\end{align*}
+	}%
+	%\begin{align*}
+	%	\frac{
+	%		\frac{i = 1..n}
+	%		{\langle e_i, \sigma \rangle\Downarrow t_i} \ \ 
+	%		\frac{f(x_1, x_2, \cdots, x_n)}
+	%		{\langle x_i, \sigma \rangle\Downarrow t_i}
+	%	}
+	%	{
+	%		\langle f(e_1, e_2, \cdots, e_n), \sigma \rangle\Downarrow t
+	%	}
+	%\end{align*}
 	
 
 
